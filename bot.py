@@ -3,9 +3,7 @@
 import discord
 
 import os
-token = os.environ.get('BOT_TOKEN')
 
-load_dotenv()  # take environment variables from 
 from datetime import datetime
 
 intents = discord.Intents.default()
@@ -47,5 +45,5 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
                     embedVar.set_image(url = message.attachments[0].url)
                 await client.get_channel(1011448137002528839).send(embed=embedVar)
         
-    
+token = os.environ.get('BOT_TOKEN')
 client.run(token)
