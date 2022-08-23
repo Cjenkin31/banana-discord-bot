@@ -1,7 +1,9 @@
 # This example requires the 'message_content' intent.
 
 import discord
-from dotenv import load_dotenv
+
+import os
+token = os.environ.get('BOT_TOKEN')
 
 load_dotenv()  # take environment variables from 
 from datetime import datetime
@@ -46,4 +48,4 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
                 await client.get_channel(1011448137002528839).send(embed=embedVar)
         
     
-client.run()
+client.run(token)
