@@ -35,15 +35,22 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
         reactions = message.reactions
         for reaction in reactions:
             if str(reaction) == "🍌":
-                link = str(message.jump_url)
-                embedVar = discord.Embed(description=message.content, color=0x00ff00)
-                valueString = "[Go To Message]"+"("+link+")"
-                embedVar.add_field(name ="Link",value=valueString)
-                embedVar.set_author(name= message.author,icon_url=message.author.avatar.url)
-                embedVar.timestamp = message.created_at
-                if len(message.attachments) > 0:
-                    embedVar.set_image(url = message.attachments[0].url)
-                await client.get_channel(1011728618604474428).send(embed=embedVar)
+                await client.get_channel(1011728618604474428).send(embed=CreateEmbedMessage(message))
         
 token = os.environ.get('BOT_TOKEN')
 client.run(token)
+
+def CreateEmbedMessage(message):
+    link = str(message.jump_url)
+    embedCreater = discord.Embed(description=message.content, color=0x00ff00)
+    valueString = "[Go To Message]"+"("+link+")"
+    embedCreater = setEmbedVariables(embedCreater,message,valueString)
+    if len(message.attachments) > 0:
+        embedCreater.set_image(url = message.attachments[0].url)
+    return embedCreater
+
+def setEmbedVariables(embedCreater,message,valueString):
+    embedCreater.add_field(name ="Link",value=valueString)
+    embedCreater.set_author(name = message.author,icon_url=message.author.avatar.url)
+    embedCreater.timestamp = message.created_at
+    return embedCreater
