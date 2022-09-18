@@ -10,7 +10,22 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.reactions = True
 intents.members = True
+
 client = discord.Client(intents=intents)
+def setEmbedVariables(embedCreater,message,valueString):
+    embedCreater.add_field(name ="Link",value=valueString)
+    embedCreater.set_author(name = message.author,icon_url=message.author.avatar.url)
+    embedCreater.timestamp = message.created_at
+    return embedCreater
+
+def CreateEmbedMessage(message):
+    link = str(message.jump_url)
+    embedCreater = discord.Embed(description=message.content, color=0x00ff00)
+    valueString = "[Go To Message]"+"("+link+")"
+    embedCreater = setEmbedVariables(embedCreater,message,valueString)
+    if len(message.attachments) > 0:
+        embedCreater.set_image(url = message.attachments[0].url)
+    return embedCreater
 
 @client.event
 async def on_ready():
@@ -40,17 +55,4 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
 token = os.environ.get('BOT_TOKEN')
 client.run(token)
 
-def CreateEmbedMessage(message):
-    link = str(message.jump_url)
-    embedCreater = discord.Embed(description=message.content, color=0x00ff00)
-    valueString = "[Go To Message]"+"("+link+")"
-    embedCreater = setEmbedVariables(embedCreater,message,valueString)
-    if len(message.attachments) > 0:
-        embedCreater.set_image(url = message.attachments[0].url)
-    return embedCreater
 
-def setEmbedVariables(embedCreater,message,valueString):
-    embedCreater.add_field(name ="Link",value=valueString)
-    embedCreater.set_author(name = message.author,icon_url=message.author.avatar.url)
-    embedCreater.timestamp = message.created_at
-    return embedCreater
