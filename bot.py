@@ -1,5 +1,3 @@
-# This example requires the 'message_content' intent.
-
 import discord
 from discord.ext import commands
 import os
@@ -15,7 +13,7 @@ overwatchHeroTankList = ["D.VA", "Doomfist", "Junkerqueen","Orisa","Reinhardt","
 overwatchHeroSupportList = ["Ashe", "Bastion", "Cassidy","Echo","Genji","Hanzo","Junkrat","Mei","Pharah","Reaper","Sojourn","Soldier 76","Sombra(Please Dont)","Symmetra","Torbjorn","Tracer","Widowmaker"]
 overwatchHeroDPSList = ["Ana", "Baptiste", "Brigitte","Kiriko","Lucio","Mercy","Moira","Zenyatta"]
 client = discord.Client(intents=intents)
-bot = Bot("!")
+bot = discord.Client(intents=intents)
 @bot.command()
 async def Ping(ctx):
     await ctx.send(f"Pong! {round(client.latency * 1000)}ms")
