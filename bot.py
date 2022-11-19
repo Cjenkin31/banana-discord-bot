@@ -4,24 +4,29 @@ import discord
 from discord.ext import commands
 import os
 from datetime import datetime
-
+import random
 intents = discord.Intents.default()
 intents.message_content = True
 intents.reactions = True
 intents.members = True
 
-
+overwatchHeroTankList = ["D.VA", "Doomfist", "Junkerqueen","Orisa","Reinhardt","Roadhod","Sigma","Winston","Wrecking Ball","Zarya"]
+overwatchHeroSupportList = ["Ashe", "Bastion", "Cassidy","Echo","Genji","Hanzo","Junkrat","Mei","Pharah","Reaper","Sojourn","Soldier 76","Sombra(Please Dont)","Symmetra","Torbjorn","Tracer","Widowmaker"]
+overwatchHeroDPSList = ["Ana", "Baptiste", "Brigitte","Kiriko","Lucio","Mercy","Moira","Zenyatta"]
 client = discord.Client(intents=intents)
-async def _init_command_response(interaction: Interaction):
-    print(f"> {interaction.user} used the command.")
-    await interaction.response.send_message("\n".join([
-        f"Hi **{interaction.user}**"
-    ]))
-
-@client.tree.command()
-async def hello(interaction: Interaction):
-    """ Says hello or something """
-    await _init_command_response(interaction)
+@client.command()
+async def Ping(ctx):
+    await ctx.send(f"Pong! {round(client.latency * 1000)}ms")
+@client.command()
+async def RandomTankHero(ctx):
+    tankHero=random.choice(overwatchHeroTankList)
+    await ctx.send(tankHero)
+async def RandomSupportHero(ctx):
+    supportHero=random.choice(overwatchHeroSupportList)
+    await ctx.send(supportHero)
+async def RandomDPSHero(ctx):
+    dpsHero=random.choice(overwatchHeroDPSList)
+    await ctx.send(dpsHero)
 
 def setEmbedVariables(embedCreater,message,valueString):
     embedCreater.add_field(name ="Link",value=valueString)
