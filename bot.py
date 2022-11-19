@@ -17,7 +17,7 @@ overwatchHeroDPSList = ["Ana", "Baptiste", "Brigitte","Kiriko","Lucio","Mercy","
 bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
 
-@tree.command(name = "Hello", description = "hello command", guild=discord.Object(id=222147212681936896)) #Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
+@tree.command(name = "hello", description = "hello command", guild=discord.Object(id=222147212681936896)) #Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
 async def first_command(interaction):
     await interaction.response.send_message("Hello!")
 
