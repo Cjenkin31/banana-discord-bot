@@ -1,9 +1,8 @@
 # This example requires the 'message_content' intent.
-
+from discord import app_commands, Intents, Client, Interaction
 import discord
-
+from discord.ext import commands
 import os
-
 from datetime import datetime
 
 intents = discord.Intents.default()
@@ -11,7 +10,19 @@ intents.message_content = True
 intents.reactions = True
 intents.members = True
 
+
 client = discord.Client(intents=intents)
+async def _init_command_response(interaction: Interaction):
+    print(f"> {interaction.user} used the command.")
+    await interaction.response.send_message("\n".join([
+        f"Hi **{interaction.user}**"
+    ]))
+
+@client.tree.command()
+async def hello(interaction: Interaction):
+    """ Says hello or something """
+    await _init_command_response(interaction)
+
 def setEmbedVariables(embedCreater,message,valueString):
     embedCreater.add_field(name ="Link",value=valueString)
     embedCreater.set_author(name = message.author,icon_url=message.author.avatar.url)
