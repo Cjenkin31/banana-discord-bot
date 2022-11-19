@@ -21,24 +21,20 @@ tree = app_commands.CommandTree(client)
 async def first_command(interaction):
     await interaction.response.send_message("Hello!")
 
-@bot.command()
-async def Ping(ctx):
-    await ctx.send(f"Pong! {round(client.latency * 1000)}ms")
-
-@bot.command()
-async def RandomTankHero(ctx):
+@tree.command(name = "randomtank", description = "hello command", guild=discord.Object(id=222147212681936896)) #Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
+async def first_command(interaction):
     tankHero=random.choice(overwatchHeroTankList)
-    await ctx.send(tankHero)
+    await interaction.response.send_message(tankHero)
 
-@bot.command()
-async def RandomSupportHero(ctx):
+@tree.command(name = "randomsupport", description = "hello command", guild=discord.Object(id=222147212681936896)) #Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
+async def first_command(interaction):
     supportHero=random.choice(overwatchHeroSupportList)
-    await ctx.send(supportHero)
+    await interaction.response.send_message(supportHero)
 
-@bot.command()
-async def RandomDPSHero(ctx):
+@tree.command(name = "randomdps", description = "hello command", guild=discord.Object(id=222147212681936896)) #Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
+async def first_command(interaction):
     dpsHero=random.choice(overwatchHeroDPSList)
-    await ctx.send(dpsHero)
+    await interaction.response.send_message(dpsHero)
 
 def setEmbedVariables(embedCreater,message,valueString):
     embedCreater.add_field(name ="Link",value=valueString)
