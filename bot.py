@@ -58,6 +58,8 @@ def CreateEmbedMessage(message):
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
+    await tree.sync(guild=discord.Object(id=222147212681936896))
+    print("Ready!")
 
 @client.event
 async def on_message(message):
