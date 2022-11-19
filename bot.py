@@ -1,8 +1,9 @@
 # This example requires the 'message_content' intent.
-from discord import app_commands, Intents, Client, Interaction
+
 import discord
 from discord.ext import commands
 import os
+from discord.ext.commands import Bot
 from datetime import datetime
 import random
 intents = discord.Intents.default()
@@ -14,16 +15,22 @@ overwatchHeroTankList = ["D.VA", "Doomfist", "Junkerqueen","Orisa","Reinhardt","
 overwatchHeroSupportList = ["Ashe", "Bastion", "Cassidy","Echo","Genji","Hanzo","Junkrat","Mei","Pharah","Reaper","Sojourn","Soldier 76","Sombra(Please Dont)","Symmetra","Torbjorn","Tracer","Widowmaker"]
 overwatchHeroDPSList = ["Ana", "Baptiste", "Brigitte","Kiriko","Lucio","Mercy","Moira","Zenyatta"]
 client = discord.Client(intents=intents)
-@client.command()
+bot = Bot("!")
+@bot.command()
 async def Ping(ctx):
     await ctx.send(f"Pong! {round(client.latency * 1000)}ms")
-@client.command()
+
+@bot.command()
 async def RandomTankHero(ctx):
     tankHero=random.choice(overwatchHeroTankList)
     await ctx.send(tankHero)
+
+@bot.command()
 async def RandomSupportHero(ctx):
     supportHero=random.choice(overwatchHeroSupportList)
     await ctx.send(supportHero)
+
+@bot.command()
 async def RandomDPSHero(ctx):
     dpsHero=random.choice(overwatchHeroDPSList)
     await ctx.send(dpsHero)
