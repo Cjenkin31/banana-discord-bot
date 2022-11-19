@@ -10,12 +10,12 @@ intents.message_content = True
 intents.reactions = True
 intents.members = True
 
-tree = app_commands.CommandTree(client)
+client = discord.Client(intents=intents)
 overwatchHeroTankList = ["D.VA", "Doomfist", "Junkerqueen","Orisa","Reinhardt","Roadhod","Sigma","Winston","Wrecking Ball","Zarya"]
 overwatchHeroSupportList = ["Ashe", "Bastion", "Cassidy","Echo","Genji","Hanzo","Junkrat","Mei","Pharah","Reaper","Sojourn","Soldier 76","Sombra(Please Dont)","Symmetra","Torbjorn","Tracer","Widowmaker"]
 overwatchHeroDPSList = ["Ana", "Baptiste", "Brigitte","Kiriko","Lucio","Mercy","Moira","Zenyatta"]
-client = discord.Client(intents=intents)
 bot = Bot("!",intents=intents)
+tree = app_commands.CommandTree(client)
 
 @tree.command(name = "Hello", description = "hello command", guild=discord.Object(id=222147212681936896)) #Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
 async def first_command(interaction):
