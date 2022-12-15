@@ -19,10 +19,6 @@ overwatchGameModeList = ["Competitive", "Quick Play", "Custom Games", "Arcade"]
 bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
 
-@tree.command(name = "hello", description = "hello command", guild=discord.Object(id=222147212681936896))
-async def first_command(interaction):
-    await interaction.response.send_message("Hello!")
-
 @tree.command(name = "randomtank", description = "rolls a random tank hero from overwatch", guild=discord.Object(id=222147212681936896))
 async def first_command(interaction):
     tankHero=random.choice(overwatchHeroTankList)
