@@ -48,9 +48,10 @@ async def first_command(interaction):
     overwatchGamemode=random.choice(overwatchGameModeList)
     await interaction.response.send_message(overwatchGamemode)
 
-@tree.command(name = "testcommand", description = "does nothing atm.", guild=discord.Object(id=222147212681936896)) 
-async def self(interaction: discord.Interaction, stuff: str):
-    await interaction.response.send_message(stuff)
+@tree.command(name = "pickfromlist", description = "input things to be chosen seperated by a ,. Ex. Overwatch,League", guild=discord.Object(id=222147212681936896)) 
+async def self(interaction: discord.Interaction, items: str):
+    list=items.split(',')
+    await interaction.response.send_message(random.choice(list))
 
 def setEmbedVariables(embedCreater,message,valueString):
     embedCreater.add_field(name ="Link",value=valueString)
