@@ -53,6 +53,11 @@ async def self(interaction: discord.Interaction, items: str):
     list=items.split(',')
     await interaction.response.send_message(random.choice(list))
 
+@tree.command(name = "coinflip", description = "flips a coin") 
+async def self(interaction: discord.Interaction, items: str):
+    list=["Heads","Tails"]
+    await interaction.response.send_message(random.choice(list))
+
 def setEmbedVariables(embedCreater,message,valueString):
     embedCreater.add_field(name ="Link",value=valueString)
     embedCreater.set_author(name = message.author,icon_url=message.author.avatar.url)
