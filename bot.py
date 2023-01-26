@@ -22,28 +22,23 @@ mainServerId=discord.Object(id=222147212681936896)
 
 @tree.command(name = "randomtank", description = "rolls a random tank hero from overwatch", guild=mainServerId)
 async def first_command(interaction):
-    tankHero=random.choice(overwatchHeroTankList)
-    await interaction.response.send_message(tankHero)
+    await interaction.response.send_message(random.choice(overwatchHeroTankList))
 
 @tree.command(name = "randomsupport", description = "rolls a random support hero from overwatch", guild=mainServerId)
 async def first_command(interaction):
-    supportHero=random.choice(overwatchHeroSupportList)
-    await interaction.response.send_message(supportHero)
+    await interaction.response.send_message(random.choice(overwatchHeroSupportList))
 
 @tree.command(name = "randomdps", description = "rolls a random support dps from overwatch", guild=mainServerId) 
 async def first_command(interaction):
-    dpsHero=random.choice(overwatchHeroDPSList)
-    await interaction.response.send_message(dpsHero)
+    await interaction.response.send_message(random.choice(overwatchHeroDPSList))
 
 @tree.command(name = "randomroleow", description = "rolls a random role for overwatch", guild=mainServerId) 
 async def first_command(interaction):
-    overwatchRole=random.choice(overwatchRoleList)
-    await interaction.response.send_message(overwatchRole)
+    await interaction.response.send_message(random.choice(overwatchRoleList))
 
 @tree.command(name = "randomgamemodeow", description = "rolls a random game mode for overwatch", guild=mainServerId) 
 async def first_command(interaction):
-    overwatchGamemode=random.choice(overwatchGameModeList)
-    await interaction.response.send_message(overwatchGamemode)
+    await interaction.response.send_message(random.choice(overwatchGameModeList))
 
 @tree.command(name = "yesno", description = "picks yes or no", guild=mainServerId) 
 async def first_command(interaction):
@@ -51,13 +46,11 @@ async def first_command(interaction):
 
 @tree.command(name = "pickfromlist", description = "input things to be chosen seperated by a ,. Ex. Overwatch,League", guild=mainServerId) 
 async def self(interaction: discord.Interaction, items: str):
-    list=items.split(',')
-    await interaction.response.send_message(random.choice(list))
+    await interaction.response.send_message(random.choice(items.split(',')))
 
 @tree.command(name = "coinflip", description = "flips a coin") 
 async def self(interaction: discord.Interaction, items: str):
-    list=["Heads","Tails"]
-    await interaction.response.send_message(random.choice(list))
+    await interaction.response.send_message(random.choice(["Heads","Tails"]))
 
 def setEmbedVariables(embedCreater,message,valueString):
     embedCreater.add_field(name ="Link",value=valueString)
