@@ -45,6 +45,10 @@ async def first_command(interaction):
     overwatchGamemode=random.choice(overwatchGameModeList)
     await interaction.response.send_message(overwatchGamemode)
 
+@tree.command(name = "yesno", description = "picks yes or no", guild=mainServerId) 
+async def first_command(interaction):
+    await interaction.response.send_message(random.choice(["Yes", "No"]))
+
 @tree.command(name = "pickfromlist", description = "input things to be chosen seperated by a ,. Ex. Overwatch,League", guild=mainServerId) 
 async def self(interaction: discord.Interaction, items: str):
     list=items.split(',')
