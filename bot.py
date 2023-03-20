@@ -48,6 +48,13 @@ async def first_command(interaction):
 async def self(interaction: discord.Interaction, items: str):
     await interaction.response.send_message(random.choice(items.split(',')))
 
+@tree.command(name = "randomnumber", description = "Choose a random number between 2 inputs", guild=mainServerId) 
+async def self(interaction: discord.Interaction, items: str):
+    try:
+        await interaction.response.send_message(random.randint(int(items.split(',')[0]),int(items.split(',')[1])))
+    except:
+        await interaction.response.send_message("Either you messed up or I did. But It was prob you")
+
 @tree.command(name = "coinflip", description = "flips a coin") 
 async def self(interaction: discord.Interaction, items: str):
     await interaction.response.send_message(random.choice(["Heads","Tails"]))
