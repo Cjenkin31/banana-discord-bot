@@ -118,6 +118,8 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
+sent_messages = {}  # dictionary to keep track of sent messages
+
 @client.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     if payload.user_id == client.user.id:
@@ -139,7 +141,10 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
                     target_channel = client.get_channel(1101698839104192652)
                 else:
                     return
-                await target_channel.send(embed=CreateEmbedMessage(message))
+                if payload.message_id not in sent_messages:
+                    await target_channel.send(embed=CreateEmbedMessage(message))
+                    sent_messages[payload.message_id] = True
+                break
         
 token = os.environ.get('BOT_TOKEN')
 client.run(token)
