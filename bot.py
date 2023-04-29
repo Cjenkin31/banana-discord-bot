@@ -34,6 +34,10 @@ for server in servers:
     async def first_command(interaction):
         await interaction.response.send_message(random.choice(overwatchHeroSupportList))
 
+    @tree.command(name="randomvoiceline", description="rolls a random voiceline from overwatch", guild=server)
+    async def first_command(interaction):
+        await interaction.response.send_message(random.choice(overwatchVoiceLines))
+
     @tree.command(name="randomdps", description="rolls a random support dps from overwatch", guild=server)
     async def first_command(interaction):
         await interaction.response.send_message(random.choice(overwatchHeroDPSList))
