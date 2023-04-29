@@ -19,8 +19,13 @@ overwatchGameModeList = ["Competitive", "Quick Play", "Custom Games", "Arcade"]
 bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
 mainServerId=discord.Object(id=222147212681936896)
+sideServerId=discord.Object(id=1101665956314501180)
 
 @tree.command(name = "randomtank", description = "rolls a random tank hero from overwatch", guild=mainServerId)
+async def first_command(interaction):
+    await interaction.response.send_message(random.choice(overwatchHeroTankList))
+
+@tree.command(name = "randomtank", description = "rolls a random tank hero from overwatch", guild=sideServerId)
 async def first_command(interaction):
     await interaction.response.send_message(random.choice(overwatchHeroTankList))
 
@@ -28,7 +33,15 @@ async def first_command(interaction):
 async def first_command(interaction):
     await interaction.response.send_message(random.choice(overwatchHeroSupportList))
 
+@tree.command(name = "randomsupport", description = "rolls a random support hero from overwatch", guild=sideServerId)
+async def first_command(interaction):
+    await interaction.response.send_message(random.choice(overwatchHeroSupportList))
+
 @tree.command(name = "randomdps", description = "rolls a random support dps from overwatch", guild=mainServerId) 
+async def first_command(interaction):
+    await interaction.response.send_message(random.choice(overwatchHeroDPSList))
+
+@tree.command(name = "randomdps", description = "rolls a random support dps from overwatch", guild=sideServerId) 
 async def first_command(interaction):
     await interaction.response.send_message(random.choice(overwatchHeroDPSList))
 
@@ -36,7 +49,15 @@ async def first_command(interaction):
 async def first_command(interaction):
     await interaction.response.send_message(random.choice(overwatchRoleList))
 
+@tree.command(name = "randomroleow", description = "rolls a random role for overwatch", guild=sideServerId) 
+async def first_command(interaction):
+    await interaction.response.send_message(random.choice(overwatchRoleList))
+
 @tree.command(name = "randomgamemodeow", description = "rolls a random game mode for overwatch", guild=mainServerId) 
+async def first_command(interaction):
+    await interaction.response.send_message(random.choice(overwatchGameModeList))
+
+@tree.command(name = "randomgamemodeow", description = "rolls a random game mode for overwatch", guild=sideServerId) 
 async def first_command(interaction):
     await interaction.response.send_message(random.choice(overwatchGameModeList))
 
