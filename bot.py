@@ -75,7 +75,7 @@ for server in servers:
         while(firstSupport==secondSupport):
             secondSupport=random.choice(overwatchHeroSupportList)
         
-        await interaction.response.send_message("Tank: "+random.choice(overwatchHeroTankList)+"\nDPS: "+firstDPS+","+secondDPS+"\nSupport: "+firstSupport+","+secondSupport)
+        await interaction.response.send_message("Tank: "+random.choice(overwatchHeroTankList)+"\nDPS: "+firstDPS+", "+secondDPS+"\nSupport: "+firstSupport+", "+secondSupport)
 
 @tree.command(name = "coinflip", description = "flips a coin") 
 async def self(interaction: discord.Interaction, items: str):
