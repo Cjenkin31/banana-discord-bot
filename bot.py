@@ -133,17 +133,13 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
             if str(reaction) == "🍌" and reaction.count == 1:
                 if guild is None:
                     return
-                
-                # check if the reaction occurred in server A
                 if guild.id == 222147212681936896:
                     target_channel = client.get_channel(1011728618604474428)
-                # check if the reaction occurred in server B
                 elif guild.id == 1101665956314501180:
                     target_channel = client.get_channel(1101698839104192652)
                 else:
                     return
-
-                # send the embed message to the target channel
+                print(payload.message_id not in saved_messages)
                 if payload.message_id not in saved_messages:
                     await target_channel.send(embed=CreateEmbedMessage(message))
                     saved_messages[payload.message_id] = True
