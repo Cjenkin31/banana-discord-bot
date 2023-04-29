@@ -117,15 +117,13 @@ async def on_message(message):
 
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
-
-sent_messages = {}
-
+saved_messages = {}
 @client.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     if payload.user_id == client.user.id:
         return
 
-    if payload.emoji.name == "🍞" and message.reactions[0].count == 1:
+    if payload.emoji.name == "🍞":
         channel = client.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
         reactions = message.reactions
@@ -135,16 +133,20 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
             if str(reaction) == "🍌" and reaction.count == 1:
                 if guild is None:
                     return
+                
+                # check if the reaction occurred in server A
                 if guild.id == 222147212681936896:
                     target_channel = client.get_channel(1011728618604474428)
+                # check if the reaction occurred in server B
                 elif guild.id == 1101665956314501180:
                     target_channel = client.get_channel(1101698839104192652)
                 else:
                     return
-                if payload.message_id not in sent_messages:
+
+                # send the embed message to the target channel
+                if payload.message_id not in saved_messages:
                     await target_channel.send(embed=CreateEmbedMessage(message))
-                    sent_messages[payload.message_id] = True
-                break
+                    saved_messages[payload.message_id] = True
         
 token = os.environ.get('BOT_TOKEN')
 client.run(token)
