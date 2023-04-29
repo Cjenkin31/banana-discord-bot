@@ -65,7 +65,17 @@ for server in servers:
 
     @tree.command(name = "randomfullcomp", description = "Rolls 1 tank, 2 dps, 2 supports", guild=server) 
     async def first_command(interaction):
-        await interaction.response.send_message("Tank: "+random.choice(overwatchHeroTankList)+"\nDPS: "+random.choice(overwatchHeroDPSList)+","+random.choice(overwatchHeroDPSList)+"\nSupport: "+random.choice(overwatchHeroSupportList)+","+random.choice(overwatchHeroSupportList))
+        firstDPS=random.choice(overwatchHeroDPSList)
+        secondDPS=random.choice(overwatchHeroDPSList)
+        while(firstDPS==secondDPS):
+            secondDPS=random.choice(overwatchHeroDPSList)
+        
+        firstSupport=random.choice(overwatchHeroSupportList)
+        secondSupport=random.choice(overwatchHeroSupportList)
+        while(firstSupport==secondSupport):
+            secondSupport=random.choice(overwatchHeroSupportList)
+        
+        await interaction.response.send_message("Tank: "+random.choice(overwatchHeroTankList)+"\nDPS: "+firstDPS+","+secondDPS+"\nSupport: "+firstSupport+","+secondSupport)
 
 @tree.command(name = "coinflip", description = "flips a coin") 
 async def self(interaction: discord.Interaction, items: str):
