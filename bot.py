@@ -49,7 +49,7 @@ for server in servers:
 async def first_command(interaction):
     await interaction.response.send_message(random.choice(["Yes", "No"]))
 
-@tree.command(name = "yesnoTest", description = "picks yes or no", guild=sideServerId) 
+@tree.command(name = "yesnotest", description = "picks yes or no", guild=sideServerId) 
 async def first_command(interaction):
     await interaction.response.send_message(random.choice(["Yes", "No"]))
 
