@@ -4,6 +4,7 @@ import os
 from discord import app_commands
 from discord.ext.commands import Bot
 from datetime import datetime
+from voicelines import GetVoiceLines
 import random
 intents = discord.Intents.default()
 intents.message_content = True
@@ -16,6 +17,7 @@ overwatchHeroDPSList = ["Ashe", "Bastion", "Cassidy","Echo","Genji","Hanzo","Jun
 overwatchHeroSupportList = ["Ana", "Baptiste", "Brigitte","Kiriko","Lucio","Mercy","Moira","Zenyatta"]
 overwatchRoleList = ["Tank", "DPS", "Support"]
 overwatchGameModeList = ["Competitive", "Quick Play", "Custom Games", "Arcade"]
+overwatchVoiceLines=GetVoiceLines()
 bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
 mainServerId=discord.Object(id=222147212681936896)
@@ -128,11 +130,16 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
         guild = client.get_guild(payload.guild_id)
 
         for reaction in reactions:
-            if str(reaction) == "🍌" and reaction.count==1:
-                if (guild==discord.object(id=222147212681936896)):
-                    await client.get_channel(1011728618604474428).send(embed=CreateEmbedMessage(message))
-                elif (guild==discord.Object(id=1101665956314501180)):
-                    await client.get_channel(1101698839104192652).send(embed=CreateEmbedMessage(message))
+            if str(reaction) == "🍌" and reaction.count == 1:
+                if guild is None:
+                    return
+                if guild.id == 222147212681936896:
+                    target_channel = client.get_channel(1011728618604474428)
+                elif guild.id == 1101665956314501180:
+                    target_channel = client.get_channel(1101698839104192652)
+                else:
+                    return
+                await target_channel.send(embed=CreateEmbedMessage(message))
         
 token = os.environ.get('BOT_TOKEN')
 client.run(token)
