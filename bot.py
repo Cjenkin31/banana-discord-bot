@@ -122,6 +122,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
         for reaction in reactions:
             if str(reaction) == "🍌" and reaction.count==1:
                 await client.get_channel(1011728618604474428).send(embed=CreateEmbedMessage(message))
+                await client.get_channel(1101698839104192652).send(embed=CreateEmbedMessage(message))
         
 token = os.environ.get('BOT_TOKEN')
 client.run(token)
