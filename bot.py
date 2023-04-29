@@ -125,11 +125,14 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
         channel = client.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
         reactions = message.reactions
+        guild = client.get_guild(payload.guild_id)
 
         for reaction in reactions:
             if str(reaction) == "🍌" and reaction.count==1:
-                await client.get_channel(1011728618604474428).send(embed=CreateEmbedMessage(message))
-                await client.get_channel(1101698839104192652).send(embed=CreateEmbedMessage(message))
+                if (guild==discord.object(id=222147212681936896)):
+                    await client.get_channel(1011728618604474428).send(embed=CreateEmbedMessage(message))
+                elif (guild==discord.Object(id=1101665956314501180)):
+                    await client.get_channel(1101698839104192652).send(embed=CreateEmbedMessage(message))
         
 token = os.environ.get('BOT_TOKEN')
 client.run(token)
