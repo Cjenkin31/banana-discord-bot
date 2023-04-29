@@ -88,7 +88,7 @@ async def on_ready():
     print(f'We have logged in as {client.user}')
     await tree.sync(guild=mainServerId)
     print("Ready!")
-
+sideServerId=discord.Object(id=1101665956314501180)
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
