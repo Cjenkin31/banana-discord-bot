@@ -143,7 +143,6 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
                     target_channel = client.get_channel(1101698839104192652)
                 else:
                     return
-                print(payload.message_id not in saved_messages)
                 if payload.message_id not in saved_messages:
                     await target_channel.send(embed=CreateEmbedMessage(message))
                     saved_messages[payload.message_id] = True
