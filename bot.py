@@ -123,7 +123,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     if payload.user_id == client.user.id:
         return
 
-    if payload.emoji.name == "🍞":
+    if payload.emoji.name == "🍞" and reaction.count == 1:
         channel = client.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
         reactions = message.reactions
