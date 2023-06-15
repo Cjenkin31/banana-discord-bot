@@ -4,6 +4,14 @@ from discord import app_commands
 from discord.ext.commands import Bot
 from voicelines import GetVoiceLines
 import random
+overwatchHeroTankList = ["D.VA", "Doomfist", "Junkerqueen","Orisa","Reinhardt","Roadhog","Sigma","Winston","Wrecking Ball","Zarya","Ramattra"]
+overwatchHeroDPSList = ["Ashe", "Bastion", "Cassidy","Echo","Genji","Hanzo","Junkrat","Mei","Pharah","Reaper","Sojourn","Soldier 76","Sombra(Please Dont)","Symmetra","Torbjorn","Tracer","Widowmaker"]
+overwatchHeroSupportList = ["Ana", "Baptiste", "Brigitte","Kiriko","Lucio","Mercy","Moira","Zenyatta"]
+overwatchRoleList = ["Tank", "DPS", "Support"]
+overwatchGameModeList = ["Competitive", "Quick Play", "Custom Games", "Arcade"]
+mainServerId=discord.Object(id=222147212681936896)
+sideServerId=discord.Object(id=1101665956314501180)
+
 def DefineAllCommands(tree):
     mainServerId=discord.Object(id=222147212681936896)
     sideServerId=discord.Object(id=1101665956314501180)
