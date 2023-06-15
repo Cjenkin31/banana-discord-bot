@@ -13,16 +13,10 @@ intents.reactions = True
 intents.members = True
 
 client = discord.Client(intents=intents)
-overwatchHeroTankList = ["D.VA", "Doomfist", "Junkerqueen","Orisa","Reinhardt","Roadhog","Sigma","Winston","Wrecking Ball","Zarya","Ramattra"]
-overwatchHeroDPSList = ["Ashe", "Bastion", "Cassidy","Echo","Genji","Hanzo","Junkrat","Mei","Pharah","Reaper","Sojourn","Soldier 76","Sombra(Please Dont)","Symmetra","Torbjorn","Tracer","Widowmaker"]
-overwatchHeroSupportList = ["Ana", "Baptiste", "Brigitte","Kiriko","Lucio","Mercy","Moira","Zenyatta"]
-overwatchRoleList = ["Tank", "DPS", "Support"]
-overwatchGameModeList = ["Competitive", "Quick Play", "Custom Games", "Arcade"]
+
 overwatchVoiceLines=GetVoiceLines()
 bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
-mainServerId=discord.Object(id=222147212681936896)
-sideServerId=discord.Object(id=1101665956314501180)
 
 servers = [mainServerId, sideServerId]
 
