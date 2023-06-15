@@ -26,7 +26,7 @@ sideServerId=discord.Object(id=1101665956314501180)
 
 servers = [mainServerId, sideServerId]
 
-DefineAllCommands()
+DefineAllCommands(tree)
 
 def setEmbedVariables(embedCreater,message,valueString):
     embedCreater.add_field(name ="Link",value=valueString)
