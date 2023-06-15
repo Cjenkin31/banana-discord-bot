@@ -65,7 +65,7 @@ for server in servers:
         except:
             await interaction.response.send_message("Either you messed up or I did. But It was prob you")
 
-    @tree.command(name="randomgamemodeow", description="rolls number 1-100", guild=server) 
+    @tree.command(name="rhythmroll", description="rolls number 1-100", guild=server) 
     async def first_command(interaction):
         await interaction.response.send_message(random.randint(0,100))
 
