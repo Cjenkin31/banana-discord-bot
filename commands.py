@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from discord.ext.commands import Bot
 from voicelines import GetVoiceLines
-
+import random
 def DefineAllCommands(tree):
     mainServerId=discord.Object(id=222147212681936896)
     sideServerId=discord.Object(id=1101665956314501180)
