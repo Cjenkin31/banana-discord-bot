@@ -60,6 +60,6 @@ def DefineAllCommands():
             
             await interaction.response.send_message("Tank: "+random.choice(overwatchHeroTankList)+"\nDPS: "+firstDPS+", "+secondDPS+"\nSupport: "+firstSupport+", "+secondSupport)
 
-@tree.command(name = "coinflip", description = "flips a coin") 
-async def self(interaction: discord.Interaction, items: str):
-    await interaction.response.send_message(random.choice(["Heads","Tails"]))
+    @tree.command(name = "coinflip", description = "flips a coin") 
+    async def self(interaction: discord.Interaction, items: str):
+        await interaction.response.send_message(random.choice(["Heads","Tails"]))
