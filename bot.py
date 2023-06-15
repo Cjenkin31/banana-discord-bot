@@ -18,8 +18,6 @@ overwatchVoiceLines=GetVoiceLines()
 bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
 
-servers = [mainServerId, sideServerId]
-
 DefineAllCommands(tree)
 
 def setEmbedVariables(embedCreater,message,valueString):
