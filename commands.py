@@ -52,10 +52,9 @@ def DefineAllCommands(tree):
         @tree.command(name = "sleepygenerator", description = "will give an amt of Z's that are randomly uppercased and lower", guild=server) 
         async def self(interaction: discord.Interaction, items: int):
             itemCount=items
+            zString = "" if itemCount<=200 else "Limiting to 200 Z's:   "
             if (itemCount > 200):
-                await interaction.response.send_message("Limiting to 200....")
                 itemCount=200
-            zString = ""
             while (itemCount>0):
                 randomZ="Z" if random.randint(1,2) == 1 else "z"
                 zString = zString+randomZ
