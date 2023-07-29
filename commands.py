@@ -49,6 +49,19 @@ def DefineAllCommands(tree):
         async def self(interaction: discord.Interaction, items: str):
             await interaction.response.send_message(random.choice(items.split(',')))
 
+        @tree.command(name = "sleepygenerator", description = "will give an amt of Z's that are randomly uppercased and lower", guild=server) 
+        async def self(interaction: discord.Interaction, items: int):
+            itemCount=items
+            if (itemCount > 200):
+                await interaction.response.send_message("Limiting to 200....")
+                itemCount=200
+            zString = ""
+            while (itemCount>0):
+                randomZ="Z" if random.randint(1,2) == 1 else "z"
+                zString = zString+randomZ
+                itemCount-=1
+            await interaction.response.send_message(zString)
+    
         @tree.command(name = "randomnumber", description = "Choose a random number between 2 inputs", guild=server) 
         async def self(interaction: discord.Interaction, items: str):
             try:
