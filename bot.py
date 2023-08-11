@@ -50,7 +50,8 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-
+    if message.content.lower == 'l':
+        await message.channel.send(':GunBagel:')
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
     if  message.content.startswith('ggez'):
