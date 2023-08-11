@@ -73,8 +73,9 @@ async def on_message(message):
         debugMode = True
     elif message.content.startswith('debug'):
         debugMode= False
-    if message.content.lower() == 'l':  # Fixed the comparison here as well
-        await message.channel.send(':GunBagel:')
+    if message.content.lower() == 'l':
+        gunbagel_emoji = '<:GunBagel:1105232118759567480>'
+        await message.channel.send(gunbagel_emoji)
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
     if message.content.startswith('ggez'):
