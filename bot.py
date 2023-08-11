@@ -64,6 +64,7 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
+    print(message.content)
     if message.content.lower == 'l':
         await message.channel.send(':GunBagel:')
     if message.content.startswith('$hello'):
