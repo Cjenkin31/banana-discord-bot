@@ -7,6 +7,9 @@ from datetime import datetime
 from voicelines import GetVoiceLines
 from commands import DefineAllCommands
 import random
+
+BOT_VERSION = "1.0.0"
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.reactions = True
@@ -19,6 +22,16 @@ bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
 
 DefineAllCommands(tree)
+
+async def send_version_info():
+    update_message = f"Bot Version: {BOT_VERSION}\nUpdated with new features and improvements!"
+    for guild in client.guilds:
+        for channel in guild.text_channels:
+            try:
+                await channel.send(update_message)
+            except:
+                # Handle any permissions errors or other exceptions
+                pass
 
 def setEmbedVariables(embedCreater,message,valueString):
     embedCreater.add_field(name ="Link",value=valueString)
@@ -40,6 +53,7 @@ async def on_ready():
     print(f'We have logged in as {client.user}')
     await tree.sync(guild=mainServerId)
     print("Ready!")
+    await send_version_info() 
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
