@@ -64,17 +64,20 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    global debugMode  # Declare debugMode as a global variable
     if message.author == client.user:
         return
-    if (debugMode):
+    if debugMode:
         print(message.content)
-    if message.content.startswith('debug'):
-        debugMode=True
-    if message.content.lower == 'l':
+    if message.content.startswith('debug') and not debugMode:
+        debugMode = True
+    elif message.content.startswith('debug'):
+        debugMode= False
+    if message.content.lower() == 'l':  # Fixed the comparison here as well
         await message.channel.send(':GunBagel:')
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
-    if  message.content.startswith('ggez'):
+    if message.content.startswith('ggez'):
         await message.channel.send(random.choice(["Well played. I salute you all.","For glory and honor! Huzzah comrades!","I'm wrestling with some insecurity issues in my life but thank you all for playing with me.","It's past my bedtime. Please don't tell my mommy.","Gee whiz! That was fun. Good playing!","I feel very, very small... please hold me..."]))
 saved_messages = {}
 @client.event
