@@ -17,6 +17,8 @@ intents.members = True
 
 client = discord.Client(intents=intents)
 
+debugMode=False
+
 overwatchVoiceLines=GetVoiceLines()
 bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
@@ -64,7 +66,10 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    print(message.content)
+    if (debugMode):
+        print(message.content)
+    if message.content.startswith('debug'):
+        debugMode=True
     if message.content.lower == 'l':
         await message.channel.send(':GunBagel:')
     if message.content.startswith('$hello'):
