@@ -1,0 +1,9 @@
+import random
+
+def GetDictPets():
+    return {"images\IMG_6913.jpg":"Amber", "images\IMG_6903.jpg":"Amber", "images\IMG_6895.png":"Amber", "images\IMG_6839.png":"Amber", "images\IMG_6781.jpg":"Amber","images\Polish_20230808_163228438.jpg":"Jake","images\IMG_6721-1.png":"Amber","images\IMG_6306.jpg":"Amber","images\IMG_6195.jpg":"Kaylie","images\IMG_5781.jpg":"Amber","images\IMG_2839.jpg":"Donovan","images\IMG_2838.jpg":"Donovan","images\IMG_5587.jpg":"Amber","images\43CE5474-E5E3-42BC-BF89-A0A6CC034C88.jpg":"Jeremy","images\1B9ABD25-F1B6-4956-B08B-9D74438C7390.jpg":"Jeremy","images\Attachment.jpg":"Amber","images\20230527_170343.jpg":"Chris","images\IMG_5155.jpg":"Amber","images\image0.jpg":"JP","images\19B73A22-6D9E-4CFD-85EF-FDE6D13A936F.jpg":"Jeremy","images\6259240B-B2C4-4DCC-B285-7AE9DDEE3C9B.jpg":"Jeremy","images\3DE72052-988A-4B42-B5FA-9E506B72C079.jpg":"Jeremy","images\D4C2A3E2-847D-4CD4-A70B-0F81966E6A75.jpg":"Jeremy","images\IMG_5072.png":"Amber","images\6FBA885E-E8F9-45DB-8244-923EFE3FB09F.jpg":"Amber","images\IMG_5070.png":"Amber","images\EA245A40-EA03-420E-B4C4-3449F80F250A.jpg":"Amber","images\47E3C3F4-BD43-4D6F-93F8-0E68EA2B496B.jpg":"Amber","images\IMG_5056.png":"Amber","images\IMG_2808.jpg":"Donovan","images\70328765316__A71D91FD-0A7C-4816-9643-5891BBFFBF4D.jpg":"Donovan","images\70328776443__83F26C35-98EB-4B69-BF9A-B88CE6739387.jpg":"Donovan","images\0870272E-E771-424B-BF88-F6CBFD8C54C1.jpg":"Amber","images\3AD7DD97-04EA-44CC-810E-1C099F6EE8CC.jpg":"Kaylie","images\05EF7D7A-BAE7-4A58-B1AA-782E9B8A2A1F.jpg":"Jeremy","images\IMG_3007.jpg":"Jeremy"}
+
+def RandomPet():
+    pets_dict = GetDictPets()
+    random_key = random.choice(list(pets_dict.keys()))
+    return [random_key, pets_dict[random_key]]

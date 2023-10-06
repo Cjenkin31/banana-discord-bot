@@ -3,6 +3,8 @@ from discord.ext import commands
 from discord import app_commands
 from discord.ext.commands import Bot
 from voicelines import GetVoiceLines
+from pets import RandomPet
+
 import random
 overwatchHeroTankList = ["D.VA", "Doomfist", "Junkerqueen","Orisa","Reinhardt","Roadhog","Sigma","Winston","Wrecking Ball","Zarya","Ramattra"]
 overwatchHeroDPSList = ["Ashe", "Bastion", "Cassidy","Echo","Genji","Hanzo","Junkrat","Mei","Pharah","Reaper","Sojourn","Soldier 76","Sombra(Please Dont)","Symmetra","Torbjorn","Tracer","Widowmaker"]
@@ -85,6 +87,13 @@ def DefineAllCommands(tree):
                 secondSupport=random.choice(overwatchHeroSupportList)
             
             await interaction.response.send_message("Tank: "+random.choice(overwatchHeroTankList)+"\nDPS: "+firstDPS+", "+secondDPS+"\nSupport: "+firstSupport+", "+secondSupport)
+        
+        @tree.command(name="randompet", description="Random pet picture from friends!", guild=server) 
+        async def random_pet(interaction):
+            pet_info = RandomPet()  # Get random pet info using the RandomPet function
+            file_path, name = pet_info  # Unpack the pet info into file path and name
+            await interaction.response.send_message(f'Sure! Here\'s a random pet from {name}!\n![Image]({file_path})')
+
 
     @tree.command(name = "coinflip", description = "flips a coin") 
     async def self(interaction: discord.Interaction, items: str):
