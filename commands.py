@@ -1,3 +1,5 @@
+import os
+from urllib import request
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -90,10 +92,25 @@ def DefineAllCommands(tree):
         
         @tree.command(name="randompet", description="Random pet picture from friends!", guild=server) 
         async def random_pet(interaction):
-            pet_info = RandomPet()  # Get random pet info using the RandomPet function
-            file_path, name = pet_info
-            file = discord.File(file_path, filename="image.jpg")
-            await interaction.response.send_message(f'Sure! Here\'s a random pet from {name}!', file=file)
+            pet_info = RandomPet()
+            file_url, name = pet_info
+
+            # Fetch the image from GitHub
+            response = request.get(file_url, stream=True)
+            if response.status_code == 200:
+                # Create a temporary file to hold the image
+                with open('temp_image.jpg', 'wb') as file:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        file.write(chunk)
+                
+                # Send the image to Discord
+                discord_file = discord.File('temp_image.jpg', filename='image.jpg')
+                await interaction.response.send_message(f'Sure! Here\'s a random pet from {name}!', file=discord_file)
+                
+                # Optionally, delete the temporary file if you no longer need it
+                os.remove('temp_image.jpg')
+            else:
+                await interaction.response.send_message('Sorry, I could not fetch the image.')
 
 
 
