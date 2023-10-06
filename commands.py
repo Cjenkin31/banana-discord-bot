@@ -110,6 +110,8 @@ def DefineAllCommands(tree):
                 # Optionally, delete the temporary file if you no longer need it
                 os.remove('temp_image.jpg')
             else:
+                print(file_url)
+                print(name)
                 await interaction.response.send_message('Sorry, I could not fetch the image.')
 
 
