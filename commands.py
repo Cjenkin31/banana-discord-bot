@@ -91,8 +91,10 @@ def DefineAllCommands(tree):
         @tree.command(name="randompet", description="Random pet picture from friends!", guild=server) 
         async def random_pet(interaction):
             pet_info = RandomPet()  # Get random pet info using the RandomPet function
-            file_path, name = pet_info  # Unpack the pet info into file path and name
-            await interaction.response.send_message(f'Sure! Here\'s a random pet from {name}!\n![Image]({file_path})')
+            file_path, name = pet_info
+            file = discord.File(file_path, filename="image.jpg")
+            await interaction.response.send_message(f'Sure! Here\'s a random pet from {name}!', file=file)
+
 
 
     @tree.command(name = "coinflip", description = "flips a coin") 
