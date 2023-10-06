@@ -1,5 +1,5 @@
 import os
-from urllib import request
+import requests
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -96,7 +96,7 @@ def DefineAllCommands(tree):
             file_url, name = pet_info
 
             # Fetch the image from GitHub
-            response = request.get(file_url, stream=True)
+            response = requests.get(file_url, stream=True)  # Corrected from request.get to requests.get
             if response.status_code == 200:
                 # Create a temporary file to hold the image
                 with open('temp_image.jpg', 'wb') as file:
