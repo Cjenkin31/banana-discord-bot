@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from discord.ext.commands import Bot
+from logic import ChooseLocalOrApi
 from voicelines import GetVoiceLines
 from pets import RandomPet
 
@@ -92,10 +93,8 @@ def DefineAllCommands(tree):
         
         @tree.command(name="randompet", description="Random pet picture from friends!", guild=server) 
         async def random_pet(interaction):
-            pet_info = RandomPet()
-            file_url, name = pet_info
-
             # Fetch the image from GitHub
+            name,file_url = ChooseLocalOrApi()
             response = requests.get(file_url, stream=True)  # Corrected from request.get to requests.get
             if response.status_code == 200:
                 # Create a temporary file to hold the image

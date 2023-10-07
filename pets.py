@@ -1,4 +1,5 @@
 import random
+import requests
 
 def GetDictPets():
     base_url = "https://raw.githubusercontent.com/Cjenkin31/banana-discord-bot/main/images/"
@@ -8,3 +9,11 @@ def RandomPet():
     pets_dict = GetDictPets()
     random_key = random.choice(list(pets_dict.keys()))
     return [random_key, pets_dict[random_key]]
+
+def RandomCatAPIPet():
+    response = requests.get('https://cataas.com/cat')
+    if response.status_code == 200:
+        return [response.url, 'cataas.com']
+    else:
+        print('Failed to retrieve cat image from cataas.com')
+        return [None, None]
