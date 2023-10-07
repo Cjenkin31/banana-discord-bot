@@ -13,7 +13,7 @@ def RandomPet():
 def RandomCatAPIPet():
     response = requests.get('https://cataas.com/cat')
     if response.status_code == 200:
-        return ['cataas.com', response.url]
+        return [response.url,'cataas.com']
     else:
         print('Failed to retrieve cat image from cataas.com')
         return [None, None]

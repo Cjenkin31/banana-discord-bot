@@ -94,7 +94,7 @@ def DefineAllCommands(tree):
         @tree.command(name="randompet", description="Random pet picture from friends!", guild=server) 
         async def random_pet(interaction):
             # Fetch the image from GitHub/cataas
-            name,file_url = ChooseLocalOrApi()
+            file_url,name = ChooseLocalOrApi()
             response = requests.get(file_url, stream=True)
             if response.status_code == 200:
                 # Create a temporary file to hold the image
