@@ -1,5 +1,4 @@
 import os
-import string
 import requests
 import discord
 from discord.ext import commands
@@ -113,7 +112,7 @@ def DefineAllCommands(tree):
                 print(name)
                 await interaction.response.send_message('Sorry, I could not fetch the image.')
         @tree.command(name="catsays", description="Random Cat with text input", guild=server) 
-        async def self(interaction: discord.Interaction, message: string):
+        async def self(interaction: discord.Interaction, message: str):
             # Fetch the image from GitHub/cataas
             file_url,name = CatSaying(message)
             response = requests.get(file_url, stream=True)
