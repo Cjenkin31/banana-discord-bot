@@ -17,6 +17,25 @@ overwatchGameModeList = ["Competitive", "Quick Play", "Custom Games", "Arcade"]
 mainServerId=discord.Object(id=222147212681936896)
 sideServerId=discord.Object(id=1101665956314501180)
 
+async def SendCatImage(interaction, file_url, name, sent_message):
+    response = requests.get(file_url, stream=True)
+    if response.status_code == 200:
+        # Create a temporary file to hold the image
+        with open('temp_image.jpg', 'wb') as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                file.write(chunk)
+        
+        # Send the image to Discord
+        discord_file = discord.File('temp_image.jpg', filename='image.jpg')
+
+        await interaction.response.send_message(sent_message, file=discord_file)
+
+        os.remove('temp_image.jpg')
+    else:
+        print(file_url)
+        print(name)
+        await interaction.response.send_message('Sorry, I could not fetch the image.')
+
 def DefineAllCommands(tree):
     mainServerId=discord.Object(id=222147212681936896)
     sideServerId=discord.Object(id=1101665956314501180)
@@ -32,7 +51,7 @@ def DefineAllCommands(tree):
 
         @tree.command(name="randomvoiceline", description="rolls a random voiceline from overwatch", guild=server)
         async def first_command(interaction):
-            await interaction.response.send_message(random.choice(overwatchVoiceLines))
+            await interaction.response.send_message(random.choice(GetVoiceLines()))
 
         @tree.command(name="randomdps", description="rolls a random support dps from overwatch", guild=server)
         async def first_command(interaction):
@@ -90,47 +109,19 @@ def DefineAllCommands(tree):
                 secondSupport=random.choice(overwatchHeroSupportList)
             
             await interaction.response.send_message("Tank: "+random.choice(overwatchHeroTankList)+"\nDPS: "+firstDPS+", "+secondDPS+"\nSupport: "+firstSupport+", "+secondSupport)
-        
+
         @tree.command(name="randompet", description="Random pet picture from friends!", guild=server) 
         async def random_pet(interaction):
             # Fetch the image from GitHub/cataas
-            file_url,name = ChooseLocalOrApi()
-            response = requests.get(file_url, stream=True)
-            if response.status_code == 200:
-                # Create a temporary file to hold the image
-                with open('temp_image.jpg', 'wb') as file:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        file.write(chunk)
-                
-                # Send the image to Discord
-                discord_file = discord.File('temp_image.jpg', filename='image.jpg')
-                await interaction.response.send_message(f'Sure! Here\'s a random pet from {name}!', file=discord_file)
-                
-                os.remove('temp_image.jpg')
-            else:
-                print(file_url)
-                print(name)
-                await interaction.response.send_message('Sorry, I could not fetch the image.')
+            file_url, name = ChooseLocalOrApi()
+            sent_message = f'Sure! Here\'s a random picture from {name}!'
+            await SendCatImage(interaction, file_url, name, sent_message)
+
         @tree.command(name="catsays", description="Random Cat with text input", guild=server) 
         async def self(interaction: discord.Interaction, message: str):
-            # Fetch the image from GitHub/cataas
-            file_url,name = CatSaying(message)
-            response = requests.get(file_url, stream=True)
-            if response.status_code == 200:
-                # Create a temporary file to hold the image
-                with open('temp_image.jpg', 'wb') as file:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        file.write(chunk)
-                
-                # Send the image to Discord
-                discord_file = discord.File('temp_image.jpg', filename='image.jpg')
-                await interaction.response.send_message(f'Sure! Here\'s a your cat says picture from {name}!', file=discord_file)
-                
-                os.remove('temp_image.jpg')
-            else:
-                print(file_url)
-                print(name)
-                await interaction.response.send_message('Sorry, I could not fetch the image.')
+            file_url, name = CatSaying(message)
+            sent_message = f'Sure! Here\'s the picture from {name}!'
+            await SendCatImage(interaction, file_url, name, sent_message)
 
 
 
