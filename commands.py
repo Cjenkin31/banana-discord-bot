@@ -124,7 +124,7 @@ def DefineAllCommands(tree):
                 
                 # Send the image to Discord
                 discord_file = discord.File('temp_image.jpg', filename='image.jpg')
-                await interaction.response.send_message(f'Sure! Here\'s a random pet from {name}!', file=discord_file)
+                await interaction.response.send_message(f'Sure! Here\'s a your cat says picture from {name}!', file=discord_file)
                 
                 os.remove('temp_image.jpg')
             else:
