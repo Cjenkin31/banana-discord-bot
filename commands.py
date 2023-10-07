@@ -95,7 +95,7 @@ def DefineAllCommands(tree):
         async def random_pet(interaction):
             # Fetch the image from GitHub
             name,file_url = ChooseLocalOrApi()
-            response = requests.get(file_url, stream=True)  # Corrected from request.get to requests.get
+            response = requests.get(file_url, stream=True)
             if response.status_code == 200:
                 # Create a temporary file to hold the image
                 with open('temp_image.jpg', 'wb') as file:
@@ -106,7 +106,6 @@ def DefineAllCommands(tree):
                 discord_file = discord.File('temp_image.jpg', filename='image.jpg')
                 await interaction.response.send_message(f'Sure! Here\'s a random pet from {name}!', file=discord_file)
                 
-                # Optionally, delete the temporary file if you no longer need it
                 os.remove('temp_image.jpg')
             else:
                 print(file_url)
