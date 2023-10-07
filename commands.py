@@ -1,4 +1,5 @@
 import os
+import string
 import requests
 import discord
 from discord.ext import commands
@@ -6,7 +7,7 @@ from discord import app_commands
 from discord.ext.commands import Bot
 from logic import ChooseLocalOrApi
 from voicelines import GetVoiceLines
-from pets import RandomPet
+from pets import CatSaying, RandomPet
 
 import random
 overwatchHeroTankList = ["D.VA", "Doomfist", "Junkerqueen","Orisa","Reinhardt","Roadhog","Sigma","Winston","Wrecking Ball","Zarya","Ramattra"]
@@ -95,6 +96,26 @@ def DefineAllCommands(tree):
         async def random_pet(interaction):
             # Fetch the image from GitHub/cataas
             file_url,name = ChooseLocalOrApi()
+            response = requests.get(file_url, stream=True)
+            if response.status_code == 200:
+                # Create a temporary file to hold the image
+                with open('temp_image.jpg', 'wb') as file:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        file.write(chunk)
+                
+                # Send the image to Discord
+                discord_file = discord.File('temp_image.jpg', filename='image.jpg')
+                await interaction.response.send_message(f'Sure! Here\'s a random pet from {name}!', file=discord_file)
+                
+                os.remove('temp_image.jpg')
+            else:
+                print(file_url)
+                print(name)
+                await interaction.response.send_message('Sorry, I could not fetch the image.')
+        @tree.command(name="catsays", description="Random Cat with text input", guild=server) 
+        async def self(interaction: discord.Interaction, message: string):
+            # Fetch the image from GitHub/cataas
+            file_url,name = CatSaying(message)
             response = requests.get(file_url, stream=True)
             if response.status_code == 200:
                 # Create a temporary file to hold the image

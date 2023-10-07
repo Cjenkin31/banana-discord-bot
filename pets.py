@@ -17,3 +17,12 @@ def RandomCatAPIPet():
     else:
         print('Failed to retrieve cat image from cataas.com')
         return [None, None]
+
+def CatSaying(message):
+    url = "https://cataas.com/cat/says/"+message
+    response = requests.get(url)
+    if response.status_code == 200:
+        return [response.url,'cataas.com']
+    else:
+        print('Failed to retrieve cat image from cataas.com')
+        return [None, None]
