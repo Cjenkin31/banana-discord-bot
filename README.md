@@ -1,8 +1,7 @@
 # TODO
+## Pre work
 [ ] Research Cost
-- 
 [ ] Research If ElevenLabs is needed
-- 
 # Part 1
 [ ] Get messages starting with Banana
 [ ] Have them stored
