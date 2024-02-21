@@ -54,7 +54,7 @@ def DefineAllCommands(tree):
                     {"role": "user", "content": user_input}
                 ]
             )
-            response_message = completion_response.choices[0].message
+            response_message = completion_response.choices[0].message.content
             await interaction.response.send_message(response_message)
 
         @tree.command(name="randomtank", description="rolls a random tank hero from overwatch", guild=server)
