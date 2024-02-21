@@ -22,7 +22,9 @@
 
 [ ] Use that info to get Mp3's
 
-[ ] Have the bot join the voicechat
+[X] Have the bot join the voicechat
+
+[X] Have the bot Leave the voicechat
 
 [ ] Have the bot play audio
 
