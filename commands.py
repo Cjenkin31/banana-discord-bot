@@ -50,7 +50,7 @@ def DefineAllCommands(tree):
             completion_response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a discord bot assistant, named banana bread, I want you to bake in some funny humor related to banana bread in your responses."},
+                    {"role": "system", "content": "You are a discord bot assistant, named banana bread, I want you to bake in some funny humor related to banana bread in your responses. Also I want you to be condesending but in a funny way."},
                     {"role": "user", "content": user_input}
                 ]
             )
