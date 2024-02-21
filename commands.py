@@ -73,6 +73,8 @@ def DefineAllCommands(tree):
             )
             response_message = completion_response.choices[0].message.content
 
+            await interaction.response.send_message(f"🗣️ **Banana Bread says:** \"{response_message}\"")
+
             # ElevenLabs API request to get the MP3 file
             headers = {
                 "Accept": "audio/mpeg",
