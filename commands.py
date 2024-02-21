@@ -128,3 +128,27 @@ def DefineAllCommands(tree):
     @tree.command(name = "coinflip", description = "flips a coin") 
     async def self(interaction: discord.Interaction, items: str):
         await interaction.response.send_message(random.choice(["Heads","Tails"]))
+        
+    @tree.command(name="joinvoice", description="Joins a voice channel", guilds=[mainServerId, sideServerId])
+    async def join_voice_channel(interaction: discord.Interaction):
+        if interaction.user.voice:
+            voice_channel = interaction.user.voice.channel
+            if interaction.client.voice_clients:
+                await interaction.response.send_message("I'm already in a voice channel.")
+            else:
+                vc = await voice_channel.connect()
+                await interaction.response.send_message(f"Joined {voice_channel.name}.")
+        else:
+            await interaction.response.send_message("You are not in a voice channel.")
+
+    @tree.command(name="leavevoice", description="Leaves the voice channel", guilds=[mainServerId, sideServerId])
+    async def leave_voice_channel(interaction: discord.Interaction):
+        if interaction.client.voice_clients:
+            for vc in interaction.client.voice_clients:
+                if vc.guild == interaction.guild:
+                    await vc.disconnect()
+                    await interaction.response.send_message("I have left the voice channel.")
+                    return
+            await interaction.response.send_message("I'm not in any voice channel in this server.")
+        else:
+            await interaction.response.send_message("I'm not in any voice channel.")
