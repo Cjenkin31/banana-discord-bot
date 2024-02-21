@@ -72,6 +72,7 @@ def DefineAllCommands(tree):
                 ]
             )
             response_message = completion_response.choices[0].message.content
+
             # ElevenLabs API request to get the MP3 file
             headers = {
                 "Accept": "audio/mpeg",
@@ -96,6 +97,7 @@ def DefineAllCommands(tree):
             if interaction.user.voice:
                 voice_channel = interaction.user.voice.channel
                 vc = await voice_channel.connect()
+                await interaction.response.send_message("Currently saying: " + response_message)
                 audio_source = FFmpegPCMAudio(file_path)
                 if not vc.is_playing():
                     vc.play(audio_source, after=lambda e: print('Finished playing', e))
