@@ -60,9 +60,12 @@ async def on_ready():
 async def on_voice_state_update(member, before, after):
     if after.channel and after.channel.name == "Join To Create VC":
         guild = after.channel.guild
-        new_channel = await guild.create_voice_channel(name=f"{member.name}'s VC")
+        category = after.channel.category
+
+        new_channel = await guild.create_voice_channel(name=f"{member.name}'s VC", category=category)
 
         await member.move_to(new_channel)
+
         async def check_and_delete_vc(vc):
             await asyncio.sleep(10)
             while True:
@@ -71,6 +74,7 @@ async def on_voice_state_update(member, before, after):
                     break
                 await asyncio.sleep(10)
         client.loop.create_task(check_and_delete_vc(new_channel))
+
 
 @client.event
 async def on_message(message):
