@@ -92,7 +92,6 @@ def DefineAllCommands(tree):
                 await interaction.response.send_message("No roles have been set up. Use /setuprolesgiven first.", ephemeral=True)
                 return
 
-            # Assuming you have a function to create the message with role buttons
             await create_roles_message(interaction.guild, guild_roles["roles"])
             await interaction.response.send_message("Roles channel has been updated.", ephemeral=True)
 
@@ -100,14 +99,14 @@ def DefineAllCommands(tree):
         @app_commands.checks.has_permissions(administrator=True)
         async def add_role(interaction: discord.Interaction, role_name: str):
             add_role_to_server(interaction.guild_id, role_name)
-            await create_roles_message(interaction)  # Update the roles message
+            await create_roles_message(interaction)
             await interaction.response.send_message(f"Role {role_name} added.", ephemeral=True)
 
         @tree.command(name="remove_role", description="Remove a role from the selectable list.")
         @app_commands.checks.has_permissions(administrator=True)
         async def remove_role(interaction: discord.Interaction, role_name: str):
             remove_role_from_server(interaction.guild_id, role_name)
-            await create_roles_message(interaction)  # Update the roles message
+            await create_roles_message(interaction)
             await interaction.response.send_message(f"Role {role_name} removed.", ephemeral=True)
 
         @tree.command(name="create_roles_message", description="Creates or updates a message for role selection.")
