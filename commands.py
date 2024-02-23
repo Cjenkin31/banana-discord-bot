@@ -11,12 +11,17 @@ from pets import CatSaying, RandomPet
 from openai import OpenAI
 import random
 import asyncio
+from pymongo import MongoClient
+from database import *
 
 mainServerId=discord.Object(id=222147212681936896)
 sideServerId=discord.Object(id=1101665956314501180)
 gptkey = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=gptkey)
 elevenlabskey = os.environ.get('xi-api-key')
+mongo_client = MongoClient(os.environ.get("MONGODB_URI"))
+db = mongo_client.bananabread
+roles_collection = db.roles
 
 bananaBreadStory="You are a discord bot assistant, named banana bread, I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way."
 
@@ -36,6 +41,10 @@ async def SendCatImage(interaction, file_url, name, sent_message):
         print(name)
         await interaction.response.send_message('Sorry, I could not fetch the image.')
 
+async def is_admin(interaction: discord.Interaction) -> bool:
+    """Check if the user has the administrator permission."""
+    return interaction.user.guild_permissions.administrator
+
 def DefineAllCommands(tree):
     mainServerId=discord.Object(id=222147212681936896)
     sideServerId=discord.Object(id=1101665956314501180)
@@ -53,6 +62,78 @@ def DefineAllCommands(tree):
             )
             response_message = completion_response.choices[0].message.content
             await interaction.response.send_message(response_message)
+
+        @tree.command(name="setuprolesgiven", description="Set up roles that can be given out.")
+        @app_commands.checks.has_permissions(administrator=True)
+        @app_commands.describe(roles="List of roles to be given out, separated by commas.")
+        async def setup_roles_given(interaction: discord.Interaction, roles: str):
+            if not await is_admin(interaction):
+                await interaction.response.send_message("You don't have permission to use this command.", ephemeral=True)
+                return
+
+            role_names = [role.strip() for role in roles.split(",")]
+
+            roles_collection.update_one({"guild_id": interaction.guild_id}, {"$set": {"roles": role_names}}, upsert=True)
+            
+            await interaction.response.send_message("Selectable roles have been updated.", ephemeral=True)
+
+        @tree.command(name="setuproleschannel", description="Set up or update the roles channel.")
+        @app_commands.checks.has_permissions(administrator=True)
+        async def setup_roles_channel(interaction: discord.Interaction):
+            if not await is_admin(interaction):
+                await interaction.response.send_message("You don't have permission to use this command.", ephemeral=True)
+                return
+
+            guild_id = interaction.guild_id
+
+            guild_roles = roles_collection.find_one({"guild_id": guild_id})
+            
+            if not guild_roles or "roles" not in guild_roles:
+                await interaction.response.send_message("No roles have been set up. Use /setuprolesgiven first.", ephemeral=True)
+                return
+
+            # Assuming you have a function to create the message with role buttons
+            await create_roles_message(interaction.guild, guild_roles["roles"])
+            await interaction.response.send_message("Roles channel has been updated.", ephemeral=True)
+
+        @tree.command(name="add_role", description="Add a role to the selectable list.")
+        @app_commands.checks.has_permissions(administrator=True)
+        async def add_role(interaction: discord.Interaction, role_name: str):
+            add_role_to_server(interaction.guild_id, role_name)
+            await create_roles_message(interaction)  # Update the roles message
+            await interaction.response.send_message(f"Role {role_name} added.", ephemeral=True)
+
+        @tree.command(name="remove_role", description="Remove a role from the selectable list.")
+        @app_commands.checks.has_permissions(administrator=True)
+        async def remove_role(interaction: discord.Interaction, role_name: str):
+            remove_role_from_server(interaction.guild_id, role_name)
+            await create_roles_message(interaction)  # Update the roles message
+            await interaction.response.send_message(f"Role {role_name} removed.", ephemeral=True)
+
+        @tree.command(name="create_roles_message", description="Creates or updates a message for role selection.")
+        @app_commands.checks.has_permissions(administrator=True)
+        async def create_roles_message(interaction: discord.Interaction):
+            guild_id = interaction.guild_id
+            channel = interaction.channel
+
+            roles = get_server_roles(guild_id)
+            view = discord.ui.View()
+
+            for role_name in roles:
+                button = discord.ui.Button(label=role_name, style=discord.ButtonStyle.primary, custom_id=role_name)
+                view.add_item(button)
+
+            message_content = "Select your roles:"
+            message_id = get_roles_message_id(guild_id)
+            
+            if message_id:
+                message = await channel.fetch_message(int(message_id))
+                await message.edit(content=message_content, view=view)
+            else:
+                message = await channel.send(content=message_content, view=view)
+                update_roles_message_id(guild_id, message.id)
+
+            await interaction.response.send_message("Roles message created or updated.", ephemeral=True)
 
         @tree.command(name="speak", description="Speaks the response generated by GPT-3 in a voice channel.", guild=server)
         async def speak(interaction: discord.Interaction, user_input: str):
