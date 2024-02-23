@@ -89,10 +89,16 @@ def DefineAllCommands(tree):
             file_path = 'temp_response.mp3'
             with open(file_path, 'wb') as f:
                 f.write(response.content)
-
             if interaction.user.voice:
                 voice_channel = interaction.user.voice.channel
-                vc = await voice_channel.connect()
+                try:
+                    vc = await voice_channel.connect()
+                except discord.Forbidden:
+                    await interaction.response.send_message("I don't have permission to join that voice channel.")
+                    return
+                except discord.ClientException:
+                    await interaction.response.send_message("I'm already connected to a voice channel.")
+                    return
                 audio_source = FFmpegPCMAudio(file_path)
                 if not vc.is_playing():
                     vc.play(audio_source, after=lambda e: print('Finished playing', e))
