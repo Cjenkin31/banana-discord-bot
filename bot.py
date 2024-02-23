@@ -40,9 +40,9 @@ def CreateEmbedMessage(message):
 async def on_ready():
     print(f'We have logged in as {client.user}')
     try:
-        await tree.sync(guild=1101665956314501180)
+        await tree.sync(guild=discord.Object(id=1101665956314501180))
         print(f"Commands synced to guild {1101665956314501180}")
-        await tree.sync(guild=222147212681936896)
+        await tree.sync(guild=discord.Object(id=222147212681936896))
         print(f"Commands synced to guild {222147212681936896}")
     except Exception as e:
         print(f"Failed to sync commands: {e}")
