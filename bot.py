@@ -22,18 +22,9 @@ debugMode=False
 overwatchVoiceLines=GetVoiceLines()
 bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
-
+mainServerId=discord.Object(id=222147212681936896)
+sideServerId=discord.Object(id=1101665956314501180)
 DefineAllCommands(tree)
-
-async def send_version_info():
-    update_message = f"Bot Version: {BOT_VERSION}\nUpdated with new features and improvements!"
-    for guild in client.guilds:
-        for channel in guild.text_channels:
-            try:
-                await channel.send(update_message)
-            except:
-                # Handle any permissions errors or other exceptions
-                pass
 
 def setEmbedVariables(embedCreater,message,valueString):
     embedCreater.add_field(name ="Link",value=valueString)
@@ -53,33 +44,17 @@ def CreateEmbedMessage(message):
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
-    await tree.sync(guild=mainServerId)
-    print("Ready!")
-    await send_version_info() 
-@client.event
-async def on_ready():
-    print(f'We have logged in as {client.user}')
-    await tree.sync(guild=discord.Object(id=1101665956314501180))
+    await tree.sync(guild=discord.Object(id=mainServerId))
+    await tree.sync(guild=discord.Object(id=sideServerId))
     print("Ready!")
 
 @client.event
 async def on_message(message):
-    global debugMode  # Declare debugMode as a global variable
     if message.author == client.user:
         return
-    if debugMode:
-        print(message.content)
-    if message.content.startswith('debug') and not debugMode:
-        debugMode = True
-    elif message.content.startswith('debug'):
-        debugMode= False
-    if message.content.lower() == 'l':
-        gunbagel_emoji = '<:GunBagel:1105232118759567480>'
-        await message.channel.send(gunbagel_emoji)
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
     if message.content.startswith('ggez'):
         await message.channel.send(random.choice(["Well played. I salute you all.","For glory and honor! Huzzah comrades!","I'm wrestling with some insecurity issues in my life but thank you all for playing with me.","It's past my bedtime. Please don't tell my mommy.","Gee whiz! That was fun. Good playing!","I feel very, very small... please hold me..."]))
+
 saved_messages = {}
 @client.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
