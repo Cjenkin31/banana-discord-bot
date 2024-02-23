@@ -41,15 +41,19 @@ def CreateEmbedMessage(message):
 async def on_ready():
     print(f'We have logged in as {client.user}')
     try:
-        for guild in client.guilds:
-            if "Join To Create VC" not in [channel.name for channel in guild.voice_channels]:
-                await guild.create_voice_channel("Join To Create VC")
         await tree.sync(guild=discord.Object(id=1101665956314501180))
         print(f"Commands synced to guild {1101665956314501180}")
         await tree.sync(guild=discord.Object(id=222147212681936896))
         print(f"Commands synced to guild {222147212681936896}")
     except Exception as e:
         print(f"Failed to sync commands: {e}")
+    for guild in client.guilds:
+        try:
+            if "Join To Create VC" not in [channel.name for channel in guild.voice_channels]:
+                await guild.create_voice_channel("Join To Create VC")
+        except Exception as e:
+            print(f"Failed to create VC: {e}")
+            continue
     print("Ready!")
 
 @client.event
