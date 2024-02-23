@@ -59,13 +59,15 @@ async def on_message(message):
         await message.channel.send(random.choice(["Well played. I salute you all.","For glory and honor! Huzzah comrades!","I'm wrestling with some insecurity issues in my life but thank you all for playing with me.","It's past my bedtime. Please don't tell my mommy.","Gee whiz! That was fun. Good playing!","I feel very, very small... please hold me..."]))
 
     if message.content.startswith('!createvc '):
+        print("Message Found")
         channel_name = message.content[len('!createvc '):].strip()
-
+        print(channel_name)
         if not channel_name:
             await message.channel.send("Please provide a name for the voice channel.")
             return
-
+        print("Making VC")
         vc = await message.guild.create_voice_channel(channel_name)
+        print("Made VC")
         await message.channel.send(f"Voice channel '{channel_name}' created. It will be deleted when it becomes empty.")
 
         async def check_and_delete_vc(vc):
