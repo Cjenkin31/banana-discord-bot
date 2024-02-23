@@ -5,7 +5,6 @@ from discord.ext import commands
 from discord import app_commands
 from discord import FFmpegPCMAudio
 from discord.ext.commands import Bot
-from discord import FFmpegPCMAudio
 from logic import ChooseLocalOrApi
 from voicelines import GetVoiceLines
 from pets import CatSaying, RandomPet
@@ -24,15 +23,14 @@ gptkey = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=gptkey)
 elevenlabskey = os.environ.get('xi-api-key')
 
+bananaBreadStory="You are a discord bot assistant, named banana bread, I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way."
+
 async def SendCatImage(interaction, file_url, name, sent_message):
     response = requests.get(file_url, stream=True)
     if response.status_code == 200:
-        # Create a temporary file to hold the image
         with open('temp_image.jpg', 'wb') as file:
             for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)
-        
-        # Send the image to Discord
         discord_file = discord.File('temp_image.jpg', filename='image.jpg')
 
         await interaction.response.send_message(sent_message, file=discord_file)
@@ -54,7 +52,7 @@ def DefineAllCommands(tree):
             completion_response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a discord bot assistant, named banana bread, I want you to bake in some funny humor related to banana bread in your responses. Also I want you to be condesending but in a funny way."},
+                    {"role": "system", "content": bananaBreadStory},
                     {"role": "user", "content": user_input}
                 ]
             )
@@ -66,7 +64,7 @@ def DefineAllCommands(tree):
             completion_response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a discord bot assistant, named banana bread, I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way."},
+                    {"role": "system", "content": bananaBreadStory},
                     {"role": "user", "content": user_input}
                 ]
             )
@@ -114,30 +112,6 @@ def DefineAllCommands(tree):
             else:
                 await interaction.response.send_message("You are not in a voice channel.")
 
-        @tree.command(name="randomtank", description="rolls a random tank hero from overwatch", guild=server)
-        async def first_command(interaction):
-            await interaction.response.send_message(random.choice(overwatchHeroTankList))
-
-        @tree.command(name="randomsupport", description="rolls a random support hero from overwatch", guild=server)
-        async def first_command(interaction):
-            await interaction.response.send_message(random.choice(overwatchHeroSupportList))
-
-        @tree.command(name="randomvoiceline", description="rolls a random voiceline from overwatch", guild=server)
-        async def first_command(interaction):
-            await interaction.response.send_message(random.choice(GetVoiceLines()))
-
-        @tree.command(name="randomdps", description="rolls a random support dps from overwatch", guild=server)
-        async def first_command(interaction):
-            await interaction.response.send_message(random.choice(overwatchHeroDPSList))
-
-        @tree.command(name="randomroleow", description="rolls a random role for overwatch", guild=server)
-        async def first_command(interaction):
-            await interaction.response.send_message(random.choice(overwatchRoleList))
-
-        @tree.command(name="randomgamemodeow", description="rolls a random game mode for overwatch", guild=server)
-        async def first_command(interaction):
-            await interaction.response.send_message(random.choice(overwatchGameModeList))
-
         @tree.command(name = "yesno", description = "picks yes or no", guild=server) 
         async def first_command(interaction):
             await interaction.response.send_message(random.choice(["Yes", "No"]))
@@ -146,19 +120,15 @@ def DefineAllCommands(tree):
         async def self(interaction: discord.Interaction, items: str):
             await interaction.response.send_message(random.choice(items.split(',')))
 
-        @tree.command(name = "sleepygenerator", description = "will give an amt of Z's that are randomly uppercased and lower", guild=server) 
-        async def self(interaction: discord.Interaction, items: int):
-            itemCount=items
-            zString = "" if itemCount<=200 else "Limiting to 200 Z's:   "
-            if (itemCount > 200):
-                itemCount=200
-            while (itemCount>0):
-                randomZ="Z" if random.randint(1,2) == 1 else "z"
-                zString = zString+randomZ
-                itemCount-=1
+        @tree.command(name="sleepygenerator", description="will give an amount of Z's that are randomly uppercased and lower", guild=server)
+        async def sleepygenerator(interaction: discord.Interaction, items: int):
+            itemCount = min(items, 200)
+            zString = ''.join(random.choice(['Z', 'z']) for _ in range(itemCount))
+            if items > 200:
+                zString = "Limiting to 200 Z's: " + zString
             await interaction.response.send_message(zString)
-    
-        @tree.command(name = "randomnumber", description = "Choose a random number between 2 inputs", guild=server) 
+
+        @tree.command(name = "randomnumber", description = "Choose a random number between 2 inputs ex: 1,100", guild=server) 
         async def self(interaction: discord.Interaction, items: str):
             try:
                 await interaction.response.send_message(random.randint(int(items.split(',')[0]),int(items.split(',')[1])))
@@ -181,27 +151,3 @@ def DefineAllCommands(tree):
             file_url, name = CatSaying(message)
             sent_message = f'Sure! Here\'s the picture from {name}!'
             await SendCatImage(interaction, file_url, name, sent_message)
-
-        @tree.command(name="joinvoice", description="Joins a voice channel", guild=server)
-        async def join_voice_channel(interaction: discord.Interaction):
-            if interaction.user.voice:
-                voice_channel = interaction.user.voice.channel
-                if interaction.client.voice_clients:
-                    await interaction.response.send_message("I'm already in a voice channel.")
-                else:
-                    vc = await voice_channel.connect()
-                    await interaction.response.send_message(f"Joined {voice_channel.name}.")
-            else:
-                await interaction.response.send_message("You are not in a voice channel.")
-
-        @tree.command(name="leavevoice", description="Leaves the voice channel", guild=server)
-        async def leave_voice_channel(interaction: discord.Interaction):
-            if interaction.client.voice_clients:
-                for vc in interaction.client.voice_clients:
-                    if vc.guild == interaction.guild:
-                        await vc.disconnect()
-                        await interaction.response.send_message("I have left the voice channel.")
-                        return
-                await interaction.response.send_message("I'm not in any voice channel in this server.")
-            else:
-                await interaction.response.send_message("I'm not in any voice channel.")
