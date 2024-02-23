@@ -8,8 +8,6 @@ from voicelines import GetVoiceLines
 from commands import DefineAllCommands
 import random
 
-BOT_VERSION = "1.0.0"
-
 intents = discord.Intents.default()
 intents.message_content = True
 intents.reactions = True
@@ -17,13 +15,9 @@ intents.members = True
 
 client = discord.Client(intents=intents)
 
-debugMode=False
-
 overwatchVoiceLines=GetVoiceLines()
 bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
-mainServerId=discord.Object(id=222147212681936896)
-sideServerId=discord.Object(id=1101665956314501180)
 DefineAllCommands(tree)
 
 def setEmbedVariables(embedCreater,message,valueString):
