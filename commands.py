@@ -51,7 +51,7 @@ def DefineAllCommands(tree):
     sideServerId2=discord.Object(id=1210021401772429352)
     servers = [mainServerId, sideServerId,sideServerId2]
 
-    @tree.command(name="cleanupvc", description="Cleans up voice chats.")
+    @tree.command(name="cleanupvc", description="Cleans up voice chats.", guilds=servers)
     async def cleanupvc(interaction: discord.Interaction):
         guild = interaction.guild
         if guild is None:
