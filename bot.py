@@ -56,30 +56,35 @@ async def on_message(message):
         await message.channel.send(random.choice(["Well played. I salute you all.","For glory and honor! Huzzah comrades!","I'm wrestling with some insecurity issues in my life but thank you all for playing with me.","It's past my bedtime. Please don't tell my mommy.","Gee whiz! That was fun. Good playing!","I feel very, very small... please hold me..."]))
 
 saved_messages = {}
+
+# This is for the banana bread saved messages
+guild_to_channel = {
+    222147212681936896: 1011728618604474428,
+    1101665956314501180: 1101698839104192652,
+}
+
 @client.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
-    if payload.user_id == client.user.id:
+    if payload.user_id == client.user.id or payload.emoji.name not in ["🍞", "🍌"]:
+        return
+    guild_id = payload.guild_id
+    if guild_id not in guild_to_channel:
         return
 
     if payload.emoji.name == "🍞":
         channel = client.get_channel(payload.channel_id)
-        message = await channel.fetch_message(payload.message_id)
-        reactions = message.reactions
-        guild = client.get_guild(payload.guild_id)
-
-        for reaction in reactions:
-            if str(reaction) == "🍌" and reaction.count == 1:
-                if guild is None:
-                    return
-                if guild.id == 222147212681936896:
-                    target_channel = client.get_channel(1011728618604474428)
-                elif guild.id == 1101665956314501180:
-                    target_channel = client.get_channel(1101698839104192652)
-                else:
-                    return
+        try:
+            message = await channel.fetch_message(payload.message_id)
+            banana_reaction = discord.utils.get(message.reactions, emoji="🍌")
+            if banana_reaction and banana_reaction.count == 1:
+                target_channel_id = guild_to_channel[guild_id]
+                target_channel = client.get_channel(target_channel_id)
                 if payload.message_id not in saved_messages:
                     await target_channel.send(embed=CreateEmbedMessage(message))
                     saved_messages[payload.message_id] = True
-        
+        except discord.NotFound:
+            print(f"Message {payload.message_id}, Channel: {payload.channel_id}.")
+            pass
+
 token = os.environ.get('BOT_TOKEN')
 client.run(token)
