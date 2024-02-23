@@ -165,9 +165,8 @@ def DefineAllCommands(tree):
                     "similarity_boost": 0.5
                 }
             }
-            # Male Bread: BM4igwEfmKXiGdbdbJdk
             # Female Bread: Iq2WyJggqdxjND19FFJw
-            url = "https://api.elevenlabs.io/v1/text-to-speech/BM4igwEfmKXiGdbdbJdk"
+            url = "https://api.elevenlabs.io/v1/text-to-speech/Iq2WyJggqdxjND19FFJw"
             response = requests.post(url, json=data, headers=headers)
 
             file_path = 'temp_response.mp3'
