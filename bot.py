@@ -80,17 +80,6 @@ async def on_voice_state_update(member, before, after):
         client.loop.create_task(check_and_delete_vc(new_channel))
 
 @client.event
-async def on_interaction(interaction: discord.Interaction):
-    if interaction.type == discord.InteractionType.component and interaction.custom_id.startswith("role_"):
-        role_id = interaction.custom_id.split("_")[1]
-        role = interaction.guild.get_role(int(role_id))
-
-        if role in interaction.user.roles:
-            await interaction.user.remove_roles(role)
-        else:
-            await interaction.user.add_roles(role)
-
-@client.event
 async def on_message(message):
     if message.author == client.user:
         return
