@@ -41,6 +41,9 @@ def CreateEmbedMessage(message):
 async def on_ready():
     print(f'We have logged in as {client.user}')
     try:
+        for guild in client.guilds:
+            if "Join To Create VC" not in [channel.name for channel in guild.voice_channels]:
+                await guild.create_voice_channel("Join To Create VC")
         await tree.sync(guild=discord.Object(id=1101665956314501180))
         print(f"Commands synced to guild {1101665956314501180}")
         await tree.sync(guild=discord.Object(id=222147212681936896))
@@ -49,7 +52,21 @@ async def on_ready():
         print(f"Failed to sync commands: {e}")
     print("Ready!")
 
+@client.event
+async def on_voice_state_update(member, before, after):
+    if after.channel and after.channel.name == "Join To Create VC":
+        guild = after.channel.guild
+        new_channel = await guild.create_voice_channel(name=f"{member.name}'s VC")
 
+        await member.move_to(new_channel)
+        async def check_and_delete_vc(vc):
+            await asyncio.sleep(10)
+            while True:
+                if len(vc.members) == 0:
+                    await vc.delete()
+                    break
+                await asyncio.sleep(10)
+        client.loop.create_task(check_and_delete_vc(new_channel))
 
 @client.event
 async def on_message(message):
@@ -57,28 +74,6 @@ async def on_message(message):
         return
     if message.content.startswith('ggez'):
         await message.channel.send(random.choice(["Well played. I salute you all.","For glory and honor! Huzzah comrades!","I'm wrestling with some insecurity issues in my life but thank you all for playing with me.","It's past my bedtime. Please don't tell my mommy.","Gee whiz! That was fun. Good playing!","I feel very, very small... please hold me..."]))
-
-    if message.content.startswith('!createvc '):
-        print("Message Found")
-        channel_name = message.content[len('!createvc '):].strip()
-        print(channel_name)
-        if not channel_name:
-            await message.channel.send("Please provide a name for the voice channel.")
-            return
-        print("Making VC")
-        vc = await message.guild.create_voice_channel(channel_name)
-        print("Made VC")
-        await message.channel.send(f"Voice channel '{channel_name}' created. It will be deleted when it becomes empty.")
-
-        async def check_and_delete_vc(vc):
-            await asyncio.sleep(30)
-            while True:
-                if len(vc.members) == 0:
-                    await vc.delete()
-                    break
-                await asyncio.sleep(10)
-
-        client.loop.create_task(check_and_delete_vc(vc))
 saved_messages = {}
 
 # This is for the banana bread saved messages
