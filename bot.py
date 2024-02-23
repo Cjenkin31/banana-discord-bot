@@ -7,6 +7,7 @@ from datetime import datetime
 from voicelines import GetVoiceLines
 from commands import DefineAllCommands
 import random
+import asyncio
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -57,6 +58,25 @@ async def on_message(message):
     if message.content.startswith('ggez'):
         await message.channel.send(random.choice(["Well played. I salute you all.","For glory and honor! Huzzah comrades!","I'm wrestling with some insecurity issues in my life but thank you all for playing with me.","It's past my bedtime. Please don't tell my mommy.","Gee whiz! That was fun. Good playing!","I feel very, very small... please hold me..."]))
 
+    if message.content.startswith('!createvc '):
+        channel_name = message.content[len('!createvc '):].strip()
+
+        if not channel_name:
+            await message.channel.send("Please provide a name for the voice channel.")
+            return
+
+        vc = await message.guild.create_voice_channel(channel_name)
+        await message.channel.send(f"Voice channel '{channel_name}' created. It will be deleted when it becomes empty.")
+
+        async def check_and_delete_vc(vc):
+            await asyncio.sleep(30)
+            while True:
+                if len(vc.members) == 0:
+                    await vc.delete()
+                    break
+                await asyncio.sleep(10)
+
+        client.loop.create_task(check_and_delete_vc(vc))
 saved_messages = {}
 
 # This is for the banana bread saved messages
