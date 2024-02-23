@@ -63,7 +63,7 @@ def DefineAllCommands(tree):
             response_message = completion_response.choices[0].message.content
             await interaction.response.send_message(response_message)
 
-        @tree.command(name="setuprolesgiven", description="Set up roles that can be given out.")
+        @tree.command(name="setuprolesgiven", description="Set up roles that can be given out.", guild=server)
         @app_commands.checks.has_permissions(administrator=True)
         @app_commands.describe(roles="List of roles to be given out, separated by commas.")
         async def setup_roles_given(interaction: discord.Interaction, roles: str):
@@ -77,7 +77,7 @@ def DefineAllCommands(tree):
             
             await interaction.response.send_message("Selectable roles have been updated.", ephemeral=True)
 
-        @tree.command(name="setuproleschannel", description="Set up or update the roles channel.")
+        @tree.command(name="setuproleschannel", description="Set up or update the roles channel.", guild=server)
         @app_commands.checks.has_permissions(administrator=True)
         async def setup_roles_channel(interaction: discord.Interaction):
             if not await is_admin(interaction):
@@ -95,21 +95,21 @@ def DefineAllCommands(tree):
             await create_roles_message(interaction.guild, guild_roles["roles"])
             await interaction.response.send_message("Roles channel has been updated.", ephemeral=True)
 
-        @tree.command(name="add_role", description="Add a role to the selectable list.")
+        @tree.command(name="add_role", description="Add a role to the selectable list.", guild=server)
         @app_commands.checks.has_permissions(administrator=True)
         async def add_role(interaction: discord.Interaction, role_name: str):
             add_role_to_server(interaction.guild_id, role_name)
             await create_roles_message(interaction)
             await interaction.response.send_message(f"Role {role_name} added.", ephemeral=True)
 
-        @tree.command(name="remove_role", description="Remove a role from the selectable list.")
+        @tree.command(name="remove_role", description="Remove a role from the selectable list.", guild=server)
         @app_commands.checks.has_permissions(administrator=True)
         async def remove_role(interaction: discord.Interaction, role_name: str):
             remove_role_from_server(interaction.guild_id, role_name)
             await create_roles_message(interaction)
             await interaction.response.send_message(f"Role {role_name} removed.", ephemeral=True)
 
-        @tree.command(name="create_roles_message", description="Creates or updates a message for role selection.")
+        @tree.command(name="create_roles_message", description="Creates or updates a message for role selection.", guild=server)
         @app_commands.checks.has_permissions(administrator=True)
         async def create_roles_message(interaction: discord.Interaction):
             guild_id = interaction.guild_id
