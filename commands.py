@@ -146,3 +146,23 @@ def DefineAllCommands(tree):
             file_url, name = CatSaying(message)
             sent_message = f'Sure! Here\'s the picture from {name}!'
             await SendCatImage(interaction, file_url, name, sent_message)
+            
+        @tree.command(name="createvc", description="Create a temporary voice channel.", guild=server)
+        async def create_vc(interaction: discord.Interaction, name: str):
+            guild = interaction.guild
+
+            vc = await guild.create_voice_channel(name)
+
+            await interaction.response.send_message(f"Created voice channel '{name}'. It will auto-delete if empty.", ephemeral=True)
+
+            await asyncio.sleep(30)
+            if len(vc.members) == 0:
+                await vc.delete()
+                return
+
+            def check_vc_empty():
+                return len(vc.members) == 0
+
+            while not check_vc_empty():
+                await asyncio.sleep(10)  # Check every 10 seconds
+            await vc.delete()
