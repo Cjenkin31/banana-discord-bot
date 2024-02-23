@@ -48,7 +48,6 @@ async def on_ready():
     print(f'We have logged in as {client.user}')
     try:
         await tree.sync(guild=discord.Object(id=1210021401772429352))
-        await tree.sync(guild=discord.Object(id=222147212681936896))
         await tree.sync(guild=discord.Object(id=1101665956314501180))
         print(f"Commands synced to guilds")
     except Exception as e:
@@ -91,7 +90,6 @@ saved_messages = {}
 
 # This is for the banana bread saved messages
 guild_to_channel = {
-    222147212681936896: 1011728618604474428,
     1101665956314501180: 1101698839104192652,
     1210021401772429352: 1210424573066219530,
 }

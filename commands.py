@@ -14,7 +14,6 @@ import asyncio
 from pymongo import MongoClient
 from database import *
 
-mainServerId=discord.Object(id=222147212681936896)
 sideServerId=discord.Object(id=1101665956314501180)
 gptkey = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=gptkey)
@@ -46,10 +45,9 @@ async def is_admin(interaction: discord.Interaction) -> bool:
     return interaction.user.guild_permissions.administrator
 
 def DefineAllCommands(tree):
-    mainServerId=discord.Object(id=222147212681936896)
     sideServerId=discord.Object(id=1101665956314501180)
     sideServerId2=discord.Object(id=1210021401772429352)
-    servers = [mainServerId, sideServerId,sideServerId2]
+    servers = [sideServerId,sideServerId2]
 
     @tree.command(name="cleanupvc", description="Cleans up voice chats.", guilds=servers)
     async def cleanupvc(interaction: discord.Interaction):
