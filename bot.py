@@ -51,6 +51,8 @@ async def on_ready():
         print(f"Commands synced to guild {1101665956314501180}")
         await tree.sync(guild=discord.Object(id=222147212681936896))
         print(f"Commands synced to guild {222147212681936896}")
+        await tree.sync(guild=discord.Object(id=1210021401772429352))
+        print(f"Commands synced to guild {1210021401772429352}")
     except Exception as e:
         print(f"Failed to sync commands: {e}")
     for guild in client.guilds:
@@ -104,6 +106,7 @@ saved_messages = {}
 guild_to_channel = {
     222147212681936896: 1011728618604474428,
     1101665956314501180: 1101698839104192652,
+    1210021401772429352: 1210424573066219530,
 }
 
 @client.event
