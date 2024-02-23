@@ -12,11 +12,6 @@ from openai import OpenAI
 import random
 import asyncio
 
-overwatchHeroTankList = ["D.VA", "Doomfist", "Junkerqueen","Orisa","Reinhardt","Roadhog","Sigma","Winston","Wrecking Ball","Zarya","Ramattra"]
-overwatchHeroDPSList = ["Ashe", "Bastion", "Cassidy","Echo","Genji","Hanzo","Junkrat","Mei","Pharah","Reaper","Sojourn","Soldier 76","Sombra(Please Dont)","Symmetra","Torbjorn","Tracer","Widowmaker"]
-overwatchHeroSupportList = ["Ana", "Baptiste", "Brigitte","Kiriko","Lucio","Mercy","Moira","Zenyatta"]
-overwatchRoleList = ["Tank", "DPS", "Support"]
-overwatchGameModeList = ["Competitive", "Quick Play", "Custom Games", "Arcade"]
 mainServerId=discord.Object(id=222147212681936896)
 sideServerId=discord.Object(id=1101665956314501180)
 gptkey = os.environ.get('OPENAI_API_KEY')
@@ -113,11 +108,11 @@ def DefineAllCommands(tree):
                 await interaction.response.send_message("You are not in a voice channel.")
 
         @tree.command(name = "yesno", description = "picks yes or no", guild=server) 
-        async def first_command(interaction):
+        async def yesno(interaction):
             await interaction.response.send_message(random.choice(["Yes", "No"]))
 
         @tree.command(name = "pickfromlist", description = "input things to be chosen seperated by a ,. Ex. Overwatch,League", guild=server) 
-        async def self(interaction: discord.Interaction, items: str):
+        async def pickfromlist(interaction: discord.Interaction, items: str):
             await interaction.response.send_message(random.choice(items.split(',')))
 
         @tree.command(name="sleepygenerator", description="will give an amount of Z's that are randomly uppercased and lower", guild=server)
