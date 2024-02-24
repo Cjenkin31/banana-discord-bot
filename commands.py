@@ -123,17 +123,20 @@ def DefineAllCommands(tree):
             except discord.ClientException:
                 await interaction.response.send_message("I'm already connected to a voice channel.")
                 return
-            audio_source = FFmpegPCMAudio(file_path)
-            if not vc.is_playing():
-                vc.play(audio_source, after=lambda e: print('Finished playing', e))
+            try:
+                audio_source = FFmpegPCMAudio(file_path)
+                if not vc.is_playing():
+                    vc.play(audio_source, after=lambda e: print('Finished playing', e))
 
-                while vc.is_playing():
-                    await asyncio.sleep(1)
+                    while vc.is_playing():
+                        await asyncio.sleep(1)
 
-                await vc.disconnect()
-            else:
-                await interaction.response.send_message("I'm currently speaking. Please wait until I'm finished.")
-                await vc.disconnect()
+                    await vc.disconnect()
+                else:
+                    await interaction.response.send_message("I'm currently speaking. Please wait until I'm finished.")
+                    await vc.disconnect()
+            except Exception as e:
+                await interaction.response.send_message(f"🗣️ **Banana Bread Errors with:** \"{e}\"")
         else:
             await interaction.response.send_message("You are not in a voice channel.")
 
