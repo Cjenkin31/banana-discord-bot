@@ -63,6 +63,8 @@ async def on_ready():
 
 @client.event
 async def on_voice_state_update(member, before, after):
+    if before.channel is not None:
+        await on_member_leave_vc(before.channel)
     if after.channel and after.channel.name == "Join To Create VC":
         guild = after.channel.guild
         category = after.channel.category
@@ -71,14 +73,12 @@ async def on_voice_state_update(member, before, after):
 
         await member.move_to(new_channel)
 
-        async def check_and_delete_vc(vc):
-            await asyncio.sleep(10)
-            while True:
-                if len(vc.members) == 0:
-                    await vc.delete()
-                    break
-                await asyncio.sleep(10)
-        client.loop.create_task(check_and_delete_vc(new_channel))
+async def on_member_leave_vc(channel):
+    await asyncio.sleep(1)
+
+    if channel.name.endswith("'s VC") and len(channel.members) == 0:
+        await channel.delete(reason="VC Cleanup")
+
 
 @client.event
 async def on_message(message):
