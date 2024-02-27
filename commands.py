@@ -115,12 +115,14 @@ def DefineAllCommands(tree):
         }
         data = {
             "text": response_message,
-            "model_id": "eleven_monolingual_v1",
+            "model_id": "eleven_multilingual_v2", 
+            "voice_id": voice_id,
             "voice_settings": {
                 "stability": 0.5,
-                "similarity_boost": 0.5
-            },
-            "voice_id": voice_id  # Use the selected voice ID
+                "similarity_boost": 0.75,
+                "style_exaggeration": 0.0,
+                "speaker_boost": True
+            }
         }
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
         response = requests.post(url, json=data, headers=headers)
