@@ -88,6 +88,9 @@ def DefineAllCommands(tree):
         if interaction.guild.voice_client is not None and interaction.guild.voice_client.is_playing():
             await interaction.response.send_message("I'm currently speaking. Please try again later.")
             return
+        if interaction.user.voice.channel is None:
+            await interaction.response.send_message("Please use askbread if you just want text responses.")
+            return
         speaker_voices = {
             "JP": "uERblY4ce8BC2FzPBGxR",
             "bread": "saUfe5jyFdcsZbN5Yt1c",
