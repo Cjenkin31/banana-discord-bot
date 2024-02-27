@@ -13,9 +13,6 @@ import random
 import asyncio
 from pymongo import MongoClient
 from database import *
-from collections import deque
-import uuid
-
 
 sideServerId=discord.Object(id=1101665956314501180)
 gptkey = os.environ.get('OPENAI_API_KEY')
@@ -24,34 +21,8 @@ elevenlabskey = os.environ.get('xi-api-key')
 mongo_client = MongoClient(os.environ.get("MONGODB_URI"))
 db = mongo_client.bananabread
 roles_collection = db.roles
-voice_response_queue = deque()
-
 meanBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to be as rude and sarcastic as possible."
 bananaBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way."
-
-async def process_voice_queue(voice_channel):
-    while voice_response_queue:
-        task = voice_response_queue.popleft()
-        file_path, interaction = task
-        try:
-            vc = await voice_channel.connect()
-        except discord.ClientException:
-            vc = discord.utils.get(client.voice_clients, guild=interaction.guild)
-        except discord.Forbidden:
-            await interaction.followup.send("I don't have permission to join that voice channel.")
-            return
-
-        audio_source = FFmpegPCMAudio(file_path)
-        if not vc.is_playing():
-            vc.play(audio_source, after=lambda e: print('Finished playing', e))
-
-            while vc.is_playing():
-                await asyncio.sleep(1)
-
-            await vc.disconnect()
-        os.remove(file_path)  # Clean up the temp file
-
-        await asyncio.sleep(1)
 
 async def SendCatImage(interaction, file_url, name, sent_message):
     response = requests.get(file_url, stream=True)
@@ -157,14 +128,33 @@ def DefineAllCommands(tree):
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
         response = requests.post(url, json=data, headers=headers)
 
-        file_path = f'temp_response_{uuid.uuid4()}.mp3'
+        file_path = 'temp_response.mp3'
+        with open(file_path, 'wb') as f:
+            f.write(response.content)
+        if interaction.user.voice:
+            voice_channel = interaction.user.voice.channel
+            try:
+                vc = await voice_channel.connect()
+            except discord.Forbidden:
+                await interaction.response.send_message("I don't have permission to join that voice channel.")
+                return
+            except discord.ClientException:
+                await interaction.response.send_message("I'm already connected to a voice channel.")
+                return
+            try:
+                audio_source = FFmpegPCMAudio(file_path)
+                if not vc.is_playing():
+                    vc.play(audio_source, after=lambda e: print('Finished playing', e))
 
-        voice_channel = interaction.user.voice.channel if interaction.user.voice else None
-        if voice_channel:
-            voice_response_queue.append((file_path, interaction))
-            if len(voice_response_queue) == 1:
-                await process_voice_queue(voice_channel)
-            await interaction.response.send_message("Your request is queued.")
+                    while vc.is_playing():
+                        await asyncio.sleep(1)
+
+                    await vc.disconnect()
+                else:
+                    await interaction.response.send_message("I'm currently speaking. Please wait until I'm finished.")
+                    await vc.disconnect()
+            except Exception as e:
+                await interaction.response.send_message(f"🗣️ **Banana Bread Errors with:** \"{e}\"")
         else:
             await interaction.response.send_message("You are not in a voice channel.")
 
