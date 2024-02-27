@@ -88,6 +88,7 @@ def DefineAllCommands(tree):
         speaker_voices = {
             "JP": "uERblY4ce8BC2FzPBGxR",
             "bread": "saUfe5jyFdcsZbN5Yt1c",
+            "Chris": "H8uduO2F47eLZMUNZvUf",
         }
 
         voice_id = speaker_voices.get(speaker, speaker_voices["bread"])  # Default to "bread" if speaker is not found
