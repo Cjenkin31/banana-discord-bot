@@ -29,6 +29,14 @@ meanBreadStory="You are a discord bot assistant, named \" The banana bread Bot \
 bananaBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way."
 
 async def generate_and_play_speech(interaction, text, voice_id):
+    voice_channel = interaction.user.voice.channel if interaction.user.voice else None
+    if not voice_channel:
+        await interaction.followup.send("You are not in a voice channel.")
+        return
+    vc = await connect_to_voice_channel(voice_channel, interaction.guild)
+    if not vc:
+        await interaction.followup.send("Failed to connect to the voice channel.")
+        return
     headers = {
         "Accept": "audio/mpeg",
         "Content-Type": "application/json",
