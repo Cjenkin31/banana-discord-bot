@@ -21,7 +21,7 @@ elevenlabskey = os.environ.get('xi-api-key')
 mongo_client = MongoClient(os.environ.get("MONGODB_URI"))
 db = mongo_client.bananabread
 roles_collection = db.roles
-meanBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be as rude and sarcastic as possible."
+meanBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to be as rude and sarcastic as possible."
 bananaBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way."
 
 async def SendCatImage(interaction, file_url, name, sent_message):
