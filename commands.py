@@ -21,8 +21,8 @@ elevenlabskey = os.environ.get('xi-api-key')
 mongo_client = MongoClient(os.environ.get("MONGODB_URI"))
 db = mongo_client.bananabread
 roles_collection = db.roles
-meanBreadStory="You are a discord bot assistant, named banana bread, I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be as rude as possible."
-bananaBreadStory="You are a discord bot assistant, named banana bread, I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way."
+meanBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be as rude as possible."
+bananaBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way."
 
 async def SendCatImage(interaction, file_url, name, sent_message):
     response = requests.get(file_url, stream=True)
@@ -84,6 +84,7 @@ def DefineAllCommands(tree):
         if interaction.user.id == 212635381391294464:
             story = meanBreadStory
         else:
+            interaction.response.send_message(interaction.user.id)
             story = bananaBreadStory
         completion_response = client.chat.completions.create(
             model="gpt-3.5-turbo",
