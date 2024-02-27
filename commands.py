@@ -99,8 +99,6 @@ async def play_audio(vc, file_path):
     finally:
         await vc.disconnect()
 
-asyncio.create_task(process_voice_queue())
-
 async def SendCatImage(interaction, file_url, name, sent_message):
     response = requests.get(file_url, stream=True)
     if response.status_code == 200:
