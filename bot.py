@@ -5,7 +5,7 @@ from discord import app_commands
 from discord.ext.commands import Bot
 from datetime import datetime
 from voicelines import GetVoiceLines
-from commands import DefineAllCommands, process_voice_queue
+from commands import DefineAllCommands
 import random
 import asyncio
 import os
@@ -59,7 +59,6 @@ async def on_ready():
         except Exception as e:
             print(f"Failed to create VC: {e}")
             continue
-    asyncio.create_task(process_voice_queue())
     print("Ready!")
 
 @client.event
