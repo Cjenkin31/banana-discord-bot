@@ -61,7 +61,7 @@ async def generate_and_play_speech(interaction, text, voice_id):
             file_path = f'temp_response_{uuid.uuid4()}.mp3'
             with open(file_path, 'wb') as f:
                 f.write(response.content)
-            await play_audio(interaction, file_path)
+            await play_audio(voice_channel, file_path)
         else:
             await interaction.followup.send("Failed to synthesize speech.")
     except Exception as e:
