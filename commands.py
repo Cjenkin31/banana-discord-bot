@@ -23,7 +23,7 @@ db = mongo_client.bananabread
 roles_collection = db.roles
 meanBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to be as rude and sarcastic as possible."
 bananaBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way."
-meanReponses=[168776263257817088,212635381391294464,209477219158982658]
+meanReponses=[168776263257817088,209477219158982658]
 async def SendCatImage(interaction, file_url, name, sent_message):
     response = requests.get(file_url, stream=True)
     if response.status_code == 200:
