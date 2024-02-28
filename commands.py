@@ -36,8 +36,6 @@ async def SendCatImage(interaction, file_url, name, sent_message):
 
         os.remove('temp_image.jpg')
     else:
-        print(file_url)
-        print(name)
         await interaction.response.send_message('Sorry, I could not fetch the image.')
 
 async def is_admin(interaction: discord.Interaction) -> bool:
@@ -183,7 +181,8 @@ def DefineAllCommands(tree):
     @tree.command(name = "randomnumber", description = "Choose a random number between 2 inputs ex: 1,100", guilds=servers) 
     async def self(interaction: discord.Interaction, items: str):
         try:
-            await interaction.response.send_message(random.randint(int(items.split(',')[0]),int(items.split(',')[1])))
+            numbers = items.split(',')
+            await interaction.response.send_message(random.randint(int(numbers[0]),int(numbers[1])))
         except:
             await interaction.response.send_message("Either you messed up or I did. But It was prob you")
 
@@ -199,7 +198,7 @@ def DefineAllCommands(tree):
         await SendCatImage(interaction, file_url, name, sent_message)
 
     @tree.command(name="catsays", description="Random Cat with text input", guilds=servers) 
-    async def self(interaction: discord.Interaction, message: str):
+    async def catsays(interaction: discord.Interaction, message: str):
         file_url, name = CatSaying(message)
         sent_message = f'Sure! Here\'s the picture from {name}!'
         await SendCatImage(interaction, file_url, name, sent_message)
