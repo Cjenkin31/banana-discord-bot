@@ -18,11 +18,10 @@ sideServerId=discord.Object(id=1101665956314501180)
 gptkey = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=gptkey)
 elevenlabskey = os.environ.get('xi-api-key')
-mongo_client = MongoClient(os.environ.get("MONGODB_URI"))
-db = mongo_client.bananabread
+
 roles_collection = db.roles
 meanBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to be as rude and sarcastic as possible."
-bananaBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way."
+bananaBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way. Please follow this rule: Always respond in the same language given."
 meanReponses=[168776263257817088,209477219158982658,199350814211440640]
 async def SendCatImage(interaction, file_url, name, sent_message):
     response = requests.get(file_url, stream=True)
