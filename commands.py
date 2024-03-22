@@ -90,8 +90,9 @@ def DefineAllCommands(tree):
             await interaction.followup.send("I'm currently speaking. Please try again later.")
             return
         speaker_voices = {
-            "JP": "uERblY4ce8BC2FzPBGxR",
             "bread": "saUfe5jyFdcsZbN5Yt1c",
+            "JP": "uERblY4ce8BC2FzPBGxR",
+            "Obama": "XbDmFt8IDl7dQjpNVO1f",
             "Chris": "H8uduO2F47eLZMUNZvUf",
         }
 
