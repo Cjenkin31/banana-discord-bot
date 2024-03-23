@@ -93,16 +93,16 @@ def DefineAllCommands(tree):
             return
         speaker_voices = {
             "bread": "saUfe5jyFdcsZbN5Yt1c",
-            "JP": "uERblY4ce8BC2FzPBGxR",
-            "Obama": "XbDmFt8IDl7dQjpNVO1f",
-            "Chris": "H8uduO2F47eLZMUNZvUf",
+            "jp": "uERblY4ce8BC2FzPBGxR",
+            "obama": "XbDmFt8IDl7dQjpNVO1f",
+            "chris": "H8uduO2F47eLZMUNZvUf",
         }
 
-        voice_id = speaker_voices.get(speaker, speaker_voices["bread"])  # Default to "bread" if speaker is not found
+        voice_id = speaker_voices.get(speaker.lower(), speaker_voices["bread"])  # Default to "bread" if speaker is not found
 
         if role == "bread" and interaction.user.id in meanReponses:
             story = meanBreadStory
-        elif role == "obama":
+        elif role.lower() == "obama":
             story = obamaStory
         else:
             story = bananaBreadStory
