@@ -133,7 +133,7 @@ def DefineAllCommands(tree):
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
         response = requests.post(url, json=data, headers=headers)
 
-        file_path = 'temp_response.mp3'
+        file_path = f'{interaction.guild.id}_temp_response.mp3'
         with open(file_path, 'wb') as f:
             f.write(response.content)
         if interaction.user.voice:
