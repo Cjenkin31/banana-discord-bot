@@ -102,10 +102,10 @@ def DefineAllCommands(tree):
 
         if role == "bread" and interaction.user.id in meanReponses:
             story = meanBreadStory
-        elif role == "bread":
-            story = bananaBreadStory
-        else:
+        elif role == "obama":
             story = obamaStory
+        else:
+            story = bananaBreadStory
         completion_response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
