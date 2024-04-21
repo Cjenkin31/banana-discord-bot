@@ -118,4 +118,5 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
             pass
 
 token = os.environ.get('BOT_TOKEN')
+
 client.run(token)
