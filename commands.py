@@ -40,7 +40,6 @@ async def SendCatImage(interaction, file_url, name, sent_message):
         await interaction.response.send_message('Sorry, I could not fetch the image.')
 
 async def is_admin(interaction: discord.Interaction) -> bool:
-    """Check if the user has the administrator permission."""
     return interaction.user.guild_permissions.administrator
 
 def DefineAllCommands(tree):
