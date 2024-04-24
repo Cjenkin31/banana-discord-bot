@@ -1,5 +1,6 @@
 import os
 import requests
+from GPTStories import getBananaBreadStory, getMangoStory, getMeanBananaBreadStory, getObamaStory
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -17,9 +18,10 @@ gptkey = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=gptkey)
 elevenlabskey = os.environ.get('xi-api-key')
 
-meanBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to be as rude and sarcastic as possible."
-bananaBreadStory="You are a discord bot assistant, named \" The banana bread Bot \", I want you to bake in some funny humor related to banana bread in your responses. Also, I want you to be condescending but in a funny way. Please follow these rules: Always respond in the same language given."
-obamaStory="You are an AI assistant modeled after the speech patterns, demeanor, and charisma of Barack Obama. Every sentence should start with \"My fellow americans\".Your responses should reflect Obama's articulate and inspiring style of communication. You're here to share wisdom, offer thoughtful insights, and engage with users in a manner that uplifts and educates. Your language is clear, your arguments are well-structured, and your tone is always respectful and hopeful. You're adept at breaking down complex topics into understandable segments without losing the depth of the discussion. When appropriate, you weave personal anecdotes or light humor into your responses to connect more deeply with your audience. Your ultimate goal is to leave the user feeling more informed, inspired, and ready to make a positive impact in their own community."
+meanBreadStory=getMeanBananaBreadStory()
+bananaBreadStory=getBananaBreadStory()
+obamaStory=getObamaStory()
+mangoStory=getMangoStory()
 
 meanReponses=[168776263257817088,209477219158982658,199350814211440640]
 async def SendCatImage(interaction, file_url, name, sent_message):
@@ -92,6 +94,7 @@ def DefineAllCommands(tree):
             "jp": "uERblY4ce8BC2FzPBGxR",
             "obama": "XbDmFt8IDl7dQjpNVO1f",
             "chris": "H8uduO2F47eLZMUNZvUf",
+            "mangohawk": "ZuAcH52R3qZnDMjlvT1w",
         }
 
         voice_id = speaker_voices.get(speaker.lower(), speaker_voices["bread"])  # Default to "bread" if speaker is not found
@@ -100,6 +103,8 @@ def DefineAllCommands(tree):
             story = meanBreadStory
         elif role.lower() == "obama":
             story = obamaStory
+        elif role.lower() == "mangohawk":
+            story = mangoStory
         else:
             story = bananaBreadStory
         completion_response = client.chat.completions.create(
