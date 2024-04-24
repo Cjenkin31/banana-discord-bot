@@ -9,23 +9,18 @@ from commands import DefineAllCommands
 import random
 import asyncio
 import os
-from pymongo import MongoClient
-
-mongo_client = MongoClient(os.environ.get("MONGODB_URI"))
-db = mongo_client.bananabread
-roles_collection = db.roles
 
 intents = discord.Intents.all()
 intents.message_content = True
 intents.reactions = True
 intents.members = True
 
-
 client = discord.Client(intents=intents)
 
 overwatchVoiceLines=GetVoiceLines()
 bot = Bot("!",intents=intents)
 tree = app_commands.CommandTree(client)
+print("Defining Commands...")
 DefineAllCommands(tree)
 
 def setEmbedVariables(embedCreater,message,valueString):
@@ -118,5 +113,6 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
             pass
 
 token = os.environ.get('BOT_TOKEN')
+print("Connecting")
 client.run(token)
-print(client)
+print("Connected!")
