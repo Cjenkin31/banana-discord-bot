@@ -1,5 +1,7 @@
 import random
-import requests
+import logging
+from .utils.api_requests import make_api_get_request, make_api_post_request
+
 
 def GetDictPets():
     base_url = "https://raw.githubusercontent.com/Cjenkin31/banana-discord-bot/main/images/"
@@ -11,18 +13,17 @@ def RandomPet():
     return [random_key, pets_dict[random_key]]
 
 def RandomCatAPIPet():
-    response = requests.get('https://cataas.com/cat')
-    if response.status_code == 200:
-        return [response.url,'cataas.com']
-    else:
-        print('Failed to retrieve cat image from cataas.com')
-        return [None, None]
+    url = 'https://cataas.com/cat'
+    result = make_api_get_request(url)
+    if result:
+        return [result.url, 'cataas.com']
+    logging.error('Failed to retrieve cat image from cataas.com')
+    return [None, None]
 
 def CatSaying(message):
-    url = "https://cataas.com/cat/says/"+message
-    response = requests.get(url)
-    if response.status_code == 200:
-        return [response.url,'cataas.com']
-    else:
-        print('Failed to retrieve cat image from cataas.com')
-        return [None, None]
+    url = f"https://cataas.com/cat/says/{message}"
+    result = make_api_get_request(url)
+    if result:
+        return [result.url, 'cataas.com']
+    logging.error('Failed to retrieve cat image from cataas.com')
+    return [None, None]

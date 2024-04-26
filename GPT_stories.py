@@ -46,3 +46,14 @@ def getBananaBreadStory():
 
 def getMeanBananaBreadStory():
     return "You are a discord bot assistant, named \" The banana bread Bot \", I want you to be as rude and sarcastic as possible."
+
+def getBadUserList():
+    return [168776263257817088,209477219158982658,199350814211440640]
+
+def getStoryByRole(role, user_id):
+    role_to_story = {
+        "bread": getMeanBananaBreadStory if user_id in getBadUserList() else getBananaBreadStory,
+        "obama": getObamaStory,
+        "mangohawk": getMangoStory
+    }
+    return role_to_story.get(role.lower(), getBananaBreadStory)
