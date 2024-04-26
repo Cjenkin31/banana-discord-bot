@@ -1,9 +1,16 @@
-from logic import ChooseLocalOrApi
+from data.pets import RandomCatAPIPet, RandomPet
 from utils.image_helpers import download_image
 import discord
 from discord.ext import commands
 from discord import app_commands
 import os
+import random
+
+def ChooseLocalOrApi():
+    if ( random.random() >= .5 ):
+        return RandomPet()
+    return RandomCatAPIPet()
+
 async def SendCatImage(interaction, file_url, name, sent_message):
     image = download_image(file_url)
     if image:

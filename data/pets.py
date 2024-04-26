@@ -1,6 +1,6 @@
 import random
 import logging
-from .utils.api_requests import make_api_get_request, make_api_post_request
+from ..utils.api_requests import make_api_get_request, make_api_post_request
 
 
 def GetDictPets():
