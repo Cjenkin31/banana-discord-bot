@@ -8,7 +8,7 @@ async def setup_ready(bot):
     @bot.event
     async def on_ready():
         print(f'Logged in as {bot.user}!')
-        await define_all_commands(bot, SERVERS)
         await setup_events(bot)
+        await define_all_commands(bot, SERVERS)
         for guild in SERVERS:
             await bot.tree.sync(guild=guild)
