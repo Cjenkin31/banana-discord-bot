@@ -240,10 +240,11 @@ def DefineAllCommands(tree):
     @tree.command(name="playerdetails", description="Fetches detailed player information including profile and stats.", guilds=servers)
     async def player_details(interaction: discord.Interaction, player_id: str):
         await interaction.response.defer()
-        
+        sanitized_player_id = player_id.replace('#', '-')
+
         # Fetch player profile and stats
-        player_profile = fetch_player_profile(player_id)
-        player_stats = fetch_player_stats(player_id)
+        player_profile = fetch_player_profile(sanitized_player_id)
+        player_stats = fetch_player_stats(sanitized_player_id)
         
         if player_profile and player_stats:
             embed = discord.Embed(title=f"{player_profile['username']}'s Profile", description=f"*{player_profile['title']}*", color=0x00ff00)
