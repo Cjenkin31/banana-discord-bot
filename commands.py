@@ -265,9 +265,6 @@ def DefineAllCommands(tree):
                 else:
                     print(f"Details for role {role} are not a dictionary. Received: {details}")
 
-
-
-            
             # Embed for stats information
             stats_message = f"**Games Played:** {player_stats['general']['games_played']}\n"
             stats_message += f"**Games Won:** {player_stats['general']['games_won']}\n"
