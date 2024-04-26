@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from config import TOKEN, INTENTS, SERVERS
+from config.config import TOKEN, INTENTS, SERVERS
 from events import setup_events
 from utils.error_handlers import setup_logging
 from .Commands.setup_commands import define_all_commands
