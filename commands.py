@@ -262,19 +262,19 @@ def DefineAllCommands(tree):
                 if role == 'season':
                     continue
                 if isinstance(details, dict):
-                    current_tier = tier_values.get(details.get('division', ''), 0) * 5 + int(details.get('tier', 5))  # Using 5 as default tier division
+                    current_tier = tier_values.get(details.get('division', ''), 0) * 5 + int(details.get('tier', 5))  # Using 5 as default for division
                     if current_tier > highest_tier:
                         highest_tier = current_tier
                         primary_role = role
 
             # Embed construction
             embed = discord.Embed(title=f"{player_profile['username']}'s Profile", description=f"*{player_profile['title']}*", color=0x00ff00)
-            embed.set_thumbnail(url=player_profile['avatar'])
+            embed.set_image(url=player_profile['namecard'])
 
             if primary_role:
                 details = pc_competitive[primary_role]
                 rank_icon = details.get('rank_icon', '')
-                embed.set_image(url=rank_icon)
+                embed.set_thumbnail(url=rank_icon)
                 division = details.get('division', 'N/A').capitalize()
                 tier = details.get('tier', 'N/A')
                 embed.add_field(name=f"{primary_role.capitalize()} Role", value=f"Division: {division} - Tier: {tier}", inline=False)
@@ -298,5 +298,4 @@ def DefineAllCommands(tree):
             embed.add_field(name="General Stats", value=stats_message, inline=False)
             
             await interaction.followup.send(embed=embed)
-
 
