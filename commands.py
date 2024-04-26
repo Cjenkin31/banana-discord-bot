@@ -7,11 +7,13 @@ from discord import app_commands
 from discord import FFmpegPCMAudio
 from discord.ext.commands import Bot
 from logic import ChooseLocalOrApi
+from overwatchapi import get_player_data
 from voicelines import GetVoiceLines
 from pets import CatSaying, RandomPet
 from openai import OpenAI
 import random
 import asyncio
+from cachetools import TTLCache
 
 sideServerId=discord.Object(id=1101665956314501180)
 gptkey = os.environ.get('OPENAI_API_KEY')
@@ -209,4 +211,61 @@ def DefineAllCommands(tree):
         file_url, name = CatSaying(message)
         sent_message = f'Sure! Here\'s the picture from {name}!'
         await SendCatImage(interaction, file_url, name, sent_message)
+
+    # Setup cache with TTL of 1 hour (3600 seconds)
+    cache = TTLCache(maxsize=100, ttl=3600)
+
+    def fetch_player_profile(player_id):
+        """Fetch player profile from API with caching."""
+        if player_id in cache:
+            return cache[player_id]
+
+        url = f'https://overfast-api.tekrop.fr/players/{player_id}/summary'
+        response = requests.get(url)
+        if response.status_code == 200:
+            profile_data = response.json()
+            cache[player_id] = profile_data  # Cache the response
+            return profile_data
+        else:
+            return None
+
+    def fetch_player_stats(player_id):
+        """Fetch player stats from API."""
+        url = f'https://overfast-api.tekrop.fr/players/{player_id}/stats/summary'
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return None
+
+    @tree.command(name="playerdetails", description="Fetches detailed player information including profile and stats.", guilds=servers)
+    async def player_details(interaction: discord.Interaction, player_id: str):
+        await interaction.response.defer()
         
+        # Fetch player profile and stats
+        player_profile = fetch_player_profile(player_id)
+        player_stats = fetch_player_stats(player_id)
+        
+        if player_profile and player_stats:
+            # Embed for profile information
+            embed = discord.Embed(title=f"{player_profile['username']}'s Profile", description=f"*{player_profile['title']}*", color=0x00ff00)
+            embed.set_thumbnail(url=player_profile['avatar'])
+            embed.set_image(url=player_profile['namecard'])
+            
+            # Adding competitive details
+            for role, details in player_profile['competitive']['pc'].items():
+                embed.add_field(name=f"{role.capitalize()} Role", value=f"Division: {details['division']} - Tier: {details['tier']}\nRank: [Icon]({details['rank_icon']})", inline=False)
+            
+            # Embed for stats information
+            stats_message = f"**Games Played:** {player_stats['general']['games_played']}\n"
+            stats_message += f"**Games Won:** {player_stats['general']['games_won']}\n"
+            stats_message += f"**Games Lost:** {player_stats['general']['games_lost']}\n"
+            stats_message += f"**KDA:** {player_stats['general']['kda']}\n"
+            stats_message += f"**Time Played:** {player_stats['general']['time_played'] / 3600:.2f} hours\n"  # Convert seconds to hours
+            stats_message += f"**Winrate:** {player_stats['general']['winrate']}%"
+            
+            embed.add_field(name="General Stats", value=stats_message, inline=False)
+            
+            await interaction.followup.send(embed=embed)
+        else:
+            await interaction.followup.send("Failed to fetch player information. Please check the player ID and try again.")
