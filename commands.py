@@ -342,4 +342,4 @@ def DefineAllCommands(tree):
             embed = discord.Embed(title=f"Performance Summary for {name}#{tag}", description=f"Total Kills: {total_kills}\nTotal Deaths: {total_deaths}\nKDA: {kda:.2f}", color=0x00ff00)
             await interaction.followup.send(embed=embed)
         else:
-            await interaction.followup.send("
+            await interaction.followup.send("Failed to fetch performance data. Please check the player name, tag, and region.")
