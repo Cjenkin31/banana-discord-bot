@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 import random
 
-def define_random_number_command(tree, servers):
+async def define_random_number_command(tree, servers):
     @tree.command(name = "randomnumber", description = "Choose a random number between 2 inputs ex: 1,100", guilds=servers) 
     async def self(interaction: discord.Interaction, items: str):
         try:

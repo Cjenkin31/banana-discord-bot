@@ -13,7 +13,7 @@ gptkey = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=gptkey)
 elevenlabskey = os.environ.get('xi-api-key')
 
-def define_all_commands(tree, servers):
+async def define_all_commands(tree, servers):
     define_all_valorant_commands(tree, servers)
     define_all_overwatch_commands(tree, servers)
     define_all_random_commands(tree, servers)

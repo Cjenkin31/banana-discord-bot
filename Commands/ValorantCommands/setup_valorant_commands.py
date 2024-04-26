@@ -5,7 +5,7 @@ from Commands.ValorantCommands.valorant_matches_command import define_valorant_m
 from Commands.ValorantCommands.valorant_summary_command import define_valorant_summary_command
 from Commands.ValorantCommands.valorant_account_command import define_valorant_account_command
 
-def define_all_valorant_commands(tree, servers):
+async def define_all_valorant_commands(tree, servers):
     define_valorant_account_command(tree, servers)
     define_valorant_summary_command(tree, servers)
     define_valorant_matches_command(tree, servers)

@@ -9,7 +9,7 @@ from .reaction_add import setup_reaction_add
 from .ready import setup_ready
 from .voice_state_update import setup_voice_state_update
 
-def setup_events(bot):
+async def setup_events(bot):
     setup_ready(bot)
     setup_message(bot)
     setup_voice_state_update(bot)

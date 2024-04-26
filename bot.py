@@ -7,7 +7,6 @@ from Commands.setup_commands import define_all_commands
 bot = commands.Bot(command_prefix="!", intents=INTENTS)
 
 setup_events(bot)
-define_all_commands(bot, SERVERS)
 setup_logging()
 
 bot.run(TOKEN)

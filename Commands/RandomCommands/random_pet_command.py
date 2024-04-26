@@ -21,7 +21,7 @@ async def SendCatImage(interaction, file_url, name, sent_message):
     else:
         await interaction.response.send_message('Sorry, I could not fetch the image.')
 
-def define_random_pet_command(tree,servers):
+async def define_random_pet_command(tree,servers):
     @tree.command(name="randompet", description="Random pet picture from friends!", guilds=servers) 
     async def random_pet(interaction):
         # Fetch the image from GitHub/cataas

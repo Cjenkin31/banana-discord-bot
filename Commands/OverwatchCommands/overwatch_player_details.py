@@ -4,7 +4,7 @@ from discord import app_commands
 import requests
 from cachetools import TTLCache
 
-def define_overwatch_player_details_command(tree, servers):
+async def define_overwatch_player_details_command(tree, servers):
     # Setup cache with TTL of 1 hour (3600 seconds)
     cache = TTLCache(maxsize=100, ttl=3600)
 

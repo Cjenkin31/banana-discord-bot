@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-def define_cleanup_vc_command(tree, servers):    
+async def define_cleanup_vc_command(tree, servers):    
     @tree.command(name="cleanupvc", description="Cleans up voice chats.", guilds=servers)
     async def cleanupvc(interaction: discord.Interaction):
         guild = interaction.guild
