@@ -8,7 +8,7 @@ from Commands.OverwatchCommands.setup_overwatch_commands import define_all_overw
 from Commands.RandomCommands.setup_random_commands import define_all_random_commands
 from Commands.VoiceCommands.setup_voice_commands import define_all_voice_commands
 from Commands.ChatCommands.setup_chat_commands import define_all_chat_commands
-from config import SERVERS
+from config.config import SERVERS
 
 gptkey = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=gptkey)
