@@ -246,14 +246,26 @@ def DefineAllCommands(tree):
         player_stats = fetch_player_stats(player_id)
         
         if player_profile and player_stats:
-            # Embed for profile information
             embed = discord.Embed(title=f"{player_profile['username']}'s Profile", description=f"*{player_profile['title']}*", color=0x00ff00)
             embed.set_thumbnail(url=player_profile['avatar'])
             embed.set_image(url=player_profile['namecard'])
-            
-            player_profile = fetch_player_profile(player_id)
-            for role, details in player_profile['competitive']['pc'].items():
-                print(f"Role: {role}, Details: {details}")
+
+            competitive = player_profile.get('competitive', {})
+            pc_competitive = competitive.get('pc', {})
+
+            for role, details in pc_competitive.items():
+                if role == 'season':
+                    continue
+
+                if isinstance(details, dict):
+                    division = details.get('division', 'N/A')
+                    tier = details.get('tier', 'N/A')
+                    rank_icon = details.get('rank_icon', '')
+                    embed.add_field(name=f"{role.capitalize()} Role", value=f"Division: {division} - Tier: {tier}\nRank: [Icon]({rank_icon})", inline=False)
+                else:
+                    print(f"Details for role {role} are not a dictionary. Received: {details}")
+
+
 
             
             # Embed for stats information
