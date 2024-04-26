@@ -251,9 +251,10 @@ def DefineAllCommands(tree):
             embed.set_thumbnail(url=player_profile['avatar'])
             embed.set_image(url=player_profile['namecard'])
             
-            # Adding competitive details
+            player_profile = fetch_player_profile(player_id)
             for role, details in player_profile['competitive']['pc'].items():
-                embed.add_field(name=f"{role.capitalize()} Role", value=f"Division: {details['division']} - Tier: {details['tier']}\nRank: [Icon]({details['rank_icon']})", inline=False)
+                print(f"Role: {role}, Details: {details}")
+
             
             # Embed for stats information
             stats_message = f"**Games Played:** {player_stats['general']['games_played']}\n"
