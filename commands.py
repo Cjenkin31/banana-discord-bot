@@ -7,7 +7,6 @@ from discord import app_commands
 from discord import FFmpegPCMAudio
 from discord.ext.commands import Bot
 from logic import ChooseLocalOrApi
-from overwatchapi import get_player_data
 from voicelines import GetVoiceLines
 from pets import CatSaying, RandomPet
 from openai import OpenAI
