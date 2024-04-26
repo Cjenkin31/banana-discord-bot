@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from config import TOKEN, INTENTS, SERVERS
 from events import setup_events
+from utils.error_handlers import setup_logging
 from .Commands.setup_commands import define_all_commands
 from events import *
 from events.message import setup_message
@@ -15,5 +16,6 @@ setup_message(bot)
 setup_voice_state_update(bot)
 setup_reaction_add(bot)
 define_all_commands(bot, SERVERS)
+setup_logging()
 
 bot.run(TOKEN)
