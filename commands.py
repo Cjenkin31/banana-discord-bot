@@ -237,7 +237,7 @@ def DefineAllCommands(tree):
         else:
             return None
 
-    @tree.command(name="playerdetails", description="Fetches detailed player information including profile and stats.", guilds=servers)
+    @tree.command(name="overwatchplayerdetails", description="Fetches detailed player information including profile and stats.", guilds=servers)
     async def player_details(interaction: discord.Interaction, player_id: str):
         await interaction.response.defer()
         sanitized_player_id = player_id.replace('#', '-')
