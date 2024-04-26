@@ -95,6 +95,7 @@ def DefineAllCommands(tree):
             "obama": "XbDmFt8IDl7dQjpNVO1f",
             "chris": "H8uduO2F47eLZMUNZvUf",
             "mangohawk": "ZuAcH52R3qZnDMjlvT1w",
+            "cowboy": "KTPVrSVAEUSJRClDzBw7",
         }
 
         voice_id = speaker_voices.get(speaker.lower(), speaker_voices["bread"])  # Default to "bread" if speaker is not found
