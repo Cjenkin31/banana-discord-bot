@@ -247,35 +247,56 @@ def DefineAllCommands(tree):
         player_stats = fetch_player_stats(sanitized_player_id)
         
         if player_profile and player_stats:
-            embed = discord.Embed(title=f"{player_profile['username']}'s Profile", description=f"*{player_profile['title']}*", color=0x00ff00)
-            embed.set_thumbnail(url=player_profile['avatar'])
-            embed.set_image(url=player_profile['namecard'])
-
+            tier_values = {
+                'Bronze': 1, 'Silver': 2, 'Gold': 3, 'Platinum': 4, 
+                'Diamond': 5, 'Master': 6, 'Grandmaster': 7, 'Champions': 8, 'Top 500': 9
+            }
+            
             competitive = player_profile.get('competitive', {})
             pc_competitive = competitive.get('pc', {})
-
+            highest_tier = 0
+            primary_role = ''
+            
+            # Determine highest tier role
             for role, details in pc_competitive.items():
                 if role == 'season':
                     continue
-
                 if isinstance(details, dict):
-                    division = details.get('division', 'N/A')
+                    current_tier = tier_values.get(details.get('division', ''), 0) * 5 + int(details.get('tier', 5))  # Using 5 as default tier division
+                    if current_tier > highest_tier:
+                        highest_tier = current_tier
+                        primary_role = role
+
+            # Embed construction
+            embed = discord.Embed(title=f"{player_profile['username']}'s Profile", description=f"*{player_profile['title']}*", color=0x00ff00)
+            embed.set_thumbnail(url=player_profile['avatar'])
+
+            if primary_role:
+                details = pc_competitive[primary_role]
+                rank_icon = details.get('rank_icon', '')
+                embed.set_image(url=rank_icon)
+                division = details.get('division', 'N/A').capitalize()
+                tier = details.get('tier', 'N/A')
+                embed.add_field(name=f"{primary_role.capitalize()} Role", value=f"Division: {division} - Tier: {tier}", inline=False)
+
+            for role, details in pc_competitive.items():
+                if role == primary_role or role == 'season':
+                    continue
+                if isinstance(details, dict):
+                    division = details.get('division', 'N/A').capitalize()
                     tier = details.get('tier', 'N/A')
-                    rank_icon = details.get('rank_icon', '')
-                    embed.add_field(name=f"{role.capitalize()} Role", value=f"Division: {division} - Tier: {tier}\nRank: [Icon]({rank_icon})", inline=False)
-                else:
-                    print(f"Details for role {role} are not a dictionary. Received: {details}")
+                    embed.add_field(name=f"{role.capitalize()} Role", value=f"Division: {division} - Tier: {tier}", inline=False)
 
             # Embed for stats information
             stats_message = f"**Games Played:** {player_stats['general']['games_played']}\n"
             stats_message += f"**Games Won:** {player_stats['general']['games_won']}\n"
             stats_message += f"**Games Lost:** {player_stats['general']['games_lost']}\n"
             stats_message += f"**KDA:** {player_stats['general']['kda']}\n"
-            stats_message += f"**Time Played:** {player_stats['general']['time_played'] / 3600:.2f} hours\n"  # Convert seconds to hours
+            stats_message += f"**Time Played:** {player_stats['general']['time_played'] / 3600:.2f} hours\n"
             stats_message += f"**Winrate:** {player_stats['general']['winrate']}%"
             
             embed.add_field(name="General Stats", value=stats_message, inline=False)
             
             await interaction.followup.send(embed=embed)
-        else:
-            await interaction.followup.send("Failed to fetch player information. Please check the player ID and try again.")
+
+
