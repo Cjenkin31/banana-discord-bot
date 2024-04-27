@@ -19,3 +19,9 @@ async def define_all_commands(tree, servers):
     await define_all_random_commands(tree, servers)
     await define_all_voice_commands(tree, servers, client, elevenlabskey)
     await define_all_chat_commands(tree, servers, client)
+    for guild in servers:
+        try:
+            await tree.sync(guild=guild)
+            print(f"Commands synced with guild: {guild.id}")
+        except Exception as e:
+            print(f"Failed to sync commands with guild: {guild.id}, error: {e}")
