@@ -8,7 +8,8 @@ from utils.error_handlers import setup_logging
 bot = commands.Bot(command_prefix="!", intents=INTENTS)
 
 async def main():
-    await setup_ready(bot)
+    tree = discord.app_commands.CommandTree(bot)
+    await setup_ready(bot, tree)
     setup_logging()
     await bot.start(TOKEN)
 
