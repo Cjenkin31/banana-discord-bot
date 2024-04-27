@@ -33,7 +33,7 @@ def define_coinflip_command(tree, servers):
         current_bananas = await get_bananas(user_id)
 
         if current_bananas == 0:
-            await interaction.response.send_message("You don't have no bananas!")
+            await interaction.response.send_message("You have no bananas!")
             return
         
         if bet_amount > current_bananas:
