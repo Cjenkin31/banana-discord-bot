@@ -9,13 +9,3 @@ async def setup_ready(bot, tree):
         print(f'Logged in as {bot.user}!')
         await setup_events(bot)
         await define_all_commands(tree, SERVERS)
-        
-        # Sync commands with each guild
-        for guild in SERVERS:
-            try:
-                await bot.tree.sync()
-                await bot.tree.sync(guild=guild)
-                print(f"Commands synced successfully with guild: {guild.id}")
-            except Exception as e:
-                print(f"Failed to sync commands with guild: {guild.id}, error: {e}")
-
