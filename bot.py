@@ -10,7 +10,7 @@ bot = commands.Bot(command_prefix="!", intents=INTENTS)
 async def main():
     await setup_ready(bot)
     setup_logging()
-    bot.run(TOKEN)
+    await bot.start(TOKEN)
 
 if __name__ == "__main__":
     asyncio.run(main())  # Run the main function to start everything
