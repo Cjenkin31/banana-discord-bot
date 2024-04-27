@@ -4,7 +4,6 @@ from discord.ext import commands
 from discord import app_commands
 import asyncio
 from config.config import SERVERS, TOKEN, INTENTS
-from events.ready import setup_ready
 from events.setup_events import setup_events
 from utils.error_handlers import setup_logging
 
