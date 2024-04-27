@@ -3,7 +3,7 @@ from discord import app_commands
 import discord
 from data.currency import add_bananas
 
-def define_admin_add_currency_command(tree, servers):
+async def define_admin_add_currency_command(tree, servers):
     @tree.command(name="addcurrency", description="Add currency to a user", guilds=servers)
     @app_commands.checks.has_permissions(administrator=True)
     async def add_currency(interaction: discord.Interaction, user: discord.User, amount: int):
