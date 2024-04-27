@@ -2,13 +2,7 @@ import os
 import json
 import firebase_admin
 from firebase_admin import credentials, db
-
-service_account_info = json.loads(os.getenv('FIREBASE_SERVICE_ACCOUNT'))
-
-cred = credentials.Certificate(service_account_info)
-firebase_admin.initialize_app(cred, {
-    'databaseURL': os.getenv("FIREBASE_DATABASE_URL")
-})
+import config.firebase_config
 
 async def get_bananas(user_id):
     ref = db.reference(f'users/{user_id}/bananas')

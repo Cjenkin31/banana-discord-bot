@@ -5,13 +5,8 @@ import json
 from firebase_admin import credentials, db
 from datetime import datetime, timedelta, timezone
 import random
+import config.firebase_config
 
-service_account_info = json.loads(os.getenv('FIREBASE_SERVICE_ACCOUNT'))
-
-cred = credentials.Certificate(service_account_info)
-firebase_admin.initialize_app(cred, {
-    'databaseURL': os.getenv("FIREBASE_DATABASE_URL")
-})
 
 async def get_last_daily(user_id):
     ref = db.reference(f'users/{user_id}/last_daily')
