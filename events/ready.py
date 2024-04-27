@@ -13,6 +13,7 @@ async def setup_ready(bot):
         # Sync commands with each guild
         for guild in SERVERS:
             try:
+                await bot.tree.sync()
                 await bot.tree.sync(guild=guild)
                 print(f"Commands synced successfully with guild: {guild.id}")
             except Exception as e:
