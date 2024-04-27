@@ -11,5 +11,6 @@ INTENTS = discord.Intents.default()
 INTENTS.messages = True
 INTENTS.reactions = True
 INTENTS.members = True
+INTENTS.message_content = True
 
 SERVERS = [OVERBOTCHED_ID, BONK_BRIGADE_ID]
