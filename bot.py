@@ -10,11 +10,12 @@ from utils.error_handlers import setup_logging
 
 bot = commands.Bot(command_prefix="!", intents=INTENTS)
 
-async def main():
-    await bot.wait_until_ready()
-    await setup_ready(bot, bot.tree)
-    await bot.tree.sync()
+
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user}!')
+    await setup_events(bot)
+    await define_all_commands(bot.tree, SERVERS)
 
 if __name__ == "__main__":
-    bot.loop.run_until_complete(main())
     bot.run(TOKEN)
