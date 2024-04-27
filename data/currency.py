@@ -19,6 +19,11 @@ async def add_bananas(user_id, amount):
     current_bananas = await get_bananas(user_id)
     ref.update({'bananas': current_bananas + amount})
 
+async def remove_bananas(user_id, amount):
+    ref = db.reference(f'users/{user_id}')
+    current_bananas = await get_bananas(user_id)
+    ref.update({'bananas': current_bananas - amount})
+
 def update_bananas(user_id, amount):
     ref = db.reference(f'users/{user_id}')
     current_bananas = get_bananas(user_id)
