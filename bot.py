@@ -15,6 +15,12 @@ async def on_ready():
     print(f'Logged in as {bot.user}!')
     await setup_events(bot)
     await define_all_commands(bot.tree, SERVERS)
+    for guild in SERVERS:
+        try:
+            await bot.tree.sync(guild=guild)
+            print(f"Commands synced successfully with guild: {guild.id}")
+        except Exception as e:
+            print(f"Failed to sync commands with guild: {guild.id}, error: {e}")
 
 if __name__ == "__main__":
     bot.run(TOKEN)
