@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from openai import OpenAI
+from Commands.GamblingCommands.setup_gambling_commands import define_all_gambling_commands
 from Commands.ValorantCommands.setup_valorant_commands import define_all_valorant_commands
 from Commands.OverwatchCommands.setup_overwatch_commands import define_all_overwatch_commands
 from Commands.RandomCommands.setup_random_commands import define_all_random_commands
@@ -21,4 +22,5 @@ async def define_all_commands(tree, servers):
     await define_all_voice_commands(tree, servers, client, elevenlabskey)
     await define_all_chat_commands(tree, servers, client)
     await define_all_currency_commands(tree, servers)
+    await define_all_gambling_commands(tree, servers)
     print("Registered all commands.")
