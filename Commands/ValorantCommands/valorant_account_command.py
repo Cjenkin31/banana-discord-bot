@@ -16,3 +16,4 @@ async def define_valorant_account_command(tree, servers):
             await interaction.followup.send(embed=embed)
         else:
             await interaction.followup.send("Failed to fetch Valorant account details. Please check the player name and tag.")
+    print("Registered Valorant command 'valorant_account'.")
