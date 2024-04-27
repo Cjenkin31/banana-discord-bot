@@ -26,7 +26,7 @@ async def try_collect_daily(user_id):
             return False, (last_daily + timedelta(days=1)) - now
         
         bananas_to_add = random.randint(1, 100)
-        current_bananas = get_bananas(user_id)
+        current_bananas = await get_bananas(user_id)
         await add_bananas(user_id, bananas_to_add)
         await update_last_daily(user_id)
         return True, bananas_to_add
