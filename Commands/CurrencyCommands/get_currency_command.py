@@ -5,7 +5,6 @@ from data.currency import get_bananas
 
 async def define_get_currency_command(tree, servers):
     @tree.command(name="getcurrency", description="Get your currency amount", guilds=servers)
-    @app_commands.checks.has_permissions(administrator=True)
     async def get_currency(interaction: discord.Interaction):
         try:
             amount = await get_bananas(str(interaction.user.id))

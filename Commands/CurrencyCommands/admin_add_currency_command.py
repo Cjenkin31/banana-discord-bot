@@ -12,3 +12,10 @@ async def define_admin_add_currency_command(tree, servers):
             await interaction.response.send_message(f"Added {amount} bananas to {user.display_name}'s account.")
         except Exception as e:
             await interaction.response.send_message(f"Failed to add currency: {str(e)}")
+
+    @add_currency.error
+    async def add_currency_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.MissingPermissions):
+            await interaction.response.send_message("This command is for admins only.", ephemeral=True)
+        else:
+            await interaction.response.send_message("An error occurred while processing your command.", ephemeral=True)
