@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import asyncio
-from config.config import TOKEN, INTENTS
+from config.config import SERVERS, TOKEN, INTENTS
 from events.ready import setup_ready
 from utils.error_handlers import setup_logging
 
@@ -14,7 +14,12 @@ async def main():
     await setup_ready(bot, tree)
     setup_logging()
 
-    await tree.sync()
+    for guild in SERVERS:
+        try:
+            await tree.sync(guild=guild)
+            print(f"Commands synced successfully with guild: {guild.id}")
+        except Exception as e:
+            print(f"Failed to sync commands with guild: {guild.id}, error: {e}")
     await bot.start(TOKEN)
 
 if __name__ == "__main__":
