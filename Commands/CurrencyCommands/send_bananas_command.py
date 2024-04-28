@@ -18,17 +18,31 @@ class ConfirmView(discord.ui.View):
             await interaction.response.send_message(f"You do not have enough {BANANA_COIN_EMOJI} to complete this transaction.", ephemeral=True)
             self.stop()
             return
-        
+
+        # Perform the banana transaction
         await remove_bananas(str(self.initiator.id), self.amount)
         await add_bananas(str(self.user.id), self.amount)
-        
+
+        # Build the confirmation message
         message = f"{self.user.mention}, you have received {self.amount} {BANANA_COIN_EMOJI} from {self.initiator.mention}."
-        await interaction.response.send_message(message)
+        
+        # Disable all buttons in this view
+        for item in self.children:
+            if isinstance(item, discord.ui.Button):
+                item.disabled = True
+
+        # Update the message with the confirmation and disabled buttons
+        await interaction.response.edit_message(content=message, view=self)
         self.stop()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.grey)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("Canceled trade.", ephemeral=True)
+        # Notify the user that the transaction is canceled and disable buttons
+        for item in self.children:
+            if isinstance(item, discord.ui.Button):
+                item.disabled = True
+
+        await interaction.response.edit_message(content="Canceled trade.", view=self)
         self.stop()
 
 async def define_send_bananas_command(tree, servers):
