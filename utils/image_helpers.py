@@ -4,11 +4,16 @@ from io import BytesIO
 import discord
 import os
 
-def download_image(url):
+def download_image(url, local_filename):
+    images_directory = 'images'
     response = requests.get(url)
+    if not os.path.exists(images_directory):
+        os.makedirs(images_directory)
     if response.status_code == 200:
         img = Image.open(BytesIO(response.content))
-        return img
+        img_path = os.path.join(images_directory, local_filename)
+        img.save(img_path)
+        return img_path
     return None
 
 def resize_image(image, size):
