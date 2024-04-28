@@ -1,4 +1,3 @@
-# Define your custom emojis as constants
 BANANA_COIN_EMOJI_ID = "1234155554167849131"
 BANANA_COIN_EMOJI_NAME = "bananacoin"
 
