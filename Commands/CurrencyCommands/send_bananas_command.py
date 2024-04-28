@@ -32,7 +32,7 @@ class ConfirmView(discord.ui.View):
         await interaction.response.edit_message(content="Transaction completed.", view=self)
 
         # Send the public message to the channel
-        message = f"{self.user.mention}, you have received {self.amount} bananas from {self.initiator.mention}."
+        message = f"{self.user.mention}, you have received {self.amount} {BANANA_COIN_EMOJI} from {self.initiator.mention}."
         await self.channel.send(message)
         self.stop()
 
