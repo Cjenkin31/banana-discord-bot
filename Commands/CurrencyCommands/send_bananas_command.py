@@ -31,9 +31,9 @@ class ConfirmView(discord.ui.View):
         await interaction.response.send_message("Canceled trade.", ephemeral=True)
         self.stop()
 
-async def define_give_bananas_command(tree, servers):
-    @tree.command(name="give_bananas", description="Give bananas to another user", guilds=servers)
-    async def give_bananas(interaction: discord.Interaction, user: discord.User, amount: int):
+async def define_send_bananas_command(tree, servers):
+    @tree.command(name="send_bananas", description="Send bananas to another user", guilds=servers)
+    async def send_bananas(interaction: discord.Interaction, user: discord.User, amount: int):
         if amount <= 0:
             await interaction.response.send_message(f"You cannot send a non-positive amount of {BANANA_COIN_EMOJI}.", ephemeral=True)
             return
