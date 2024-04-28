@@ -20,7 +20,7 @@ async def define_admin_add_currency_command(tree, servers):
 
     @add_currency.error
     async def add_currency_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.CheckFailure):  # Changed to CheckFailure to catch all check-related errors
+        if isinstance(error, app_commands.CheckFailure):
             await interaction.response.send_message("You do not have permission for this command.", ephemeral=True)
         else:
             await interaction.response.send_message("An error occurred while processing your command.", ephemeral=True)
