@@ -8,6 +8,7 @@ async def define_admin_add_currency_command(tree, servers):
         async def predicate(interaction: discord.Interaction):
             return interaction.user.id == 212635381391294464
         return predicate
+
     @tree.command(name="addcurrency", description="Add currency to a user", guilds=servers)
     @app_commands.check(is_owner())
     async def add_currency(interaction: discord.Interaction, user: discord.User, amount: int):
@@ -19,7 +20,7 @@ async def define_admin_add_currency_command(tree, servers):
 
     @add_currency.error
     async def add_currency_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.MissingPermissions):
+        if isinstance(error, app_commands.CheckFailure):  # Changed to CheckFailure to catch all check-related errors
             await interaction.response.send_message("You do not have permission for this command.", ephemeral=True)
         else:
             await interaction.response.send_message("An error occurred while processing your command.", ephemeral=True)
