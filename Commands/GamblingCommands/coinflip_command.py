@@ -33,11 +33,11 @@ def define_coinflip_command(tree, servers):
         current_bananas = await get_bananas(user_id)
 
         if current_bananas == 0:
-            await interaction.response.send_message("You have no {BANANA_COIN_EMOJI}!")
+            await interaction.response.send_message(f"You have no {BANANA_COIN_EMOJI}!")
             return
         
         if bet_amount > current_bananas:
-            await interaction.response.send_message("You don't have enough {BANANA_COIN_EMOJI} to make this bet.")
+            await interaction.response.send_message(f"You don't have enough {BANANA_COIN_EMOJI} to make this bet.")
             return
 
         # Coin flip logic
