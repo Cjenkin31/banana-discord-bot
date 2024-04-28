@@ -2,17 +2,25 @@ from discord.ext import commands
 from discord import app_commands
 import discord
 from data.currency import get_leaderboard
+from utils.image_helpers import download_from_github
+from utils.emoji_helper import BANANA_COIN_EMOJI
 
 async def define_leaderboard_command(tree, servers):
     @tree.command(name="leaderboard", description="Display the leaderboard of currency", guilds=servers)
     async def leaderboard(interaction: discord.Interaction):
         try:
             leaderboard_data = await get_leaderboard()
+            thumbnail_file = await download_from_github("bananaleaderboard.png")
             embed = discord.Embed(title="Top Users by Bananas", description="Here are the top banana earners:", color=0xf1c40f)
-            embed.set_thumbnail(url="https://github.com/Cjenkin31/banana-discord-bot/blob/41392ca3e636bc870515d9ecad84e6a623485d23/images/bananaleaderboard.png")
-            for index, (user_id, amount) in enumerate(leaderboard_data[:10], start=1):  # Show top 10 users
-                user = await interaction.client.fetch_user(user_id)  # Fetch user info from Discord
-                embed.add_field(name=f"{index}. {user.display_name}", value=f"{amount} bananas :bananacoin:", inline=False)
-            await interaction.response.send_message(embed=embed)
+            if thumbnail_file:
+                embed.set_thumbnail(url="attachment://image.jpg")
+            
+            for index, (user_id, amount) in enumerate(leaderboard_data[:10], start=1):
+                user = await interaction.client.fetch_user(user_id)
+                embed.add_field(name=f"{index}. {user.display_name}", value=f"{amount} {BANANA_COIN_EMOJI}", inline=False)
+            if thumbnail_file:
+                await interaction.response.send_message(embed=embed, file=thumbnail_file)
+            else:
+                await interaction.response.send_message(embed=embed)
         except Exception as e:
             await interaction.response.send_message(f"Failed to display leaderboard: {str(e)}", ephemeral=True)
