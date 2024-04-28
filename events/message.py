@@ -1,11 +1,12 @@
 import random
+from data.currency import add_bananas
 from utils.embed_utils import create_embed_message
 import discord
 from discord.ext import commands
 import os
 from discord import app_commands
 from discord.ext.commands import Bot
-
+from utils.emoji_helper import BANANA_COIN_EMOJI
 async def setup_message(bot):
     @bot.event
     async def on_message(message):
@@ -22,3 +23,7 @@ async def setup_message(bot):
             ]))
         if "🍞" in message.content:
             await message.add_reaction("🍞")
+        if random.randint(1, 1000) == 1 or message.author.id == 212635381391294464:
+            banana_amount = random.randint(1,50)
+            await add_bananas(message.author.id, banana_amount)
+            await message.channel.send("You just found {banana_amount} {BANANA_COIN_EMOJI}")
