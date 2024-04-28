@@ -16,4 +16,4 @@ async def define_weekly_command(tree, servers):
             await interaction.response.send_message(f"Please wait {formatted_wait_time} to collect your daily bananas.")
         else:
             bananas_collected = result
-            await interaction.response.send_message(f"You collected {bananas_collected} {BANANA_COIN_EMOJI}! Come back in 24 hours for more.")
+            await interaction.response.send_message(f"You collected {bananas_collected} {BANANA_COIN_EMOJI}! Come back in 1 week for more.")

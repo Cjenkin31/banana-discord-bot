@@ -22,14 +22,17 @@ async def try_collect_weekly(user_id):
         last_weekly = datetime.fromisoformat(last_weekly_str) if last_weekly_str else None
         now = datetime.now(timezone.utc)
         
-        if last_weekly and (now - last_weekly < timedelta(days=7)):
-            return False, (last_weekly + timedelta(days=7)) - now
-        
-        bananas_to_add = random.randint(1, 1000)
-        current_bananas = await get_bananas(user_id)
-        await add_bananas(user_id, bananas_to_add)
-        await update_last_weekly(user_id)
-        return True, bananas_to_add
+        if last_weekly and (now - last_weekly >= timedelta(days=7)):
+            bananas_to_add = random.randint(1, 1000)
+            await add_bananas(user_id, bananas_to_add)
+            await update_last_weekly(user_id)
+            return True, bananas_to_add
+        else:
+            if last_weekly:
+                time_left = last_weekly + timedelta(days=7) - now
+                return False, time_left
+            else:
+                return True, timedelta(days=7)
     except Exception as e:
         print(f"Error while collecting weekly bananas: {e}")
         return None, "An error occurred. Please try again later."
