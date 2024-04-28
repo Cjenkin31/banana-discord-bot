@@ -22,3 +22,12 @@ def set_bananas(user_id, amount):
     ref = db.reference(f'users/{user_id}')
     current_bananas = get_bananas(user_id)
     ref.update({'bananas': amount})
+
+async def get_leaderboard():
+    ref = db.reference('users/')
+    all_users = ref.get()
+    leaderboard = sorted(
+        ((user_id, user_data.get('bananas', 0)) for user_id, user_data in all_users.items() if 'bananas' in user_data),
+        key=lambda x: x[1], reverse=True
+    )
+    return leaderboard
