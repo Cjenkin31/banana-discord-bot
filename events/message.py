@@ -23,7 +23,7 @@ async def setup_message(bot):
             ]))
         if "🍞" in message.content:
             await message.add_reaction("🍞")
-        if random.randint(1, 10) == 1:
-            banana_amount = random.randint(1,2)
+        if random.randint(1, 100) == 1:
+            banana_amount = random.randint(1,100)
             await add_bananas(message.author.id, banana_amount)
-            await message.channel.send(f"You just found {banana_amount} {BANANA_COIN_EMOJI}")
+            await message.channel.send(f"<@{message.author.id}> You just found {banana_amount} {BANANA_COIN_EMOJI}")
