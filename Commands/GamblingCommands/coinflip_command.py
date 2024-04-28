@@ -3,7 +3,7 @@ from discord import app_commands
 import discord
 import random
 from data.currency import get_bananas, add_bananas, remove_bananas
-
+from utils.emoji_helper import BANANA_COIN_EMOJI
 def define_coinflip_command(tree, servers):
     @tree.command(name="coinflip", description="Guess Heads or Tails to double your bet or lose it", guilds=servers)
     @app_commands.describe(choice="Choose Heads or Tails", bet_amount="Amount of bananas to bet or 'all'")
@@ -33,11 +33,11 @@ def define_coinflip_command(tree, servers):
         current_bananas = await get_bananas(user_id)
 
         if current_bananas == 0:
-            await interaction.response.send_message("You have no bananas!")
+            await interaction.response.send_message("You have no {BANANA_COIN_EMOJI}!")
             return
         
         if bet_amount > current_bananas:
-            await interaction.response.send_message("You don't have enough bananas to make this bet.")
+            await interaction.response.send_message("You don't have enough {BANANA_COIN_EMOJI} to make this bet.")
             return
 
         # Coin flip logic
@@ -46,9 +46,9 @@ def define_coinflip_command(tree, servers):
 
         if win:
             await add_bananas(user_id, bet_amount)
-            message = f"It's **{result}**! You won! Your bet has been doubled, increasing by {bet_amount} bananas."
+            message = f"It's **{result}**! You won! Your bet has been doubled, increasing by {bet_amount} {BANANA_COIN_EMOJI}."
         else:
             await remove_bananas(user_id, bet_amount)
-            message = f"It's **{result}**! You lost your bet of {bet_amount} bananas."
+            message = f"It's **{result}**! You lost your bet of {bet_amount} {BANANA_COIN_EMOJI}."
 
         await interaction.response.send_message(message)
