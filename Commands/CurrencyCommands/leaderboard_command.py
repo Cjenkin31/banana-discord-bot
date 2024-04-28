@@ -17,7 +17,7 @@ async def define_leaderboard_command(tree, servers):
             
             for index, (user_id, amount) in enumerate(leaderboard_data[:10], start=1):
                 user = await interaction.client.fetch_user(user_id)
-                embed.add_field(name=f"{index}. {user.display_name}", value=f"{amount} {BANANA_COIN_EMOJI}", inline=False)
+                embed.add_field(name=f"{index}. {BANANA_COIN_EMOJI} {user.display_name}", value=f"{amount}", inline=False)
             if thumbnail_file:
                 await interaction.response.send_message(embed=embed, file=thumbnail_file)
             else:
