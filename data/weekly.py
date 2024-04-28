@@ -30,6 +30,7 @@ async def try_collect_weekly(user_id):
         else:
             if last_weekly:
                 time_left = last_weekly + timedelta(days=7) - now
+                print(f"Time left: {time_left}")
                 return False, time_left
             else:
                 return True, timedelta(days=7)
