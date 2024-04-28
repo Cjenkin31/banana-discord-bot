@@ -16,7 +16,7 @@ class ConfirmView(discord.ui.View):
         # Check if initiator has enough bananas
         initiator_bananas = await get_bananas(str(self.initiator.id))
         if initiator_bananas < self.amount:
-            await interaction.response.send_message(f"You do not have enough {BANANA_COIN_EMOJI} to complete this transaction.", ephemeral=True)
+            await interaction.response.send_message("You do not have enough bananas to complete this transaction.", ephemeral=True)
             self.stop()
             return
 
@@ -24,26 +24,26 @@ class ConfirmView(discord.ui.View):
         await remove_bananas(str(self.initiator.id), self.amount)
         await add_bananas(str(self.user.id), self.amount)
 
-        # Build the confirmation message
-        message = f"{self.user.mention}, you have received {self.amount} {BANANA_COIN_EMOJI} from {self.initiator.mention}."
-
+        # Disable all buttons in this view
         for item in self.children:
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
 
-        # Clear the ephemeral message
-        await interaction.response.edit_message(content="Transaction completed.", view=None, ephemeral=True)
+        await interaction.response.edit_message(content="Transaction completed.", view=self)
+
+        # Send the public message to the channel
+        message = f"{self.user.mention}, you have received {self.amount} bananas from {self.initiator.mention}."
         await self.channel.send(message)
         self.stop()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.grey)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # Clear the ephemeral message and disable buttons
+        # Notify the user that the transaction is canceled and disable buttons
         for item in self.children:
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
 
-        await interaction.response.edit_message(content="Canceled trade.", view=None, ephemeral=True)
+        await interaction.response.edit_message(content="Canceled trade.", view=None)
         self.stop()
 
 async def define_send_bananas_command(tree, servers):
