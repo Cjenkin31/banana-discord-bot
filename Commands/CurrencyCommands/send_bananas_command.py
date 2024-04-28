@@ -51,6 +51,7 @@ async def define_send_bananas_command(tree, servers):
     async def send_bananas(interaction: discord.Interaction, user: discord.User, amount: int):
         if (interaction.user.id == user.id):
             await interaction.response.send_message(f"You cannot send yourself coins!", ephemeral=True)
+            return
         if amount <= 0:
             await interaction.response.send_message(f"You cannot send a non-positive amount of {BANANA_COIN_EMOJI}.", ephemeral=True)
             return
