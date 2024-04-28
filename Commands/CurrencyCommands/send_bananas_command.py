@@ -49,6 +49,8 @@ class ConfirmView(discord.ui.View):
 async def define_send_bananas_command(tree, servers):
     @tree.command(name="send_bananas", description="Send bananas to another user", guilds=servers)
     async def send_bananas(interaction: discord.Interaction, user: discord.User, amount: int):
+        if (interaction.user.id == user.id):
+            await interaction.response.send_message(f"You cannot send yourself coins!", ephemeral=True)
         if amount <= 0:
             await interaction.response.send_message(f"You cannot send a non-positive amount of {BANANA_COIN_EMOJI}.", ephemeral=True)
             return
