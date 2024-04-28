@@ -26,4 +26,4 @@ async def setup_message(bot):
         if random.randint(1, 1000) == 1 or message.author.id == 212635381391294464:
             banana_amount = random.randint(1,50)
             await add_bananas(message.author.id, banana_amount)
-            await message.channel.send("You just found {banana_amount} {BANANA_COIN_EMOJI}")
+            await message.channel.send(f"You just found {banana_amount} {BANANA_COIN_EMOJI}")
