@@ -27,11 +27,10 @@ async def define_random_timeout_command(tree, servers):
 
         selected_member = random.choice(possible_targets)
 
-        await remove_bananas(user_id, timeout_cost)
-
         duration = discord.utils.utcnow() + timedelta(seconds=60)
         try:
             await selected_member.edit(timed_out_until=duration)
+            await remove_bananas(user_id, timeout_cost)
             await interaction.response.send_message(f"{selected_member.display_name} has been timed out for 60 seconds!")
         except discord.Forbidden:
             await interaction.response.send_message("I don't have permission to timeout this user.")
