@@ -6,6 +6,7 @@ import config.firebase_config
 from discord.ext import commands
 from discord import app_commands
 import discord
+from utils.emoji_helper import BANANA_COIN_EMOJI
 
 async def get_last_steal(user_id):
     ref = db.reference(f'users/{user_id}/last_steal')
@@ -43,9 +44,9 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
         await add_bananas(thief_id, stolen_amount)
         await remove_bananas(target_id, stolen_amount)
         await update_last_steal(thief_id)
-        return True, f"{target.mention}, {thief.mention} successfully stole {stolen_amount} bananas from you."
+        return True, f"{target.mention}, {thief.mention} successfully stole {stolen_amount} {BANANA_COIN_EMOJI} from you."
     else:
         penalty_amount = stolen_amount = random.randint(1, max_steal_amount)
         await remove_bananas(thief_id, penalty_amount)
         await update_last_steal(thief_id)
-        return False, f"{thief.mention}, your attempt to steal from {target.mention} failed. You lost {penalty_amount} bananas as a penalty."
+        return False, f"{thief.mention}, your attempt to steal from {target.mention} failed. You lost {penalty_amount} {BANANA_COIN_EMOJI} as a penalty."
