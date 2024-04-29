@@ -10,6 +10,7 @@ from Commands.RandomCommands.setup_random_commands import define_all_random_comm
 from Commands.VoiceCommands.setup_voice_commands import define_all_voice_commands
 from Commands.ChatCommands.setup_chat_commands import define_all_chat_commands
 from Commands.CurrencyCommands.setup_currency_commands import define_all_currency_commands
+from Commands.ShopCommands.setup_shop_commands import define_all_shop_commands
 
 gptkey = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=gptkey)
@@ -23,4 +24,5 @@ async def define_all_commands(tree, servers):
     await define_all_chat_commands(tree, servers, client)
     await define_all_currency_commands(tree, servers)
     await define_all_gambling_commands(tree, servers)
+    await define_all_shop_commands(tree, servers)
     print("Registered all commands.")
