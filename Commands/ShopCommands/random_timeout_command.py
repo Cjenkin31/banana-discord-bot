@@ -1,9 +1,9 @@
-import datetime
+from datetime import timedelta
 from discord.ext import commands
 from discord import app_commands
 import discord
 import random
-from data.currency import get_bananas, add_bananas, remove_bananas
+from data.currency import get_bananas, remove_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 
 async def define_random_timeout_command(tree, servers):
@@ -17,7 +17,10 @@ async def define_random_timeout_command(tree, servers):
             return
 
         guild = interaction.guild
-        possible_targets = [member for member in guild.members if not member.bot]
+
+        moderator_role = discord.utils.get(guild.roles, name="A")
+        possible_targets = [member for member in guild.members if not member.bot and moderator_role not in member.roles]
+        
         if not possible_targets:
             await interaction.response.send_message("No available members to timeout.")
             return
@@ -26,7 +29,7 @@ async def define_random_timeout_command(tree, servers):
 
         await remove_bananas(user_id, timeout_cost)
 
-        duration = discord.utils.utcnow() + datetime.timedelta(seconds=60)
+        duration = discord.utils.utcnow() + timedelta(seconds=60)
         try:
             await selected_member.edit(timed_out_until=duration)
             await interaction.response.send_message(f"{selected_member.display_name} has been timed out for 60 seconds!")
