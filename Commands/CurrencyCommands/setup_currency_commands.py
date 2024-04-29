@@ -4,6 +4,7 @@ from .daily_currency_command import define_daily_command
 from .weekly_currency_command import define_weekly_command
 from .leaderboard_command import define_leaderboard_command
 from .send_bananas_command import define_send_bananas_command
+from .steal_currency_command import define_steal_bananas_command
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -15,3 +16,4 @@ async def define_all_currency_commands(tree, servers):
     await define_weekly_command(tree, servers)
     await define_leaderboard_command(tree, servers)
     await define_send_bananas_command(tree, servers)
+    await define_steal_bananas_command(tree, servers)

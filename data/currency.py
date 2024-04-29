@@ -16,7 +16,9 @@ async def add_bananas(user_id, amount):
 async def remove_bananas(user_id, amount):
     ref = db.reference(f'users/{user_id}')
     current_bananas = await get_bananas(user_id)
-    ref.update({'bananas': current_bananas - amount})
+    new_bananas = max(0, current_bananas - amount)
+    ref.update({'bananas': new_bananas})
+
 
 def set_bananas(user_id, amount):
     ref = db.reference(f'users/{user_id}')
