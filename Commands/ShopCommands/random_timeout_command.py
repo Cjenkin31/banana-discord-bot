@@ -6,7 +6,7 @@ import random
 from data.currency import get_bananas, add_bananas, remove_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 
-def define_random_timeout_command(tree, servers):
+async def define_random_timeout_command(tree, servers):
     @tree.command(name="randomtimeout", description="Timeout a random user for 60 seconds (including yourself)", guilds=servers)
     async def random_timeout(interaction: discord.Interaction):
         user_id = str(interaction.user.id)
