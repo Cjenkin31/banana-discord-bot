@@ -26,7 +26,7 @@ def define_coinflip_command(tree, servers):
                 if bet_amount <= 0:
                     raise ValueError("Bet amount must be a positive number.")
             except ValueError as e:
-                await interaction.response.send_message(str(e))
+                await interaction.response.send_message("Please put a valid betting amount")
                 return
 
         user_id = str(interaction.user.id)
