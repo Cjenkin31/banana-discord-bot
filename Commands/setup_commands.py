@@ -1,4 +1,5 @@
 import os
+from Commands.InventoryCommands.setup_inventory_commands import define_all_inventory_commands
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -25,4 +26,5 @@ async def define_all_commands(tree, servers):
     await define_all_currency_commands(tree, servers)
     await define_all_gambling_commands(tree, servers)
     await define_all_shop_commands(tree, servers)
+    await define_all_inventory_commands(tree, servers)
     print("Registered all commands.")
