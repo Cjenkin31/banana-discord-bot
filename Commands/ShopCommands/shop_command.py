@@ -9,6 +9,8 @@ class ShopView(View):
     def __init__(self, user_id):
         super().__init__()
         self.user_id = user_id
+        self.add_item(Button(label=f"Item 1 (50 {BANANA_COIN_EMOJI})", style=discord.ButtonStyle.primary, custom_id="buy_item_1", callback=self.interaction_handler))
+        self.add_item(Button(label=f"Item 2 (100 {BANANA_COIN_EMOJI})", style=discord.ButtonStyle.primary, custom_id="buy_item_2", callback=self.interaction_handler))
 
     async def on_timeout(self):
         self.clear_items()
@@ -32,10 +34,6 @@ class ShopView(View):
             await self.buy_item(interaction, "Item 1", 50)
         elif interaction.custom_id == "buy_item_2":
             await self.buy_item(interaction, "Item 2", 100)
-
-    async def on_ready(self):
-        self.add_item(Button(label=f"Item 1 (50 {BANANA_COIN_EMOJI})", style=discord.ButtonStyle.primary, custom_id="buy_item_1"))
-        self.add_item(Button(label=f"Item 2 (100 {BANANA_COIN_EMOJI})", style=discord.ButtonStyle.primary, custom_id="buy_item_2"))
 
 async def define_shop_command(tree, servers):
     @tree.command(name="shop", description="Visit the shop to buy items", guilds=servers)
