@@ -12,7 +12,10 @@ async def define_eat_banana_command(tree, servers):
     async def eat_banana(interaction: discord.Interaction, amt: int = 1):
         banana_gif = "https://tenor.com/view/effy-gif-11375717773991506810"
         user_id = interaction.user.id
-        user_banana = get_bananas(user_id)
+        user_banana = await get_bananas(user_id)
+        if amt > 500:
+            amt = 500
+            await interaction.response.send_message("YOU HAVE BEEN LIMITED TO 1000 BANANAS ( Thanks to <@407302203070742529> )")
         if user_banana < amt:
             await interaction.response.send_message(f"YOU DON'T HAVE ENOUGH {BANANA_COIN_EMOJI} TO EAT")
             return
