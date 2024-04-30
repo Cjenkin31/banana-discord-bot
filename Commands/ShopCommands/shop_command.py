@@ -9,11 +9,11 @@ class ShopView(View):
         super().__init__()
         self.user_id = user_id
         
-        item_1_button = Button(label=f"Item 1 (50 {BANANA_COIN_EMOJI})", style=discord.ButtonStyle.primary, custom_id="buy_item_1")
+        item_1_button = Button(label=f"Item 1 (50 coins)", style=discord.ButtonStyle.primary, custom_id="buy_item_1")
         item_1_button.callback = self.buy_item_1_callback
         self.add_item(item_1_button)
         
-        item_2_button = Button(label=f"Item 2 (100 {BANANA_COIN_EMOJI})", style=discord.ButtonStyle.primary, custom_id="buy_item_2")
+        item_2_button = Button(label=f"Item 2 (100 coins)", style=discord.ButtonStyle.primary, custom_id="buy_item_2")
         item_2_button.callback = self.buy_item_2_callback
         self.add_item(item_2_button)
 
