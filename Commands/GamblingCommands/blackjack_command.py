@@ -78,7 +78,7 @@ def define_blackjack_command(tree, servers, bot):
                 action, user = await bot.wait_for("reaction_add", timeout=60.0, check=lambda reaction, user: user == interaction.user and str(reaction.emoji) in reaction_set)
             except:
                 await bj_msg.edit(content=f"Blackjack! {BANANA_COIN_EMOJI}\n\nGame abandoned :( YOU LOST YOUR BET OF {bet_amount+1}{BANANA_COIN_EMOJI}! The bot stole 1 {BANANA_COIN_EMOJI}!")
-                await remove_bananas(bet_amount+1)
+                await remove_bananas(user_id, bet_amount+1)
                 
                 return
             
