@@ -14,7 +14,7 @@ bot = commands.Bot(command_prefix="!", intents=INTENTS)
 async def on_ready():
     print(f'Logged in as {bot.user}!')
     await setup_events(bot)
-    await define_all_commands(bot.tree, SERVERS, bot)
+    await define_all_commands(bot, SERVERS)
     for guild in SERVERS:
         try:
             await bot.tree.sync(guild=guild)
