@@ -1,7 +1,7 @@
 from discord.ext import commands
 from discord import app_commands
 import discord
-from data.currency import add_bananas
+from data.currency import remove_bananas
 
 async def define_admin_remove_currency_command(tree, servers):
     def is_owner():
@@ -13,7 +13,7 @@ async def define_admin_remove_currency_command(tree, servers):
     @app_commands.check(is_owner())
     async def remove_currency(interaction: discord.Interaction, user: discord.User, amount: int):
         try:
-            await add_bananas(str(user.id), amount)
+            await remove_bananas(str(user.id), amount)
             await interaction.response.send_message(f"Removed {amount} bananas to <@{user.id}>'s account.")
         except Exception as e:
             await interaction.response.send_message(f"Failed to add currency: {str(e)}")
