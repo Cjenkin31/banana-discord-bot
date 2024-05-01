@@ -1,18 +1,24 @@
 # TODO
-[ ] - Database with firebase
-
 [ ] - Store Cats on database
 
 [ ] - VoiceLine to ElevenLabs
 
-[ ] - Gambling
 
-[ ] Banana farm upgrade with coins multiplayers
+## The Farm Update
+[ ] - Banana farm upgrade with coins multiplayers
 
-[ ] investing
+[ ] - investing
 
-[ ] shield to block Timeouts
+[X] - Add a shop to purchase items
 
-[ ] Attack Stat tied to timeout time. Make this local to reduce calls. 
+[ ] - Make functional Items
 
-[ ] Defense stat tied to timeout block time.
+[ ] - Shield to block Timeouts
+
+## The Stat Update
+
+[ ] - Luck Stat influencing all chances
+
+[ ] - Attack Stat tied to timeout time.
+
+[ ] - Defense stat tied to timeout block time.
