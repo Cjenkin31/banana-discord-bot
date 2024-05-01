@@ -18,5 +18,5 @@ async def define_ask_bread_command(tree, servers, client):
                 {"role": "user", "content": user_input}
             ]
         )
-        response_message = completion_response.choices[0].message.content
+        response_message = completion_response.choices[0].message.content[:2000]
         await interaction.followup.send(response_message)
