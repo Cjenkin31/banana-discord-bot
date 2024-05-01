@@ -6,7 +6,7 @@ from data.currency import get_bananas, add_bananas, remove_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from game.deck import Deck
 
-card_values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+black_jack_card_values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
                'J': 10, 'Q': 10, 'K': 10, 'A': 11}
 
 def define_blackjack_command(tree, servers, bot):
@@ -14,6 +14,12 @@ def define_blackjack_command(tree, servers, bot):
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
     async def blackjack(interaction: discord.Interaction, bet_amount: str):
         # Determine if the bet is 'all' or a specific amount
+        blackjack_win = 0
+        winning_multiplier = 1.5
+        winning_color = 0x00ff00
+        losing_color = 0xff0000
+        push_color = 0xff6400
+
         if bet_amount.lower() == 'all':
             current_bananas = await get_bananas(str(interaction.user.id))
             bet_amount = current_bananas
@@ -56,7 +62,7 @@ def define_blackjack_command(tree, servers, bot):
             player_cards.append(deck.deal_card())
             player_score = calculate_score(player_cards)
             
-            display_player_score = 21 if player_score == 0 else player_score
+            display_player_score = 21 if player_score == blackjack_win else player_score
             embed.set_field_at(0, name=f"**You** `{display_player_score}`",
                             value=display_hand(player_cards),
                             inline=True)
@@ -73,11 +79,11 @@ def define_blackjack_command(tree, servers, bot):
                         inline=True)
         await bj_msg.edit(embed=embed)
         
-        if player_score == 0: # Blackjack
-            winnings = math.floor(bet_amount * 1.5)
+        if player_score == blackjack_win:
+            winnings = math.floor(bet_amount * winning_multiplier)
             
             embed.set_footer(text=f"Blackjack, you win {winnings} {BANANA_COIN_EMOJI}")
-            embed.color = 0x00ff00
+            embed.color = winning_color
             await bj_msg.edit(embed=embed)
             
             await add_bananas(user_id, winnings)
@@ -106,7 +112,7 @@ def define_blackjack_command(tree, servers, bot):
                 action, user = await bot.wait_for("reaction_add", timeout=60.0, check=check)
             except:
                 embed.set_footer(text=f"Game abandoned :( YOU LOST YOUR BET OF {bet_amount+1} {BANANA_COIN_EMOJI}! The bot stole 1 {BANANA_COIN_EMOJI}!")
-                embed.color = 0xff0000
+                embed.color = losing_color
                 await bj_msg.edit(embed=embed)
                 await remove_bananas(user_id, bet_amount+1)
                 return
@@ -135,14 +141,14 @@ def define_blackjack_command(tree, servers, bot):
         
         if player_score > 21:
             embed.set_footer(text=f"Bust! You lose {bet_amount} {BANANA_COIN_EMOJI}!")
-            embed.color = 0xff0000
+            embed.color = losing_color
             await bj_msg.edit(embed=embed)
             await remove_bananas(user_id, bet_amount)
             return
         
         # Dealer's turn
         dealer_score = calculate_score(dealer_cards)
-        dealer_score = 21 if dealer_score == 0 else dealer_score
+        dealer_score = 21 if dealer_score == blackjack_win else dealer_score
         embed.set_field_at(1, name=f"**Dealer** `{dealer_score}`",
                         value=display_hand(dealer_cards),
                         inline=True)
@@ -161,25 +167,25 @@ def define_blackjack_command(tree, servers, bot):
             
         if dealer_score > 21:
             result_msg = f"Dealer busts, you win {bet_amount} {BANANA_COIN_EMOJI}!"
-            embed.color = 0x00ff00
+            embed.color = winning_color
             await add_bananas(user_id, bet_amount)
         elif player_score > dealer_score:
             result_msg = f"You win {bet_amount} {BANANA_COIN_EMOJI}!"
-            embed.color = 0x00ff00
+            embed.color = winning_color
             await add_bananas(user_id, bet_amount)
         elif player_score < dealer_score:
             result_msg = f"You lose {bet_amount} {BANANA_COIN_EMOJI}!"
-            embed.color = 0xff0000
+            embed.color = losing_color
             await remove_bananas(user_id, bet_amount)
         else:
             result_msg = f"Push!"
-            embed.color = 0xff6400
+            embed.color = push_color
 
         embed.set_footer(text=result_msg)
         await bj_msg.edit(embed=embed)
 
 def calculate_score(cards):
-    score = sum(card_values[card.rank] for card in cards)
+    score = sum(black_jack_card_values[card.rank] for card in cards)
     if score == 21 and len(cards) == 2:
         return 0  # Blackjack
     
