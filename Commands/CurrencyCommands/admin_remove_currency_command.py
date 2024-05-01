@@ -2,11 +2,12 @@ from discord.ext import commands
 from discord import app_commands
 import discord
 from data.currency import remove_bananas
+from utils.users import UNBUTTERED_BAGEL_ID
 
 async def define_admin_remove_currency_command(tree, servers):
     def is_owner():
         async def predicate(interaction: discord.Interaction):
-            return interaction.user.id == 212635381391294464
+            return interaction.user.id == UNBUTTERED_BAGEL_ID
         return predicate
 
     @tree.command(name="remove_currency", description="Remove currency from a user", guilds=servers)
