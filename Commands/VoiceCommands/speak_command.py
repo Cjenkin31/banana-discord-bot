@@ -16,12 +16,6 @@ async def define_speak_command(tree, servers, client, elevenlabskey):
         if interaction.guild.voice_client is not None and interaction.guild.voice_client.is_playing():
             await interaction.followup.send("I'm currently speaking. Please try again later.")
             return
-        role_to_story = {
-        "bread": getMeanBananaBreadStory if interaction.user.id in getBadUserList() else getBananaBreadStory,
-        "obama": getObamaStory,
-        "mangohawk": getMangoStory
-        }
-
         speaker_voices = {
             "bread": "saUfe5jyFdcsZbN5Yt1c",
             "jp": "uERblY4ce8BC2FzPBGxR",
@@ -30,12 +24,8 @@ async def define_speak_command(tree, servers, client, elevenlabskey):
             "mangohawk": "ZuAcH52R3qZnDMjlvT1w",
             "cowboy": "KTPVrSVAEUSJRClDzBw7",
         }
-
         voice_id = speaker_voices.get(speaker.lower(), speaker_voices["bread"])  # Default to "bread" if speaker is not found
-
-        story_function = role_to_story.get(role.lower(), getBananaBreadStory)
-        story = story_function()
-
+        story = getStoryByRole(role, interaction.user.id)
         completion_response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
