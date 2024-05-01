@@ -63,9 +63,9 @@ def getEngineerStory():
 
 def getStoryByRole(role, user_id):
     role_to_story = {
-        "bread": getMeanBananaBreadStory() if user_id in getBadUserList() else getBananaBreadStory(),
-        "obama": getObamaStory(),
-        "mangohawk": getMangoStory(),
-        "cd": getEngineerStory()
+        "bread": getMeanBananaBreadStory if user_id in getBadUserList() else getBananaBreadStory,
+        "obama": getObamaStory,
+        "mangohawk": getMangoStory,
+        "cd": getEngineerStory
     }
     return role_to_story.get(role.lower(), getBananaBreadStory)
