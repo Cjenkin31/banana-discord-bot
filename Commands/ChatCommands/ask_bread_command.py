@@ -12,10 +12,10 @@ async def define_ask_bread_command(tree, servers):
         await interaction.response.defer()
 
         story = getStoryByRole(role, interaction.user.id)
-        if interaction.user.id == UNBUTTERED_BAGEL_ID:
-            model = "gpt-4-turbo"
-        else:
-            model = "gpt-3.5-turbo"
+        # if interaction.user.id == UNBUTTERED_BAGEL_ID:
+        #     model = "gpt-4-turbo"  # Way to expensive
+        # else:
+        model = "gpt-3.5-turbo"
         # Generate the completion response using the selected story
         response_message = await generate_gpt_response(model, story, user_input)
         await interaction.followup.send(response_message)
