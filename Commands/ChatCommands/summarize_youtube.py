@@ -7,9 +7,14 @@ from utils.gpt import generate_gpt_response
 
 async def download_transcript(video_id):
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
-        print(transcript)
-        transcript_text = ' '.join([item['text'] for item in transcript])
+        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        transcript = transcript_list.find_transcript(['en'])
+
+        if not transcript.is_generated:
+            transcript = transcript_list.find_generated_transcript(['en'])
+
+        transcript_fetch = transcript.fetch()
+        transcript_text = ' '.join([item['text'] for item in transcript_fetch])
         return transcript_text
     except Exception as e:
         print(e)
