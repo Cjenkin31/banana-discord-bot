@@ -53,19 +53,28 @@ def define_blackjack_command(tree, servers, bot):
         embed.set_footer(text="Dealing cards...")
         bj_msg = await interaction.channel.send(embed=embed)
         
-        def update_embed_field(hand, idx=0, is_active=False):
-            player_text = "**You**"
+        def update_hand_display(hand, idx=0, is_active=False, status=None):
+            player_text = f"**You** `{hand.score}` ({hand.bet} {BANANA_COIN_EMOJI})"
             set_inline = True
             if idx == 1:
-                player_text = "**Dealer**"
-            elif idx > 2:
+                player_text = f"**Dealer** `{hand.score}`"
+            elif idx > 1:
                 set_inline = False
                 
             active_text = ""
             if is_active:
                 active_text = "\> "
                 
-            embed.set_field_at(idx, name=f"{active_text}{player_text} `{hand.score}` ({hand.bet} {BANANA_COIN_EMOJI})", inline=set_inline)
+            if status:
+                embed.set_field_at(idx, 
+                                name=f"{active_text}{player_text}", 
+                                value=f"{str(hand)}\n{str(status)}",
+                                inline=set_inline)
+            else:
+                embed.set_field_at(idx, 
+                                name=f"{active_text}{player_text}", 
+                                value=str(hand),
+                                inline=set_inline)
         
         # Blackjack Hand class, must be within command function scope
         class Hand:
@@ -103,18 +112,14 @@ def define_blackjack_command(tree, servers, bot):
         for _ in range(2): # Deal 2 cards to player to start
             player_hand.add_card(deck.deal_card())
             
-            embed.set_field_at(0, name=f"**You** `{player_hand.score}` ({player_hand.bet} {BANANA_COIN_EMOJI})",
-                            value=str(player_hand),
-                            inline=True)
+            update_hand_display(player_hand)
             await bj_msg.edit(embed=embed)
             
             await asyncio.sleep(0.5) # Quick pause between each card
             
         dealer_hand = Hand([deck.deal_card()]) # Dealer's hand
     
-        embed.set_field_at(1, name=f"**Dealer** `{dealer_hand.score}`",
-                        value=str(dealer_hand),
-                        inline=True)
+        update_hand_display(dealer_hand, idx=1)
         await bj_msg.edit(embed=embed)
         
         dealer_hand.add_card(deck.deal_card()) # Dealer's concealed card
@@ -122,9 +127,7 @@ def define_blackjack_command(tree, servers, bot):
         if player_hand.score == 21 and len(player_hand.cards) == 2: # Blackjack
             bj_winnings = math.floor(player_hand.bet * 1.5)
 
-            embed.set_field_at(0, name=f"**You** `{player_hand.score}` ({player_hand.bet} {BANANA_COIN_EMOJI})",
-                            value=f"{str(player_hand)}\nBlackjack! +{bj_winnings} {BANANA_COIN_EMOJI}",
-                            inline=True)
+            update_hand_display(player_hand, status=f"Blackjack! +{bj_winnings} {BANANA_COIN_EMOJI}")
             embed.set_footer(text="Game over!")
             embed.description = f"You win {bj_winnings} {BANANA_COIN_EMOJI}!"
             embed.color = win_color
@@ -147,9 +150,7 @@ def define_blackjack_command(tree, servers, bot):
         for react in reaction_set:
             await bj_msg.add_reaction(react)
 
-        embed.set_field_at(0, name=f"\> **You** `{player_hand.score}` ({player_hand.bet} {BANANA_COIN_EMOJI})",
-                        value=str(player_hand),
-                        inline=True)
+        update_hand_display(player_hand, is_active=True)
         embed.set_footer(text=options_text)
         await bj_msg.edit(embed=embed)
         
@@ -197,15 +198,11 @@ def define_blackjack_command(tree, servers, bot):
                         value=str(split_player_hand),
                         inline=False)
 
-        embed.set_field_at(0, name=f"**You** `{player_hand.score}` ({player_hand.bet} {BANANA_COIN_EMOJI})",
-                        value=str(player_hand),
-                        inline=True)
+        update_hand_display(player_hand)
         await bj_msg.edit(embed=embed)
 
         if player_hand.score > 21: # Bust
-            embed.set_field_at(0, name=f"**You** `{player_hand.score}` ({player_hand.bet} {BANANA_COIN_EMOJI})",
-                            value=f"{str(player_hand)}\nBust! -{player_hand.bet} {BANANA_COIN_EMOJI}",
-                            inline=True)
+            update_hand_display(player_hand, status=f"Bust! -{player_hand.bet} {BANANA_COIN_EMOJI}")
             embed.description = f"You lose {player_hand.bet} {BANANA_COIN_EMOJI}!"
             embed.set_footer(text="Game over!")
             embed.color = lose_color
@@ -215,7 +212,7 @@ def define_blackjack_command(tree, servers, bot):
         
         hands_to_calculate = []
         
-        hand_idx = 0
+        field_idx = 0
         while len(player_hands): # Turns for each player's hand
             current_hand = player_hands.pop(0)
             hands_to_calculate.append(current_hand)
@@ -223,12 +220,8 @@ def define_blackjack_command(tree, servers, bot):
             if one_move_only:
                 break
             
-            field_idx = hand_idx
-            inline_field = True
-            if hand_idx > 0:
-                inline_field = False
+            if field_idx == 1: # Skip dealer's hand (embed field index 1)
                 field_idx += 1
-            hand_idx += 1
                 
             reaction_set = ["👊","🛑"]
             options_text = f"Hit (👊) or Stand (🛑)?"
@@ -236,9 +229,7 @@ def define_blackjack_command(tree, servers, bot):
                 reaction_set = ["👊","🛑", "⏬"]
                 options_text = f"Hit (👊), Stand (🛑), or Double Down (⏬)?"
             embed.set_footer(text=options_text)
-            embed.set_field_at(field_idx, name=f"\> **You** `{current_hand.score}` ({current_hand.bet} {BANANA_COIN_EMOJI})",
-                            value=str(current_hand),
-                            inline=inline_field)
+            update_hand_display(current_hand, idx=field_idx, is_active=True)
             await bj_msg.edit(embed=embed)
             
             while current_hand.score < 21: # Player's turn for hand
@@ -282,9 +273,7 @@ def define_blackjack_command(tree, servers, bot):
                     
                     current_hand.add_card(deck.deal_card())
                     embed.description = f"Playing for {bet_amount} {BANANA_COIN_EMOJI}"
-                    embed.set_field_at(field_idx, name=f"\> **You** `{current_hand.score}` ({current_hand.bet} {BANANA_COIN_EMOJI})",
-                                    value=str(current_hand),
-                                    inline=inline_field)
+                    update_hand_display(current_hand, idx=field_idx, is_active=True)
                     await bj_msg.edit(embed=embed)
                     break
                 elif str(action) == "🔀": # Split
@@ -295,27 +284,21 @@ def define_blackjack_command(tree, servers, bot):
                     embed.add_field(name=f"**You** `{split_player_hand.score}` ({split_player_hand.bet} {BANANA_COIN_EMOJI})", 
                                 value=str(split_player_hand),
                                 inline=False)
-                    
-                embed.set_field_at(field_idx, name=f"\> **You** `{current_hand.score}` ({current_hand.bet} {BANANA_COIN_EMOJI})",
-                                value=str(current_hand),
-                                inline=inline_field)
+                
+                update_hand_display(current_hand, idx=field_idx, is_active=True)
                 await bj_msg.edit(embed=embed)
             
             if current_hand.score > 21:
-                embed.set_field_at(field_idx, name=f"**You** `{current_hand.score}` ({current_hand.bet} {BANANA_COIN_EMOJI})",
-                                value=f"{str(current_hand)}\nBust!",
-                                inline=inline_field)
+                update_hand_display(current_hand, idx=field_idx, status="Bust!")
             else:
-                embed.set_field_at(field_idx, name=f"**You** `{current_hand.score}` ({current_hand.bet} {BANANA_COIN_EMOJI})",
-                                value=str(current_hand),
-                                inline=inline_field)
+                update_hand_display(current_hand, idx=field_idx)
             await bj_msg.edit(embed=embed)
+            
+            field_idx += 1
         
         # Dealer's turn
         embed.set_footer(text="Dealer's turn...")
-        embed.set_field_at(1, name=f"\> **Dealer** `{dealer_hand.score}`",
-                        value=str(dealer_hand),
-                        inline=True)
+        update_hand_display(dealer_hand, idx=1, is_active=True)
         await bj_msg.edit(embed=embed)
         
         while dealer_hand.score < 17:
@@ -323,50 +306,40 @@ def define_blackjack_command(tree, servers, bot):
 
             dealer_hand.add_card(deck.deal_card())
             
-            embed.set_field_at(1, name=f"\> **Dealer** `{dealer_hand.score}`",
-                        value=str(dealer_hand),
-                        inline=True)
+            update_hand_display(dealer_hand, idx=1, is_active=True)
             await bj_msg.edit(embed=embed)
             
         if dealer_hand.score > 21:
-            embed.set_field_at(1, name=f"**Dealer** `{dealer_hand.score}`",
-                    value=f"{str(dealer_hand)}\nBust!",
-                    inline=True)
+            update_hand_display(dealer_hand, idx=1, status="Bust!")
         else:
-            embed.set_field_at(1, name=f"**Dealer** `{dealer_hand.score}`",
-                    value=str(dealer_hand),
-                    inline=True)
+            update_hand_display(dealer_hand, idx=1)
         
         # Calculate winnings
         winnings = 0
-        hand_idx = 0
+        field_idx = 0
         for hand in hands_to_calculate:
-            field_idx = hand_idx
-            inline_field = True
-            if hand_idx > 0:
-                inline_field = False
+            if field_idx == 1: # Skip dealer's hand (embed field index 1)
                 field_idx += 1
-            hand_idx += 1            
-
-            result_msg = f"{str(hand)}\n"
+                        
+            result_msg = None
             if hand.score > 21:
                 winnings -= hand.bet
-                result_msg += f"Bust! -{hand.bet} {BANANA_COIN_EMOJI}"
+                result_msg = f"Bust! -{hand.bet} {BANANA_COIN_EMOJI}"
             elif dealer_hand.score > 21:
                 winnings += hand.bet
-                result_msg += f"Win! +{hand.bet} {BANANA_COIN_EMOJI}"
+                result_msg = f"Win! +{hand.bet} {BANANA_COIN_EMOJI}"
             elif hand.score > dealer_hand.score:
                 winnings += hand.bet
-                result_msg += f"Win! +{hand.bet} {BANANA_COIN_EMOJI}"
+                result_msg = f"Win! +{hand.bet} {BANANA_COIN_EMOJI}"
             elif hand.score < dealer_hand.score:
                 winnings -= hand.bet
-                result_msg += f"Loss! -{hand.bet} {BANANA_COIN_EMOJI}"
+                result_msg = f"Loss! -{hand.bet} {BANANA_COIN_EMOJI}"
             else:
-                result_msg += f"Push!"
+                result_msg = f"Push!"
                 
-            embed.set_field_at(field_idx, name=f"**You** `{hand.score}` ({hand.bet} {BANANA_COIN_EMOJI})",
-                            value=result_msg,
-                            inline=inline_field)
+            update_hand_display(hand, idx=field_idx, status=result_msg)
+            
+            field_idx += 1
             
         if winnings > 0:
             embed.color = win_color
