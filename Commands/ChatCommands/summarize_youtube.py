@@ -4,14 +4,14 @@ from discord import app_commands
 from youtube_transcript_api import YouTubeTranscriptApi
 from utils.gpt import generate_gpt_response
 
-async def download_transcript(self, video_id):
+async def download_transcript(video_id):
     try:
         transcript = YouTubeTranscriptApi.get_transcript(video_id)
         transcript_text = ' '.join([item['text'] for item in transcript])
         return transcript_text
     except Exception as e:
         return str(e)
-async def define_summarize_youtube_video_command(tree):
+async def define_summarize_youtube_video_command(tree,servers):
     @tree.command(name="summarize_youtube", description="Summarizes a YouTube video based on its transcript.")
     async def summarize_youtube(self, interaction: discord.Interaction, youtube_url: str):
         await interaction.response.defer()
