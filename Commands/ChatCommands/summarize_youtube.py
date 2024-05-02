@@ -7,24 +7,36 @@ from utils.gpt import generate_gpt_response
 
 async def download_transcript(video_id):
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
         transcript_text = ' '.join([item['text'] for item in transcript])
         return transcript_text
     except Exception as e:
-        return str(e)
-async def define_summarize_youtube_video_command(tree,servers):
+        return f"Failed to download transcript: {e}"
+
+async def define_summarize_youtube_video_command(tree, servers):
     @tree.command(name="summarize_youtube", description="Summarizes a YouTube video based on its transcript.", guilds=servers)
     async def summarize_youtube(interaction: discord.Interaction, youtube_url: str):
         await interaction.response.defer()
 
-        video_id = youtube_url.split('v=')[1].split('&')[0]
+        video_id = ''
+        if 'youtube.com/watch?v=' in youtube_url:
+            video_id = youtube_url.split('v=')[1].split('&')[0]
+        elif 'youtu.be/' in youtube_url:
+            video_id = youtube_url.split('youtu.be/')[1].split('?')[0]
+
+        if not video_id:
+            await interaction.followup.send("Invalid YouTube URL provided.")
+            return
 
         transcript = await download_transcript(video_id)
-        if len(transcript) > 1024:
-            transcript = transcript[:1024] + '...'
+        if transcript.startswith("Failed"):
+            await interaction.followup.send(transcript)
+            return
 
-        role = getStoryByRole("youtube",interaction.user.id)
-        response_message = await generate_gpt_response("gpt-3.5-turbo", role, transcript)
+        if len(transcript) > 2048:
+            transcript = transcript[:2048] + '...'
 
-        # Send the response to the user.
+        role_story = getStoryByRole("youtube", interaction.user.id)
+        response_message = await generate_gpt_response("gpt-3.5-turbo", role_story, transcript)
+
         await interaction.followup.send(response_message)
