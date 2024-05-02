@@ -172,13 +172,13 @@ def define_blackjack_command(tree, servers, bot):
                 await bj_msg.edit(embed=embed)
                 
                 try: 
-                    def check(reaction, user):
+                    def check(reaction, user): # Only accept valid reactions
                         return user == interaction.user and \
                                 reaction.message.id == bj_msg.id and \
                                 str(reaction.emoji) in available_actions
                         
-                    action, user = await bot.wait_for("reaction_add", timeout=60.0, check=check)
-                except:
+                    action, user = await bot.wait_for("reaction_add", timeout=60.0, check=check) # Wait for player action
+                except: # Timeout
                     embed.description = f"YOU LOST YOUR BET OF {bet_amount+1} {BANANA_COIN_EMOJI}! The bot stole 1 {BANANA_COIN_EMOJI}!"
                     embed.set_footer(text="Game abandoned!")
                     embed.color = lose_color
@@ -195,7 +195,7 @@ def define_blackjack_command(tree, servers, bot):
                     pass
                 
                 if str(action) == "👊": # Hit
-                    can_double_down = False
+                    can_double_down = False # Can't double down after hitting
                     current_hand.add_card(deck.deal_card())
                 elif str(action) == "🛑": # Stand
                     update_hand_display(current_hand, idx=field_idx)
@@ -204,7 +204,6 @@ def define_blackjack_command(tree, servers, bot):
                 elif str(action) == "⏬": # Double Down
                     bet_amount += current_hand.bet
                     current_hand.bet *= 2
-                    
                     current_hand.add_card(deck.deal_card())
                     embed.description = f"Playing for {bet_amount} {BANANA_COIN_EMOJI}"
                     update_hand_display(current_hand, idx=field_idx)
@@ -219,7 +218,7 @@ def define_blackjack_command(tree, servers, bot):
                                 value=str(split_player_hand),
                                 inline=False)
             
-                if current_hand.score > 21:
+                if current_hand.score > 21: # Check for player bust
                     update_hand_display(current_hand, idx=field_idx, status="Bust!")
                 else:
                     update_hand_display(current_hand, idx=field_idx, is_active=True)
@@ -234,12 +233,12 @@ def define_blackjack_command(tree, servers, bot):
             update_hand_display(dealer_hand, idx=1, is_active=True)
             await bj_msg.edit(embed=embed)
             
-            while dealer_hand.score < 17:
+            while dealer_hand.score < 17: # Dealer stands at soft 17
                 await asyncio.sleep(1)
 
                 dealer_hand.add_card(deck.deal_card())
                 
-                if dealer_hand.score > 21:
+                if dealer_hand.score > 21: # Check for dealer bust
                     update_hand_display(dealer_hand, idx=1, status="Bust!")
                 else:
                     update_hand_display(dealer_hand, idx=1, is_active=True)
@@ -254,34 +253,34 @@ def define_blackjack_command(tree, servers, bot):
                 field_idx += 1
                         
             result_msg = None
-            if hand.score > 21:
+            if hand.score > 21: # Player hand bust
                 winnings -= hand.bet
                 result_msg = f"Bust! -{hand.bet} {BANANA_COIN_EMOJI}"
-            elif dealer_hand.score > 21:
+            elif dealer_hand.score > 21: # Dealer hand bust
                 winnings += hand.bet
                 result_msg = f"Win! +{hand.bet} {BANANA_COIN_EMOJI}"
-            elif hand.score > dealer_hand.score:
+            elif hand.score > dealer_hand.score: # Player hand win
                 winnings += hand.bet
                 result_msg = f"Win! +{hand.bet} {BANANA_COIN_EMOJI}"
-            elif hand.score < dealer_hand.score:
+            elif hand.score < dealer_hand.score: # Dealer hand win
                 winnings -= hand.bet
                 result_msg = f"Loss! -{hand.bet} {BANANA_COIN_EMOJI}"
-            else:
+            else: # Tie
                 result_msg = f"Push!"
                 
             update_hand_display(hand, idx=field_idx, status=result_msg)
             
             field_idx += 1
             
-        if winnings > 0:
+        if winnings > 0: # Player wins currency overall
             embed.color = win_color
             embed.description = f"You win {winnings} {BANANA_COIN_EMOJI}!"
             await add_bananas(user_id, winnings)
-        elif winnings < 0:
+        elif winnings < 0: # Player loses currency overall
             embed.color = lose_color
             embed.description = f"You lose {abs(winnings)} {BANANA_COIN_EMOJI}!"
             await remove_bananas(user_id, abs(winnings))
-        else:
+        else: # Player is even overall
             embed.description = "No winnings or losses!"
             embed.color = push_color
 
