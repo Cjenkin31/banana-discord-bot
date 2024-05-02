@@ -136,115 +136,46 @@ def define_blackjack_command(tree, servers, bot):
             await add_bananas(user_id, bj_winnings)
             return
         
-        # Determine available player actions
-        reaction_set = ["👊","🛑"]
-        options_text = f"Hit (👊) or Stand (🛑)?"
-        if bet_amount * 2 <= current_bananas: # Ability to make an additional bet (double down/split)
-            options_text = f"Hit (👊), Stand (🛑), or Double Down (⏬)?"
-            reaction_set.append("⏬")
-            if (len(player_hand.cards) > 1 and # Ability to split hand
-                    all(card_values[player_hand.cards[0].rank] == card_values[card.rank] for card in player_hand.cards)):
-                options_text = f"Hit (👊), Stand (🛑), Double Down (⏬), or Split (🔀)?"
-                reaction_set.append("🔀")
-                
-        for react in reaction_set:
-            await bj_msg.add_reaction(react)
-
-        update_hand_display(player_hand, is_active=True)
-        embed.set_footer(text=options_text)
-        await bj_msg.edit(embed=embed)
-        
-        # Player's turn (first move)
-        try: 
-            def check(reaction, user):
-                return user == interaction.user and \
-                        reaction.message.id == bj_msg.id and \
-                        str(reaction.emoji) in reaction_set
-                
-            action, user = await bot.wait_for("reaction_add", timeout=60.0, check=check) # Wait for player action
-        except: # Timeout
-            embed.description = f"YOU LOST YOUR BET OF {bet_amount+1} {BANANA_COIN_EMOJI}! The bot stole 1 {BANANA_COIN_EMOJI}!"
-            embed.set_footer(text="Game abandoned!")
-            embed.color = lose_color
-            await bj_msg.edit(embed=embed)
-            await remove_bananas(user_id, bet_amount+1)
-            return
-
-        try:
-            await bj_msg.remove_reaction(action, user)
-        except:
-            pass
-        
-        one_move_only = False
-        hit_first_move = False
-        if str(action) == "👊": # Hit
-            hit_first_move = True
-            player_hand.add_card(deck.deal_card())
-        elif str(action) == "🛑": # Stand
-            one_move_only = True
-            pass
-        elif str(action) == "⏬": # Double Down
-            one_move_only = True
-            bet_amount += player_hand.bet
-            player_hand.bet *= 2
-            player_hand.add_card(deck.deal_card())
-            embed.description = f"Playing for {bet_amount} {BANANA_COIN_EMOJI}"
-        elif str(action) == "🔀": # Split
-            bet_amount += player_hand.bet
-            split_player_hand = Hand([player_hand.remove_card()], player_hand.bet)
-            player_hands.append(split_player_hand)
-            embed.description = f"Playing for {bet_amount} {BANANA_COIN_EMOJI}"
-            embed.add_field(name=f"**You** `{split_player_hand.score}` ({split_player_hand.bet} {BANANA_COIN_EMOJI})", 
-                        value=str(split_player_hand),
-                        inline=False)
-
-        update_hand_display(player_hand)
-        await bj_msg.edit(embed=embed)
-
-        if player_hand.score > 21: # Bust
-            update_hand_display(player_hand, status=f"Bust! -{player_hand.bet} {BANANA_COIN_EMOJI}")
-            embed.description = f"You lose {player_hand.bet} {BANANA_COIN_EMOJI}!"
-            embed.set_footer(text="Game over!")
-            embed.color = lose_color
-            await bj_msg.edit(embed=embed)
-            await remove_bananas(user_id, player_hand.bet)
-            return
-        
         hands_to_calculate = []
+        reaction_set = []
         
+        # Player's turn
         field_idx = 0
         while len(player_hands): # Turns for each player's hand
             current_hand = player_hands.pop(0)
             hands_to_calculate.append(current_hand)
             
-            if one_move_only:
-                break
-            
             if field_idx == 1: # Skip dealer's hand (embed field index 1)
                 field_idx += 1
-                
-            reaction_set = ["👊","🛑"]
-            options_text = f"Hit (👊) or Stand (🛑)?"
-            if not hit_first_move and bet_amount + current_hand.bet <= current_bananas:
-                reaction_set = ["👊","🛑", "⏬"]
-                options_text = f"Hit (👊), Stand (🛑), or Double Down (⏬)?"
-            embed.set_footer(text=options_text)
-            update_hand_display(current_hand, idx=field_idx, is_active=True)
-            await bj_msg.edit(embed=embed)
             
+            can_double_down = True
             while current_hand.score < 21: # Player's turn for hand
-                if (bet_amount + current_hand.bet <= current_bananas and len(current_hand.cards) > 1 and # Ability to split hand
-                        all(card_values[current_hand.cards[0].rank] == card_values[card.rank] for card in current_hand.cards)):
-                    options_text = f"Hit (👊), Stand (🛑), Double Down (⏬), or Split (🔀)?"
-                    reaction_set.append("🔀")
-                    embed.set_footer(text=options_text)
-                    await bj_msg.edit(embed=embed)
+                available_actions = ["👊","🛑"]
+                options_text = f"Hit (👊) or Stand (🛑)?"
+                
+                if bet_amount + current_hand.bet <= current_bananas: # Ability to make an additional bet
+                    if can_double_down: # Ability to double down
+                        available_actions.append("⏬")
+                        options_text = f"Hit (👊), Stand (🛑), or Double Down (⏬)?"
+                    if (bet_amount + current_hand.bet <= current_bananas and len(current_hand.cards) > 1 and # Ability to split hand
+                            all(card_values[current_hand.cards[0].rank] == card_values[card.rank] for card in current_hand.cards)):
+                        available_actions.append("🔀")
+                        options_text = f"Hit (👊), Stand (🛑), Double Down (⏬), or Split (🔀)?"
                     
+                for react in available_actions:
+                    if react not in reaction_set:
+                        await bj_msg.add_reaction(react)
+                        reaction_set.append(react)
+                    
+                update_hand_display(current_hand, idx=field_idx, is_active=True)   
+                embed.set_footer(text=options_text)    
+                await bj_msg.edit(embed=embed)
+                
                 try: 
                     def check(reaction, user):
                         return user == interaction.user and \
                                 reaction.message.id == bj_msg.id and \
-                                str(reaction.emoji) in reaction_set
+                                str(reaction.emoji) in available_actions
                         
                     action, user = await bot.wait_for("reaction_add", timeout=60.0, check=check)
                 except:
@@ -255,17 +186,20 @@ def define_blackjack_command(tree, servers, bot):
                     await remove_bananas(user_id, bet_amount+1)
                     return
                 
-                try:
+                embed.set_footer(text="Please wait...")
+                await bj_msg.edit(embed=embed)
+                
+                try: # Remove player's reaction
                     await bj_msg.remove_reaction(action, user)
                 except:
                     pass
                 
                 if str(action) == "👊": # Hit
+                    can_double_down = False
                     current_hand.add_card(deck.deal_card())
-                    reaction_set = ["👊","🛑"]
-                    options_text = f"Hit (👊) or Stand (🛑)?"
-                    embed.set_footer(text=options_text)
                 elif str(action) == "🛑": # Stand
+                    update_hand_display(current_hand, idx=field_idx)
+                    await bj_msg.edit(embed=embed)
                     break
                 elif str(action) == "⏬": # Double Down
                     bet_amount += current_hand.bet
@@ -273,7 +207,7 @@ def define_blackjack_command(tree, servers, bot):
                     
                     current_hand.add_card(deck.deal_card())
                     embed.description = f"Playing for {bet_amount} {BANANA_COIN_EMOJI}"
-                    update_hand_display(current_hand, idx=field_idx, is_active=True)
+                    update_hand_display(current_hand, idx=field_idx)
                     await bj_msg.edit(embed=embed)
                     break
                 elif str(action) == "🔀": # Split
@@ -284,35 +218,33 @@ def define_blackjack_command(tree, servers, bot):
                     embed.add_field(name=f"**You** `{split_player_hand.score}` ({split_player_hand.bet} {BANANA_COIN_EMOJI})", 
                                 value=str(split_player_hand),
                                 inline=False)
-                
-                update_hand_display(current_hand, idx=field_idx, is_active=True)
-                await bj_msg.edit(embed=embed)
             
-            if current_hand.score > 21:
-                update_hand_display(current_hand, idx=field_idx, status="Bust!")
-            else:
-                update_hand_display(current_hand, idx=field_idx)
-            await bj_msg.edit(embed=embed)
+                if current_hand.score > 21:
+                    update_hand_display(current_hand, idx=field_idx, status="Bust!")
+                else:
+                    update_hand_display(current_hand, idx=field_idx, is_active=True)
+                    
+                await bj_msg.edit(embed=embed)
             
             field_idx += 1
         
-        # Dealer's turn
-        embed.set_footer(text="Dealer's turn...")
-        update_hand_display(dealer_hand, idx=1, is_active=True)
-        await bj_msg.edit(embed=embed)
-        
-        while dealer_hand.score < 17:
-            await asyncio.sleep(1)
-
-            dealer_hand.add_card(deck.deal_card())
-            
+        if not (len(hands_to_calculate) == 1 and hands_to_calculate[0].score > 21): # Skip dealer's turn if only player's hand busted
+            # Dealer's turn
+            embed.set_footer(text="Dealer's turn...")
             update_hand_display(dealer_hand, idx=1, is_active=True)
             await bj_msg.edit(embed=embed)
             
-        if dealer_hand.score > 21:
-            update_hand_display(dealer_hand, idx=1, status="Bust!")
-        else:
-            update_hand_display(dealer_hand, idx=1)
+            while dealer_hand.score < 17:
+                await asyncio.sleep(1)
+
+                dealer_hand.add_card(deck.deal_card())
+                
+                if dealer_hand.score > 21:
+                    update_hand_display(dealer_hand, idx=1, status="Bust!")
+                else:
+                    update_hand_display(dealer_hand, idx=1, is_active=True)
+                    
+                await bj_msg.edit(embed=embed)
         
         # Calculate winnings
         winnings = 0
