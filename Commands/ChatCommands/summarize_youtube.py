@@ -12,8 +12,8 @@ async def download_transcript(video_id):
     except Exception as e:
         return str(e)
 async def define_summarize_youtube_video_command(tree,servers):
-    @tree.command(name="summarize_youtube", description="Summarizes a YouTube video based on its transcript.")
-    async def summarize_youtube(self, interaction: discord.Interaction, youtube_url: str):
+    @tree.command(name="summarize_youtube", description="Summarizes a YouTube video based on its transcript.", guilds=servers)
+    async def summarize_youtube(interaction: discord.Interaction, youtube_url: str):
         await interaction.response.defer()
 
         video_id = youtube_url.split('v=')[1].split('&')[0]
