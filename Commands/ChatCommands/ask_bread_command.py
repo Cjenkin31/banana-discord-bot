@@ -17,5 +17,5 @@ async def define_ask_bread_command(tree, servers):
         else:
             model = "gpt-3.5-turbo"
         # Generate the completion response using the selected story
-        response_message = generate_gpt_response(model, story, user_input)
+        response_message = await generate_gpt_response(model, story, user_input)
         await interaction.followup.send(response_message)

@@ -29,7 +29,7 @@ async def define_speak_command(tree, servers, elevenlabskey):
         voice_id = speaker_voices.get(speaker.lower(), speaker_voices["bread"])  # Default to "bread" if speaker is not found
         story = getStoryByRole(role, interaction.user.id)
         model="gpt-3.5-turbo"
-        response_message = generate_gpt_response(model, story, user_input)
+        response_message = await generate_gpt_response(model, story, user_input)
 
         await interaction.followup.send(f"🗣️ **Banana Bread says:** \"{response_message}\"")
 

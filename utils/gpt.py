@@ -1,7 +1,7 @@
 from config.config import CLIENT
 
 
-def generate_gpt_response(model, story, user_input):
+async def generate_gpt_response(model, story, user_input):
     if not isinstance(user_input, str):
         user_input = str(user_input)
     completion_response = CLIENT.chat.completions.create(
