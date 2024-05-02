@@ -30,7 +30,7 @@ async def define_summarize_youtube_video_command(tree, servers):
 
         transcript = await download_transcript(video_id)
         if transcript.startswith("Failed"):
-            await interaction.followup.send(transcript)
+            await interaction.followup.send("Failed to download video. Please try a different video.")
             return
 
         if len(transcript) > 2048:
