@@ -32,5 +32,6 @@ async def setup_message(bot):
         if bot.user.mentioned_in(message):
             model = "gpt-3.5-turbo"
             story = getStoryByRole("bread", message.author.id)
+            story += f" Respond to user {message.author.display_name}, or use their @,  <@{message.author.id}>"
             response_message = await generate_gpt_response(model, str(message.author), story)
             await message.channel.send(response_message)
