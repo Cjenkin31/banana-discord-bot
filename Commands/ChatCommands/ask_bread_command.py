@@ -3,6 +3,7 @@ from GPT_stories import getStoryByRole
 import discord
 from discord.ext import commands
 from discord import app_commands
+from utils.gpt import generate_gpt_response
 from utils.users import UNBUTTERED_BAGEL_ID
 
 async def define_ask_bread_command(tree, servers, client):
@@ -16,12 +17,5 @@ async def define_ask_bread_command(tree, servers, client):
         else:
             model = "gpt-3.5-turbo"
         # Generate the completion response using the selected story
-        completion_response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": story},
-                {"role": "user", "content": user_input}
-            ]
-        )
-        response_message = completion_response.choices[0].message.content[:1999]
+        response_message = generate_gpt_response(model, story, user_input)
         await interaction.followup.send(response_message)
