@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from youtube_transcript_api import YouTubeTranscriptApi
+from GPT_stories import getStoryByRole
 from utils.gpt import generate_gpt_response
 
 async def download_transcript(video_id):
@@ -22,7 +23,7 @@ async def define_summarize_youtube_video_command(tree,servers):
         if len(transcript) > 1024:
             transcript = transcript[:1024] + '...'
 
-        role = "youtube"
+        role = getStoryByRole("youtube",interaction.user.id)
         response_message = await generate_gpt_response("gpt-3.5-turbo", role, transcript)
 
         # Send the response to the user.
