@@ -8,9 +8,11 @@ from utils.gpt import generate_gpt_response
 async def download_transcript(video_id):
     try:
         transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
+        print(transcript)
         transcript_text = ' '.join([item['text'] for item in transcript])
         return transcript_text
     except Exception as e:
+        print(e)
         return f"Failed to download transcript: {e}"
 
 async def define_summarize_youtube_video_command(tree, servers):
