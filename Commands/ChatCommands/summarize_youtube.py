@@ -18,7 +18,7 @@ async def define_summarize_youtube_video_command(tree,servers):
 
         video_id = youtube_url.split('v=')[1].split('&')[0]
 
-        transcript = await self.download_transcript(video_id)
+        transcript = await download_transcript(video_id)
         if len(transcript) > 1024:
             transcript = transcript[:1024] + '...'
 
