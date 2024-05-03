@@ -19,7 +19,7 @@ def define_blackjack_command(tree, servers, bot):
             await interaction.response.send_message(str(response))
         bet_amount = int(response)
         user_id = str(interaction.user.id)
-        current_bananas = get_bananas(user_id)
+        current_bananas = await get_bananas(user_id)
         await interaction.response.send_message(f"Playing Blackjack...")
         
         inprog_color = 0xffff00
