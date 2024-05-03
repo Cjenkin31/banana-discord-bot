@@ -17,7 +17,7 @@ def define_blackjack_command(tree, servers, bot):
         valid, response = await bet_checks(bet_amount, interaction)
         if (not valid):
             await interaction.response.send_message(str(response))
-        bet_amount = response
+        bet_amount = int(response)
         user_id = str(interaction.user.id)
         current_bananas = get_bananas(user_id)
         await interaction.response.send_message(f"Playing Blackjack...")
