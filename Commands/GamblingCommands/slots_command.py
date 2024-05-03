@@ -47,7 +47,7 @@ def define_slots_command(tree, servers):
                         description=f"Playing for {bet_amount} {BANANA_COIN_EMOJI}",
                         color=inprog_color)
         embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar)
-        embed.add_field(name="Spinning...", value="➖ | ➖ | ➖", inline=True)
+        embed.add_field(name="Spinning...", value=f"\{SLOT_ROW_1_EMOJI}| \{SLOT_ROW_2_EMOJI} | \{SLOT_ROW_3_EMOJI}", inline=True)
         slots_msg = await interaction.channel.send(embed=embed)
         
         # Slot machine data
