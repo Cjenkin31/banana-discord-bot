@@ -1,5 +1,6 @@
 import asyncio
 import random
+from data.stats import get_luck
 from discord import app_commands
 import discord
 from data.currency import get_bananas, add_bananas, remove_bananas
@@ -27,7 +28,7 @@ def define_slots_command(tree, servers):
         embed.add_field(name="Spinning...", value=f"{SLOT_ROW_1_EMOJI} | {SLOT_ROW_2_EMOJI} | {SLOT_ROW_3_EMOJI}", inline=True)
         slots_msg = await interaction.channel.send(embed=embed)
 
-        luck_stat=0
+        luck_stat = await get_luck(user_id)
         slot_luck_stat = luck_stat/3600
         slot_data = {
             '🍒': {'weight': .9, 'payout': 1},
