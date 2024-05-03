@@ -71,7 +71,7 @@ def define_slots_command(tree, servers):
             embed.color = 0x00ff00
         else:
             result_text = "Try again!"
-            embed.description = f"Sorry, you didn't win this time. You gained {total_net_gain} {BANANA_COIN_EMOJI}"
+            embed.description = f"Sorry, you didn't win this time. You lost {total_net_gain} {BANANA_COIN_EMOJI}"
             embed.color = 0xff0000
 
         embed.set_field_at(0, name=result_text, value=f"{slot1} | {slot2} | {slot3}", inline=True)
