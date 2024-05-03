@@ -61,7 +61,9 @@ def define_slots_command(tree, servers):
             embed.description = f"Jackpot! You gained {total_net_gain} {BANANA_COIN_EMOJI}"
             embed.color = 0x00ff00
         elif slot1 == slot2 or slot1 == slot3 or slot2 == slot3:
-            payout = max(slot_data[slot1]['payout'], slot_data[slot2]['payout'], slot_data[slot3]['payout']) * bet_amount
+            payout = slot_data[slot1]['payout'] * bet_amount
+            if slot2 == slot3:
+                payout = slot_data[slot2]['payout'] * bet_amount
             total_net_gain += payout
             result_text = "You won!"
             embed.description = f"Congratulations! You gained {total_net_gain} {BANANA_COIN_EMOJI}"
