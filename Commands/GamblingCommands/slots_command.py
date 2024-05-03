@@ -3,7 +3,7 @@ import random
 from discord import app_commands
 import discord
 from data.currency import get_bananas, add_bananas, remove_bananas
-from utils.emoji_helper import BANANA_COIN_EMOJI, SLOT_ROW_1_EMOJI, SLOT_ROW_2_EMOJI, SLOT_ROW_3_EMOJI
+from utils.emoji_helper import BANANA_COIN_EMOJI, SLOT_ROW_1_EMOJI, SLOT_ROW_2_EMOJI, SLOT_ROW_3_EMOJI, SLOT_EMOJI
 def define_slots_command(tree, servers):
     @tree.command(name="slots", description="Play slots", guilds=servers)
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
@@ -43,7 +43,7 @@ def define_slots_command(tree, servers):
         
         await remove_bananas(user_id, bet_amount)
         
-        embed = discord.Embed(title="Slots 🎰",
+        embed = discord.Embed(title=f"Slots {SLOT_EMOJI}",
                         description=f"Playing for {bet_amount} {BANANA_COIN_EMOJI}",
                         color=inprog_color)
         embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar)
