@@ -20,4 +20,4 @@ async def define_steal_bananas_command(tree, servers):
         if success:
             await interaction.response.send_message(f"{message}", ephemeral=False)
         else:
-            await interaction.response.send_message(f"{message}", ephemeral=True)
+            await interaction.response.send_message(f"{message}", ephemeral=False)
