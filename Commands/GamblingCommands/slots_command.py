@@ -13,7 +13,7 @@ def define_slots_command(tree, servers):
         valid, response = await bet_checks(bet_amount, interaction)
         if (not valid):
             await interaction.response.send_message(str(response))
-        bet_amount = response
+        bet_amount = int(response)
         user_id = str(interaction.user.id)
 
         # Slots logic
