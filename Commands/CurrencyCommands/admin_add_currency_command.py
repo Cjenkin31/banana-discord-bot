@@ -13,6 +13,9 @@ async def define_admin_add_currency_command(tree, servers):
     @tree.command(name="addcurrency", description="Add currency to a user", guilds=servers)
     @app_commands.check(is_owner())
     async def add_currency(interaction: discord.Interaction, user: discord.User, amount: int):
+        if not isinstance(amount, int) or amount <= 0:
+            await interaction.response.send_message("Invalid amount. Please enter a positive number.")
+            return
         try:
             await add_bananas(str(user.id), amount)
             await interaction.response.send_message(f"Added {amount} bananas to {user.display_name}'s account.")
