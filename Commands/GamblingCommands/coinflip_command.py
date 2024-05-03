@@ -3,6 +3,7 @@ from discord import app_commands
 import discord
 import random
 from data.currency import get_bananas, add_bananas, remove_bananas
+from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI
 def define_coinflip_command(tree, servers):
     @tree.command(name="coinflip", description="Guess Heads or Tails to double your bet or lose it", guilds=servers)
@@ -16,29 +17,12 @@ def define_coinflip_command(tree, servers):
             await interaction.response.send_message("Please choose either 'Heads' or 'Tails'.")
             return
         
-        # Determine if the bet is 'all' or a specific amount
-        if bet_amount.lower() == 'all':
-            current_bananas = await get_bananas(str(interaction.user.id))
-            bet_amount = current_bananas
-        else:
-            try:
-                bet_amount = int(bet_amount)
-                if bet_amount <= 0:
-                    raise ValueError("Bet amount must be a positive number.")
-            except ValueError as e:
-                await interaction.response.send_message("Please put a valid betting amount")
-                return
+        valid, response = await bet_checks(bet_amount, interaction)
+        if (not valid):
+            await interaction.response.send_message(str(response))
+        bet_amount = response
 
         user_id = str(interaction.user.id)
-        current_bananas = await get_bananas(user_id)
-
-        if current_bananas == 0:
-            await interaction.response.send_message(f"You have no {BANANA_COIN_EMOJI}!")
-            return
-        
-        if bet_amount > current_bananas:
-            await interaction.response.send_message(f"You don't have enough {BANANA_COIN_EMOJI} to make this bet.")
-            return
 
         # Coin flip logic
         result = "heads" if random.choice([True, False]) else "tails"

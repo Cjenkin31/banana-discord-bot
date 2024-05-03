@@ -3,34 +3,18 @@ import random
 from discord import app_commands
 import discord
 from data.currency import get_bananas, add_bananas, remove_bananas
+from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI, SLOT_ROW_1_EMOJI, SLOT_ROW_2_EMOJI, SLOT_ROW_3_EMOJI, SLOT_EMOJI
 def define_slots_command(tree, servers):
     @tree.command(name="slots", description="Play slots", guilds=servers)
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
-    async def coinflip(interaction: discord.Interaction, bet_amount: str):        
-        # Determine if the bet is 'all' or a specific amount
-        if bet_amount.lower() == 'all':
-            current_bananas = await get_bananas(str(interaction.user.id))
-            bet_amount = current_bananas
-        else:
-            try:
-                bet_amount = int(bet_amount)
-                if bet_amount <= 0:
-                    raise ValueError("Bet amount must be a positive number.")
-            except ValueError as e:
-                await interaction.response.send_message("Please put a valid betting amount")
-                return
+    async def slots(interaction: discord.Interaction, bet_amount: str):        
 
+        valid, response = await bet_checks(bet_amount, interaction)
+        if (not valid):
+            await interaction.response.send_message(str(response))
+        bet_amount = response
         user_id = str(interaction.user.id)
-        current_bananas = await get_bananas(user_id)
-
-        if current_bananas == 0:
-            await interaction.response.send_message(f"You have no {BANANA_COIN_EMOJI}!")
-            return
-        
-        if bet_amount > current_bananas:
-            await interaction.response.send_message(f"You don't have enough {BANANA_COIN_EMOJI} to make this bet.")
-            return
 
         # Slots logic
         jackpot_multiplier = 10
