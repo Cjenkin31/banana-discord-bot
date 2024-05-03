@@ -20,7 +20,7 @@ def get_custom_animated_emoji(name, id):
 
 
 BANANA_COIN_EMOJI = get_custom_emoji(BANANA_COIN_EMOJI_NAME, BANANA_COIN_EMOJI_ID)
-SLOT_ROW_1_EMOJI = get_custom_animated_emoji(SLOT_EMOJI_1_NAME,SLOT_EMOJI_1_ID)
-SLOT_ROW_2_EMOJI = get_custom_animated_emoji(SLOT_EMOJI_2_NAME,SLOT_EMOJI_2_ID)
-SLOT_ROW_3_EMOJI  = get_custom_animated_emoji(SLOT_EMOJI_3_NAME,SLOT_EMOJI_3_ID)
+SLOT_ROW_1_EMOJI = get_custom_animated_emoji(SLOT_EMOJI_1_NAME, SLOT_EMOJI_1_ID)
+SLOT_ROW_2_EMOJI = get_custom_animated_emoji(SLOT_EMOJI_2_NAME, SLOT_EMOJI_2_ID)
+SLOT_ROW_3_EMOJI = get_custom_animated_emoji(SLOT_EMOJI_3_NAME, SLOT_EMOJI_3_ID)
 SLOT_EMOJI = get_custom_emoji(SLOT_MACHINE_NAME, SLOT_MACHINE_ID)
