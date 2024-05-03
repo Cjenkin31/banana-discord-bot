@@ -6,7 +6,7 @@ from data.currency import get_bananas, add_bananas, remove_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from game.deck import Deck
 
-card_values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+black_jack_card_values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
                'J': 10, 'Q': 10, 'K': 10, 'A': 11}
 
 def define_blackjack_command(tree, servers, bot):
@@ -14,6 +14,12 @@ def define_blackjack_command(tree, servers, bot):
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
     async def blackjack(interaction: discord.Interaction, bet_amount: str):
         # Determine if the bet is 'all' or a specific amount
+        blackjack_win = 0
+        winning_multiplier = 1.5
+        winning_color = 0x00ff00
+        losing_color = 0xff0000
+        push_color = 0xff6400
+
         if bet_amount.lower() == 'all':
             current_bananas = await get_bananas(str(interaction.user.id))
             bet_amount = current_bananas

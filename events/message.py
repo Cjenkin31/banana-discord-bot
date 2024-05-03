@@ -1,12 +1,9 @@
 import random
+from GPT_stories import getStoryByRole
 from data.currency import add_bananas
-from utils.embed_utils import create_embed_message
-import discord
-from discord.ext import commands
-import os
-from discord import app_commands
-from discord.ext.commands import Bot
 from utils.emoji_helper import BANANA_COIN_EMOJI
+from utils.gpt import generate_gpt_response
+
 async def setup_message(bot):
     @bot.event
     async def on_message(message):
@@ -27,3 +24,15 @@ async def setup_message(bot):
             banana_amount = random.randint(1,100)
             await add_bananas(message.author.id, banana_amount)
             await message.channel.send(f"<@{message.author.id}> You just found {banana_amount} {BANANA_COIN_EMOJI}")
+        if bot.user.mentioned_in(message):
+            model = "gpt-3.5-turbo"
+            role = "bread"
+            previous_context = ""
+            if message.reference and message.reference.resolved:
+                replied_message = await message.channel.fetch_message(message.reference.message_id)
+                previous_context = f"You previously said: {replied_message.content}\n"
+            story = getStoryByRole(role, message.author.id)
+            story = previous_context + story
+            story += f" Respond to user {message.author.display_name}, or use their @,  <@{message.author.id}>"
+            response_message = await generate_gpt_response(model, story, message.content)
+            await message.channel.send(response_message)

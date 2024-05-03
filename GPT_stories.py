@@ -67,7 +67,8 @@ def getGamblingAddict():
 
     Through Lou, you explore themes of chance, risk, and the human tendency to cling to the dream of a life-changing win. His story is a blend of thrill and caution, making him a compelling and dynamic character.
     """
-
+def getYoutubeSummarizer():
+    return "I am a YouTube Summarizer. My job is to analyze transcripts of YouTube videos and extract the most important points. I provide concise summaries that highlight the key themes and takeaways from the video, making it easier for users to quickly grasp the content without watching the entire video."
 
 def getStoryByRole(role, user_id):
     if role.lower() == 'bread':
@@ -80,5 +81,7 @@ def getStoryByRole(role, user_id):
         return getEngineerStory()
     elif role.lower() == 'lou':
         return getGamblingAddict()
+    elif role.lower() == 'youtube':
+        return getYoutubeSummarizer()
     else:
         return getBananaBreadStory()
