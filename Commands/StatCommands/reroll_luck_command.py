@@ -24,6 +24,6 @@ async def define_reroll_luck_command(tree, servers):
             
             await set_luck(user_id, luck_to_add)
 
-            await interaction.response.send_message(f"You have rerolled and set your luck to {luck_to_add} for {amount} {BANANA_COIN_EMOJI}!", ephemeral=True)
+            await interaction.response.send_message(f"You have rerolled and set your luck to {luck_to_add} for {amount} {BANANA_COIN_EMOJI}!", ephemeral=False)
         else:
-            await interaction.response.send_message(f"You need {amount} bananas to reroll your luck, but you only have {user_bananas}{BANANA_COIN_EMOJI}.", ephemeral=True)
+            await interaction.response.send_message(f"You need {amount} bananas to reroll your luck, but you only have {user_bananas}{BANANA_COIN_EMOJI}.", ephemeral=False)
