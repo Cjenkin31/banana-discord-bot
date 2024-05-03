@@ -32,7 +32,7 @@ def define_slots_command(tree, servers):
             '🍇': {'weight': 9, 'payout': 1},
             '🍓': {'weight': 8, 'payout': 1},
             '🍋': {'weight': 7, 'payout': 2},
-            '🍒': {'weight': 6, 'payout': 2},
+            '🍒': {'weight': 6, 'payout': 3},
             '🍑': {'weight': 5, 'payout': 5},
             '🍐': {'weight': 4, 'payout': 15},
             '⭐': {'weight': 3, 'payout': 20},
