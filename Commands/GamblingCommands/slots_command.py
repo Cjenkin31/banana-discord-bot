@@ -71,24 +71,18 @@ def define_slots_command(tree, servers):
         slot1 = random.choice(weighted_symbols)
         slot2 = random.choice(weighted_symbols)
         slot3 = random.choice(weighted_symbols)
-
-        embed.add_field(name="Spinning...", value=f"{SLOT_ROW_1_EMOJI} | {SLOT_ROW_2_EMOJI} | {SLOT_ROW_3_EMOJI}", inline=True)
-        slots_msg = await interaction.channel.send(embed=embed)
-
+        
         await asyncio.sleep(0.5)
-
-        embed.set_field_at(0, name="Spinning...", value=f"{slot1} | {SLOT_ROW_2_EMOJI} | {SLOT_ROW_3_EMOJI}", inline=True)
+        
+        embed.set_field_at(0, name="Spinning...", value=f"{slot1} | ➖ | ➖", inline=True)
         await slots_msg.edit(embed=embed)
-
+        
         await asyncio.sleep(0.5)
-
-        embed.set_field_at(0, name="Spinning...", value=f"{slot1} | {slot2} | {SLOT_ROW_3_EMOJI}", inline=True)
+        
+        embed.set_field_at(0, name="Spinning...", value=f"{slot1} | {slot2} | ➖", inline=True)
         await slots_msg.edit(embed=embed)
-
+        
         await asyncio.sleep(0.5)
-
-        embed.set_field_at(0, name="Result", value=f"{slot1} | {slot2} | {slot3}", inline=True)
-        await slots_msg.edit(embed=embed)
         
         result_text = ""
         if slot1 == slot2 == slot3:
