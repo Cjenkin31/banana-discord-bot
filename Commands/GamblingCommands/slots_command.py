@@ -28,17 +28,17 @@ def define_slots_command(tree, servers):
         slots_msg = await interaction.channel.send(embed=embed)
 
         luck_stat=0
-        slot_luck_stat = luck_stat/2500
+        slot_luck_stat = luck_stat/3600
         slot_data = {
-            '🍇': {'weight': .9, 'payout': 1},
-            '🍓': {'weight': .8+slot_luck_stat, 'payout': 1},
+            '🍒': {'weight': .9, 'payout': 1},
+            '🍐': {'weight': .8+slot_luck_stat, 'payout': 2},
             '🍋': {'weight': .7+slot_luck_stat, 'payout': 2},
-            '🍒': {'weight': .6+slot_luck_stat, 'payout': 3},
-            '🍑': {'weight': .5+slot_luck_stat, 'payout': 4},
-            '🍐': {'weight': .4+(slot_luck_stat*2), 'payout': 5},
-            '⭐': {'weight': .3+(slot_luck_stat*3), 'payout': 10},
-            '🍌': {'weight': .2+(slot_luck_stat*5), 'payout': 15},
-            '💎': {'weight': .1+(slot_luck_stat*10), 'payout': 25}
+            '🍑': {'weight': .6+slot_luck_stat, 'payout': 2},
+            '🍓': {'weight': .5+slot_luck_stat, 'payout': 3},
+            '🍇': {'weight': .4+(slot_luck_stat*2), 'payout': 3},
+            '⭐': {'weight': .3+(slot_luck_stat*3), 'payout': 5},
+            '🍌': {'weight': .2+(slot_luck_stat*5), 'payout': 10},
+            '💎': {'weight': .1+(slot_luck_stat*10), 'payout': 50}
         }
 
 
