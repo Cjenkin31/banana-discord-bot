@@ -8,7 +8,7 @@ SLOT_EMOJI_1_NAME = "slots"
 SLOT_EMOJI_2_NAME = "slots2"
 SLOT_EMOJI_3_NAME = "slots3"
 
-SLOT_MACHINE_NAME = "Slots "
+SLOT_MACHINE_NAME = "Slots"
 SLOT_MACHINE_ID = "1153710427625246760"
 # Function to return the full emoji format
 def get_custom_emoji(name, id):
