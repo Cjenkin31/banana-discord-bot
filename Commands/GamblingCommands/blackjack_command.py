@@ -20,6 +20,7 @@ def define_blackjack_command(tree, servers, bot):
         bet_amount = int(response)
         user_id = str(interaction.user.id)
         current_bananas = await get_bananas(user_id)
+        
         await interaction.response.send_message(f"Playing Blackjack...")
         
         blackjack_score = 21 # Total score for Blackjack
