@@ -34,11 +34,12 @@ def define_slots_command(tree, servers):
             '🍋': {'weight': 7, 'payout': 2},
             '🍒': {'weight': 6, 'payout': 2},
             '🍑': {'weight': 5, 'payout': 5},
-            '🍐': {'weight': 4, 'payout': 5},
-            '⭐': {'weight': 3, 'payout': 10},
-            '🍌': {'weight': 2, 'payout': 15},
-            '💎': {'weight': 1, 'payout': 25}
+            '🍐': {'weight': 4, 'payout': 15},
+            '⭐': {'weight': 3, 'payout': 20},
+            '🍌': {'weight': 2, 'payout': 25},
+            '💎': {'weight': 1, 'payout': 50}
         }
+
         weighted_symbols = [symbol for symbol, data in slot_data.items() for _ in range(data['weight'])]
 
         slot1 = random.choice(weighted_symbols)
@@ -60,7 +61,7 @@ def define_slots_command(tree, servers):
             result_text = "Jackpot!"
             embed.description = f"Jackpot! You gained {total_net_gain} {BANANA_COIN_EMOJI}"
             embed.color = 0x00ff00
-        elif slot1 == slot2 or slot1 == slot3 or slot2 == slot3:
+        elif slot1 == slot2 or slot2 == slot3:
             payout = slot_data[slot1]['payout'] * bet_amount
             if slot2 == slot3:
                 payout = slot_data[slot2]['payout'] * bet_amount
