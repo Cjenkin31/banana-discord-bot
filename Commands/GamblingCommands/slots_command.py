@@ -74,13 +74,13 @@ def define_slots_command(tree, servers):
         slot3 = random.choice(weighted_symbols)
         
         await asyncio.sleep(0.5)
-        
-        embed.set_field_at(0, name="Spinning...", value=f"{slot1} | ➖ | ➖", inline=True)
+
+        embed.set_field_at(0, name="Spinning...", value=f"{slot1} | {SLOT_ROW_2_EMOJI} | {SLOT_ROW_3_EMOJI}", inline=True)
         await slots_msg.edit(embed=embed)
         
         await asyncio.sleep(0.5)
         
-        embed.set_field_at(0, name="Spinning...", value=f"{slot1} | {slot2} | ➖", inline=True)
+        embed.set_field_at(0, name="Spinning...", value=f"{slot1} | {slot2} | {SLOT_ROW_3_EMOJI}", inline=True)
         await slots_msg.edit(embed=embed)
         
         await asyncio.sleep(0.5)
