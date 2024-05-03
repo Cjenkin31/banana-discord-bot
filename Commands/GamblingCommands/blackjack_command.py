@@ -94,7 +94,7 @@ def define_blackjack_command(tree, servers, bot):
                 return card
 
             def calculate_score(self):
-                score = sum(card_values[card.rank] for card in self.cards)
+                score = sum(black_jack_card_values[card.rank] for card in self.cards)
                 for card in self.cards:
                     if score > 21 and card.rank == 'A':
                         score -= 10
@@ -153,7 +153,7 @@ def define_blackjack_command(tree, servers, bot):
                         available_actions.append("⏬")
                         options_text = f"Hit (👊), Stand (🛑), or Double Down (⏬)?"
                     if (bet_amount + current_hand.bet <= current_bananas and len(current_hand.cards) > 1 and # Ability to split hand
-                            all(card_values[current_hand.cards[0].rank] == card_values[card.rank] for card in current_hand.cards)):
+                            all(black_jack_card_values[current_hand.cards[0].rank] == black_jack_card_values[card.rank] for card in current_hand.cards)):
                         available_actions.append("🔀")
                         options_text = f"Hit (👊), Stand (🛑), Double Down (⏬), or Split (🔀)?"
                     
