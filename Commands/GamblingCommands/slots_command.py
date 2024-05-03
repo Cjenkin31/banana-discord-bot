@@ -29,15 +29,15 @@ def define_slots_command(tree, servers):
 
         # Slot machine data
         slot_data = {
-            '🍇': {'weight': 9, 'payout': 1},
-            '🍓': {'weight': 8, 'payout': 2},
-            '🍋': {'weight': 7, 'payout': 2},
-            '🍒': {'weight': 6, 'payout': 3},
-            '🍑': {'weight': 5, 'payout': 5},
-            '🍐': {'weight': 4, 'payout': 10},
-            '⭐': {'weight': 3, 'payout': 20},
-            '🍌': {'weight': 2, 'payout': 25},
-            '💎': {'weight': 1, 'payout': 50}
+            '🍇': {'weight': 900, 'payout': 1},
+            '🍓': {'weight': 800, 'payout': 2},
+            '🍋': {'weight': 700, 'payout': 2},
+            '🍒': {'weight': 600, 'payout': 3},
+            '🍑': {'weight': 500, 'payout': 5},
+            '🍐': {'weight': 400, 'payout': 10},
+            '⭐': {'weight': 300, 'payout': 20},
+            '🍌': {'weight': 200, 'payout': 25},
+            '💎': {'weight': 100, 'payout': 50}
         }
 
         weighted_symbols = [symbol for symbol, data in slot_data.items() for _ in range(data['weight'])]
