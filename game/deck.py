@@ -11,7 +11,9 @@ class Deck:
         for suit in suits:
             for rank in ranks:
                 self.cards.append(Card(suit, rank))
-        random.shuffle(self.cards)
 
+    def shuffle_deck(self):
+        random.shuffle(self.cards)
+    
     def deal_card(self):
         return self.cards.pop()
