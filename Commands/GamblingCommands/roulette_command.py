@@ -80,18 +80,21 @@ async def define_roulette_command(tree, servers):
             await interaction.response.send_message("Invalid bet value. Please check your input and try again.")
             return
 
+        result_embed = Embed(title="Roulette Result", description=f"The ball landed on **{winning_color} {winning_number}**.", color=0x00ff00 if win else 0xff0000)
+        result_embed.add_field(name="Your Bet", value=f"Type: {bet_type.name}\nValue: {bet_value}\nAmount: {bet_amount} {BANANA_COIN_EMOJI}", inline=False)
+
         result_color = 0x00ff00 if win else 0xff0000
-        embed.title = "Roulette Result"
-        embed.description = f"The ball landed on **{winning_color} {winning_number}**."
-        embed.color = result_color
-        embed.set_image(url=None)
+        result_embed.title = "Roulette Result"
+        result_embed.description = f"The ball landed on **{winning_color} {winning_number}**."
+        result_embed.color = result_color
+        result_embed.set_image(url=None)
         # Dont add or remove for testing
         if win:
             payout = payouts[bet_type.value] * bet_amount
             # add_bananas(user_id, payout)
-            embed.add_field(name="Result", value=f"Congratulations! You won {payout} {BANANA_COIN_EMOJI}!", inline=False)
+            result_embed.add_field(name="Result", value=f"Congratulations! You won {payout} {BANANA_COIN_EMOJI}!", inline=False)
         else:
             # remove_bananas(bet_amount)
-            embed.add_field(name="Result", value=f"Sorry, you lost {bet_amount} {BANANA_COIN_EMOJI}. Better luck next time!", inline=False)
+            result_embed.add_field(name="Result", value=f"Sorry, you lost {bet_amount} {BANANA_COIN_EMOJI}. Better luck next time!", inline=False)
 
-        await interaction.edit_original_response(embed=embed)
+        await interaction.edit_original_response(embed=result_embed, attachments=[])
