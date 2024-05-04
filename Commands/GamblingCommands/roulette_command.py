@@ -7,7 +7,7 @@ from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from discord import Embed
 
-async def define_roulette_command(tree, servers, bot):
+async def define_roulette_command(tree, servers):
     bet_types = [
         app_commands.Choice(name="number", value="number"),
         app_commands.Choice(name="color", value="color"),
