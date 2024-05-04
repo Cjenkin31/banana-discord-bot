@@ -8,6 +8,10 @@ from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI, SLOT_ROW_1_EMOJI, SLOT_ROW_2_EMOJI, SLOT_ROW_3_EMOJI, SLOT_EMOJI
 
 async def define_slots_command(tree, servers):
+    def normalize_weights(weights):
+        total = sum(weights)
+        return [w / total for w in weights] if total > 0 else [1/len(weights)] * len(weights)
+
     @tree.command(name="slots", description="Play slots", guilds=servers)
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
     async def slots(interaction: discord.Interaction, bet_amount: str):
@@ -42,6 +46,8 @@ async def define_slots_command(tree, servers):
             '💎': {'weight': .1+(slot_luck_stat*10), 'payout': 50}
         }
 
+        slot_data = {symbol: {'weight': weight, 'payout': data['payout']} 
+                    for symbol, (weight, data) in zip(slot_data.keys(), zip(normalize_weights([data['weight'] for data in slot_data.values()]), slot_data.values()))}
 
         symbols = list(slot_data.keys())
         weights = [data['weight'] for data in slot_data.values()]
