@@ -85,7 +85,6 @@ async def define_roulette_command(tree, servers):
         embed.description = f"The ball landed on **{winning_color} {winning_number}**."
         embed.color = result_color
         embed.set_image(url=None)
-
         # Dont add or remove for testing
         if win:
             payout = payouts[bet_type.value] * bet_amount
