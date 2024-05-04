@@ -17,8 +17,8 @@ class TwoPair(PokerHand):
                 if best_pair_rank is None:
                     best_pair_rank = rank
                 else:
-                    self.best_pair = best_pair_rank
-                    self.second_pair = rank
+                    self.high_pair = best_pair_rank
+                    self.low_pair = rank
                     return True
 
         return False
@@ -26,19 +26,19 @@ class TwoPair(PokerHand):
     def get_hand_cards(self):
         hand_cards = []
         for card in self.cards:
-            if card.rank == self.best_pair or card.rank == self.second_pair:
+            if card.rank == self.high_pair or card.rank == self.low_pair:
                 hand_cards.append(card)
         return hand_cards
     
     def compare_equal_type_hands(self, hand):
-        if card_rank_values[self.best_pair] > card_rank_values[hand.best_pair]:
+        if card_rank_values[self.high_pair] > card_rank_values[hand.high_pair]:
             return 1
-        elif card_rank_values[self.best_pair] < card_rank_values[hand.best_pair]:
+        elif card_rank_values[self.high_pair] < card_rank_values[hand.high_pair]:
             return -1
 
-        if card_rank_values[self.second_pair] > card_rank_values[hand.second_pair]:
+        if card_rank_values[self.low_pair] > card_rank_values[hand.low_pair]:
             return 1
-        elif card_rank_values[self.second_pair] < card_rank_values[hand.second_pair]:
+        elif card_rank_values[self.low_pair] < card_rank_values[hand.low_pair]:
             return -1
         else:
             return super().compare_equal_type_hands(hand)
@@ -47,4 +47,4 @@ class TwoPair(PokerHand):
         return "Two Pair"
 
     def get_detailed_name(self):
-        return "Two Pair (" + self.best_pair + ", " + self.second_pair + ")"
+        return "Two Pair (" + self.high_pair + ", " + self.low_pair + ")"

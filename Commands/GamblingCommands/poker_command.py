@@ -27,6 +27,7 @@ def define_poker_command(tree, servers, bot):
         bet_amount = int(response)
         user_id = str(interaction.user.id)
         current_bananas = await get_bananas(user_id)
+        original_bet = bet_amount
         
         await interaction.response.send_message(f"Playing Mississippi Stud Poker...")
 
@@ -75,20 +76,6 @@ def define_poker_command(tree, servers, bot):
 
             def __str__(self):
                 return "[ " + ", ".join("**" + str(card) + "**" for card in self.cards) + " ]"
-    
-        handRanks = [
-            HighCard(0),
-            Pair(1),
-            TwoPair(2),
-            ThreeOfAKind(3),
-            Straight(4),
-            Flush(5),
-            FullHouse(6),
-            FourOfAKind(7),
-            StraightFlush(8),
-            RoyalFlush(9)
-        ]
-        handRanks.sort(key=lambda rank: rank.hand_type_value)
         
         deck = Deck() # Game deck
         deck.shuffle_deck() # Shuffle game deck
@@ -105,9 +92,8 @@ def define_poker_command(tree, servers, bot):
             
             await asyncio.sleep(0.5) # Quick pause between each card
             
-        for rank in handRanks:
-            if rank.makes_hand(player_hand.cards + streets_hand.cards):
-                update_card_display(player_hand, rank.ranked_cards_str())
+        rank = get_poker_hand(player_hand.cards + streets_hand.cards)
+        update_card_display(player_hand, rank.ranked_cards_str())
             
         available_actions = ["1️⃣", "2️⃣", "3️⃣", "❌"]
         options_text = f"Bet 1x (1️⃣), 2x (2️⃣), 3x (3️⃣), or Fold (❌)?"
@@ -144,11 +130,11 @@ def define_poker_command(tree, servers, bot):
                 pass
             
             if str(action) == "1️⃣": # Bet 1x
-                bet_amount *= 2
+                bet_amount += original_bet
             elif str(action) == "2️⃣": # Bet 2x
-                bet_amount *= 3
+                bet_amount += (original_bet * 2)
             elif str(action) == "3️⃣": # Bet 3x
-                bet_amount *= 4
+                bet_amount += (original_bet * 3)
             elif str(action) == "❌": # Fold
                 folded = True
                 break
@@ -157,9 +143,28 @@ def define_poker_command(tree, servers, bot):
             streets_hand.add_card(deck.deal_card())
             update_card_display(streets_hand)
 
-            for rank in handRanks:
-                if rank.makes_hand(player_hand.cards + streets_hand.cards):
-                    update_card_display(player_hand, rank.ranked_cards_str())
+            rank = get_poker_hand(player_hand.cards + streets_hand.cards)
+            update_card_display(player_hand, rank.ranked_cards_str())
                             
         embed.set_footer(text="Game over!")
         await poker_msg.edit(embed=embed)
+        
+def get_poker_hand(cards):
+    pokerHands = [
+        HighCard(0),
+        Pair(1),
+        TwoPair(2),
+        ThreeOfAKind(3),
+        Straight(4),
+        Flush(5),
+        FullHouse(6),
+        FourOfAKind(7),
+        StraightFlush(8),
+        RoyalFlush(9)
+    ]
+    pokerHands.sort(key=lambda rank: rank.hand_type_value, reverse=True)
+
+    for hand in pokerHands:
+        if hand.makes_hand(cards):
+            return hand
+    return None
