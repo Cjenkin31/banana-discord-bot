@@ -20,17 +20,27 @@ def resize_image(image, size):
     return image.resize(size, Image.ANTIALIAS)
 
 
+
 async def download_from_github(path: str):
     base_url = "https://raw.githubusercontent.com/Cjenkin31/banana-discord-bot/main/images/"
     corrected_path = path.lstrip('/')
     full_url = f"{base_url}{corrected_path}"
 
-    local_filename = 'temp_image.jpg'
-    image_path = download_image(full_url, local_filename)
-    
-    if image_path:
-        discord_file = discord.File(image_path, filename='image.jpg')
-        os.remove(image_path)
+    response = requests.get(full_url, stream=True)
+    if response.status_code == 200:
+        with open('temp_image.img', 'wb') as f:
+            for chunk in response.iter_content(1024):
+                f.write(chunk)
+
+        with Image.open('temp_image.img') as img:
+            img_format = img.format.lower()  # Get the image format
+            local_filename = f'temp_image.{img_format}'
+            img.save(local_filename)  # Save in the correct format
+
+        discord_file = discord.File(local_filename, filename=f'image.{img_format}')
+        os.remove('temp_image.img')
+        os.remove(local_filename)
         return discord_file
+
     else:
         return None
