@@ -7,7 +7,7 @@ from data.currency import get_bananas, add_bananas, remove_bananas
 from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI, SLOT_ROW_1_EMOJI, SLOT_ROW_2_EMOJI, SLOT_ROW_3_EMOJI, SLOT_EMOJI
 
-def define_slots_command(tree, servers):
+async def define_slots_command(tree, servers):
     @tree.command(name="slots", description="Play slots", guilds=servers)
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
     async def slots(interaction: discord.Interaction, bet_amount: str):
