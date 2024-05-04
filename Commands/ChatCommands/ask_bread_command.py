@@ -18,4 +18,14 @@ async def define_ask_bread_command(tree, servers):
         model = "gpt-3.5-turbo"
         # Generate the completion response using the selected story
         response_message = await generate_gpt_response(model, story, user_input)
-        await interaction.followup.send(response_message)
+        if len(response_message) > 1999:
+            chunks = [response_message[i:i + 1800] for i in range(0, len(response_message), 1800)]
+            last_message = None
+            for chunk in chunks:
+                if last_message is None:
+                    last_message = await interaction.followup.send(chunk)
+                else:
+                    last_message = await interaction.followup.send(chunk, reference=last_message)
+        else:
+            last_message = await interaction.followup.send(response_message)
+        await last_message.reply("______")
