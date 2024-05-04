@@ -25,46 +25,44 @@ async def define_roulette_command(tree, servers):
             return 2
         else:
             return 3
-    async def bet_value_autocomplete(
-        interaction: discord.Interaction,
-        current: str,
-        bet_type: app_commands.Choice[str]
-    ) -> list[app_commands.Choice[str]]:
+    async def bet_value_autocomplete(interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
         choices = []
-        if bet_type.value == 'color':
+        bet_type = interaction.data.get('options', [])[0].get('value')
+        if bet_type == 'color':
             choices = [
                 app_commands.Choice(name="Red", value="red"),
                 app_commands.Choice(name="Black", value="black"),
                 app_commands.Choice(name="Green", value="green")
             ]
-        elif bet_type.value == 'even_odd':
+        elif bet_type == 'even_odd':
             choices = [
                 app_commands.Choice(name="Even", value="even"),
                 app_commands.Choice(name="Odd", value="odd")
             ]
-        elif bet_type.value == 'range':
+        elif bet_type == 'range':
             choices = [
                 app_commands.Choice(name="Low (1-18)", value="low"),
                 app_commands.Choice(name="High (19-36)", value="high")
             ]
-        elif bet_type.value == 'dozens':
+        elif bet_type == 'dozens':
             choices = [
                 app_commands.Choice(name="First Dozen (1-12)", value="first"),
                 app_commands.Choice(name="Second Dozen (13-24)", value="second"),
                 app_commands.Choice(name="Third Dozen (25-36)", value="third")
             ]
-        elif bet_type.value == 'columns':
+        elif bet_type == 'columns':
             choices = [
                 app_commands.Choice(name="Column 1", value="1"),
                 app_commands.Choice(name="Column 2", value="2"),
                 app_commands.Choice(name="Column 3", value="3")
             ]
-        elif bet_type.value == 'number':
+        elif bet_type == 'number':
             choices = [app_commands.Choice(name=str(n), value=str(n)) for n in range(37)]
 
         # Filter choices based on the current input to reduce suggestions
         filtered_choices = [choice for choice in choices if current.lower() in choice.name.lower()]
         return filtered_choices
+
     @tree.command(name="roulette", description="Play roulette", guilds=servers)
     @app_commands.describe(bet_amount="Amount of bananas to bet",
                            bet_type="Type of bet you want to make",
