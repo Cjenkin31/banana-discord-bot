@@ -56,9 +56,6 @@ async def define_roulette_command(tree, servers):
                 app_commands.Choice(name="Column 2", value="2"),
                 app_commands.Choice(name="Column 3", value="3")
             ]
-        elif bet_type == 'number':
-            choices = [app_commands.Choice(name=str(n), value=str(n)) for n in range(37)]
-
         # Filter choices based on the current input to reduce suggestions
         filtered_choices = [choice for choice in choices if current.lower() in choice.name.lower()]
         return filtered_choices
@@ -71,13 +68,22 @@ async def define_roulette_command(tree, servers):
     @app_commands.autocomplete(bet_value=bet_value_autocomplete)
     async def roulette(interaction: discord.Interaction, bet_type: app_commands.Choice[str], bet_value: str, bet_amount: int):
         user_id = str(interaction.user.id)
-        bet_amount = 10 # Force bet_amount to 10 for testing
-        # valid, response = await bet_checks(bet_amount, interaction)
-        # if not valid:
-        #     await interaction.response.send_message(str(response))
-        #     return
-        # bet_amount = response
-        # skip validation
+        valid, response = await bet_checks(bet_amount, interaction)
+        if not valid:
+            await interaction.response.send_message(str(response))
+            return
+        bet_amount = response
+
+        if bet_type.value == 'number':
+            try:
+                bet_value_int = int(bet_value)
+                if not 0 <= bet_value_int <= 36:
+                    await interaction.response.send_message("Please choose a number between 0 and 36.", ephemeral=True)
+                    return
+            except ValueError:
+                await interaction.response.send_message("Invalid input. Please enter a valid number.", ephemeral=True)
+                return
+
         numbers = list(range(37))
         colors = {num: 'red' if (num != 0 and (num < 10 or 18 < num < 28)) else 'black' for num in numbers}
         colors[0] = 'green'  # Zero is green
@@ -127,13 +133,13 @@ async def define_roulette_command(tree, servers):
         result_embed.description = f"The ball landed on **{winning_color} {winning_number}**."
         result_embed.color = result_color
         result_embed.set_image(url=None)
-        # Dont add or remove for testing
+
         if win:
             payout = payouts[bet_type.value] * bet_amount
-            # add_bananas(user_id, payout)
+            add_bananas(user_id, payout)
             result_embed.add_field(name="Result", value=f"Congratulations! You won {payout} {BANANA_COIN_EMOJI}!", inline=False)
         else:
-            # remove_bananas(bet_amount)
+            remove_bananas(bet_amount)
             result_embed.add_field(name="Result", value=f"Sorry, you lost {bet_amount} {BANANA_COIN_EMOJI}. Better luck next time!", inline=False)
 
         await interaction.edit_original_response(embed=result_embed, attachments=[])
