@@ -6,7 +6,7 @@ from data.currency import get_bananas, add_bananas, remove_bananas
 from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from discord import Embed
-from utils.image_helpers import download_from_github
+from utils.image_helpers import download_from_github, download_gif_from_github
 
 async def define_roulette_command(tree, servers):
     bet_types = [
@@ -51,7 +51,7 @@ async def define_roulette_command(tree, servers):
             'dozens': 2,
             'columns': 2
         }
-        gif_file = await download_from_github("spinning_wheel.gif")
+        gif_file = await download_gif_from_github("spinning_wheel.gif")
         winning_number = random.choice(numbers)
         winning_color = colors[winning_number]
         win = False
