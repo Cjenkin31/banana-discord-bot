@@ -51,14 +51,15 @@ async def define_roulette_command(tree, servers):
             'dozens': 2,
             'columns': 2
         }
-        thumbnail_file = await download_from_github("spinning_wheel.gif")
+        gif_file = await download_from_github("spinning_wheel.gif")
         winning_number = random.choice(numbers)
         winning_color = colors[winning_number]
         win = False
         embed = Embed(title="🎰 Roulette Wheel Spinning...", description="Let's see where the ball lands!", color=0x0099ff)
         embed.add_field(name="Your Bet", value=f"Type: {bet_type.name}\nValue: {bet_value}\nAmount: {bet_amount} {BANANA_COIN_EMOJI}", inline=False)
-        embed.set_image(url=thumbnail_file)
-        await interaction.response.send_message(embed=embed)
+        embed.set_image(url="attachment://image.gif")
+        await interaction.response.send_message(embed=embed, file=gif_file)
+        await asyncio.sleep(3)
 
         try:
             if bet_type.value == 'number':
@@ -78,7 +79,6 @@ async def define_roulette_command(tree, servers):
         except ValueError:
             await interaction.response.send_message("Invalid bet value. Please check your input and try again.")
             return
-        await asyncio.sleep(3)
 
         result_color = 0x00ff00 if win else 0xff0000
         embed.title = "Roulette Result"
