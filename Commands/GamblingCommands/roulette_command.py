@@ -32,12 +32,12 @@ async def define_roulette_command(tree, servers):
     async def roulette(interaction: discord.Interaction, bet_type: app_commands.Choice[str], bet_value: str, bet_amount: int):
         user_id = str(interaction.user.id)
         bet_amount = 10 # Force bet_amount to 10 for testing
-        valid, response = await bet_checks(bet_amount, interaction)
-        if not valid:
-            await interaction.response.send_message(str(response))
-            return
-        bet_amount = response
-
+        # valid, response = await bet_checks(bet_amount, interaction)
+        # if not valid:
+        #     await interaction.response.send_message(str(response))
+        #     return
+        # bet_amount = response
+        # skip validation
         numbers = list(range(37))
         colors = {num: 'red' if (num != 0 and (num < 10 or 18 < num < 28)) else 'black' for num in numbers}
         colors[0] = 'green'  # Zero is green
