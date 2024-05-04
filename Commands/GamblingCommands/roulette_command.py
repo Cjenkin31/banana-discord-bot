@@ -56,6 +56,8 @@ async def define_roulette_command(tree, servers):
                 app_commands.Choice(name="Column 2", value="2"),
                 app_commands.Choice(name="Column 3", value="3")
             ]
+        elif bet_type == 'number':
+            return []
         # Filter choices based on the current input to reduce suggestions
         filtered_choices = [choice for choice in choices if current.lower() in choice.name.lower()]
         return filtered_choices
