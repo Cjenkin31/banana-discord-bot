@@ -28,4 +28,3 @@ async def define_ask_bread_command(tree, servers):
                     last_message = await interaction.followup.send(chunk, reference=last_message)
         else:
             last_message = await interaction.followup.send(response_message)
-        await last_message.reply("______")
