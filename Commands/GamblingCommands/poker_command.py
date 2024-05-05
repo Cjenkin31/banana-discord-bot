@@ -211,11 +211,11 @@ def define_poker_command(tree, servers, bot):
                     winnings = bet_amount * data['payout']
                     
             if winnings > 0:
-                embed.description=f"You win {winnings} {BANANA_COIN_EMOJI}"
+                embed.description=f"You win {winnings} {BANANA_COIN_EMOJI}!"
                 embed.color = win_color
                 await add_bananas(user_id, winnings)
             else:
-                embed.description=f"You lose {bet_amount} {BANANA_COIN_EMOJI}"
+                embed.description=f"You lose {bet_amount} {BANANA_COIN_EMOJI}!"
                 embed.color = lose_color
                 await remove_bananas(user_id, bet_amount)  
                             
