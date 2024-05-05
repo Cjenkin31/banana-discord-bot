@@ -63,9 +63,6 @@ class PokerHand:
 
     def get_detailed_name(self): 
         raise Exception("Method 'get_detailed_name' must be implemented in concrete class")
-
-    def ranked_cards_str(self):
-        return self.get_name() + " [ " + ", ".join(str(card) for card in self.get_ranked_cards()) + " ]"
     
     def __str__(self):
         return self.get_detailed_name() + " [ " + ", ".join(str(card) for card in self.cards) + " ]"
