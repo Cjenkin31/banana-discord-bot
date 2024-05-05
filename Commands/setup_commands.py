@@ -1,5 +1,4 @@
 import os
-from Commands.InventoryCommands.setup_inventory_commands import define_all_inventory_commands
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -12,6 +11,8 @@ from Commands.VoiceCommands.setup_voice_commands import define_all_voice_command
 from Commands.ChatCommands.setup_chat_commands import define_all_chat_commands
 from Commands.CurrencyCommands.setup_currency_commands import define_all_currency_commands
 from Commands.ShopCommands.setup_shop_commands import define_all_shop_commands
+from Commands.InventoryCommands.setup_inventory_commands import define_all_inventory_commands
+from Commands.StatCommands.setup_stat_commands import define_all_stat_commands
 
 
 elevenlabskey = os.environ.get('xi-api-key')
@@ -27,4 +28,5 @@ async def define_all_commands(bot, servers):
     await define_all_gambling_commands(tree, servers, bot)
     await define_all_shop_commands(tree, servers)
     await define_all_inventory_commands(tree, servers)
+    await define_all_stat_commands(tree, servers)
     print("Registered all commands.")

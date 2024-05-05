@@ -1,12 +1,17 @@
 import asyncio
 import random
+from data.stats import get_luck
 from discord import app_commands
 import discord
 from data.currency import get_bananas, add_bananas, remove_bananas
 from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI, SLOT_ROW_1_EMOJI, SLOT_ROW_2_EMOJI, SLOT_ROW_3_EMOJI, SLOT_EMOJI
 
-def define_slots_command(tree, servers):
+async def define_slots_command(tree, servers):
+    def normalize_weights(weights):
+        total = sum(weights)
+        return [w / total for w in weights] if total > 0 else [1/len(weights)] * len(weights)
+
     @tree.command(name="slots", description="Play slots", guilds=servers)
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
     async def slots(interaction: discord.Interaction, bet_amount: str):
@@ -27,44 +32,44 @@ def define_slots_command(tree, servers):
         embed.add_field(name="Spinning...", value=f"{SLOT_ROW_1_EMOJI} | {SLOT_ROW_2_EMOJI} | {SLOT_ROW_3_EMOJI}", inline=True)
         slots_msg = await interaction.channel.send(embed=embed)
 
-        # Slot machine data
+        luck_stat = await get_luck(user_id)
+        slot_luck_stat = luck_stat/3600
         slot_data = {
-            '🍇': {'weight': 900, 'payout': 1},
-            '🍓': {'weight': 800, 'payout': 2},
-            '🍋': {'weight': 700, 'payout': 2},
-            '🍒': {'weight': 600, 'payout': 3},
-            '🍑': {'weight': 500, 'payout': 5},
-            '🍐': {'weight': 400, 'payout': 10},
-            '⭐': {'weight': 300, 'payout': 20},
-            '🍌': {'weight': 200, 'payout': 25},
-            '💎': {'weight': 100, 'payout': 50}
+            '🍒': {'weight': .9, 'payout': 1},
+            '🍐': {'weight': .8+slot_luck_stat, 'payout': 2},
+            '🍋': {'weight': .7+slot_luck_stat, 'payout': 2},
+            '🍑': {'weight': .6+slot_luck_stat, 'payout': 2},
+            '🍓': {'weight': .5+slot_luck_stat, 'payout': 3},
+            '🍇': {'weight': .4+(slot_luck_stat*2), 'payout': 3},
+            '⭐': {'weight': .3+(slot_luck_stat*3), 'payout': 5},
+            '🍌': {'weight': .2+(slot_luck_stat*5), 'payout': 10},
+            '💎': {'weight': .1+(slot_luck_stat*10), 'payout': 50}
         }
 
-        weighted_symbols = [symbol for symbol, data in slot_data.items() for _ in range(data['weight'])]
+        slot_data = {symbol: {'weight': weight, 'payout': data['payout']} 
+                    for symbol, (weight, data) in zip(slot_data.keys(), zip(normalize_weights([data['weight'] for data in slot_data.values()]), slot_data.values()))}
 
-        slot1 = random.choice(weighted_symbols)
-        slot2 = random.choice(weighted_symbols)
-        slot3 = random.choice(weighted_symbols)
+        symbols = list(slot_data.keys())
+        weights = [data['weight'] for data in slot_data.values()]
+        slots = random.choices(symbols, weights, k=3)
 
         await asyncio.sleep(0.5)
-        embed.set_field_at(0, name="Spinning...", value=f"{slot1} | {SLOT_ROW_2_EMOJI} | {SLOT_ROW_3_EMOJI}", inline=True)
+        embed.set_field_at(0, name="Spinning...", value=f"{slots[0]} | {SLOT_ROW_2_EMOJI} | {SLOT_ROW_3_EMOJI}", inline=True)
         await slots_msg.edit(embed=embed)
         await asyncio.sleep(0.5)
-        embed.set_field_at(0, name="Spinning...", value=f"{slot1} | {slot2} | {SLOT_ROW_3_EMOJI}", inline=True)
+        embed.set_field_at(0, name="Spinning...", value=f"{slots[0]} | {slots[1]} | {SLOT_ROW_3_EMOJI}", inline=True)
         await slots_msg.edit(embed=embed)
         await asyncio.sleep(0.5)
 
         result_text = ""
-        if slot1 == slot2 == slot3:
-            payout = slot_data[slot1]['payout'] * bet_amount * 10
+        if slots[0] == slots[1] == slots[2]:
+            payout = slot_data[slots[0]]['payout'] * bet_amount * 10
             total_net_gain += payout
             result_text = "Jackpot!"
             embed.description = f"Jackpot! You gained {total_net_gain} {BANANA_COIN_EMOJI}"
             embed.color = 0x00ff00
-        elif slot1 == slot2 or slot2 == slot3:
-            payout = slot_data[slot1]['payout'] * bet_amount
-            if slot2 == slot3:
-                payout = slot_data[slot2]['payout'] * bet_amount
+        elif slots[0] == slots[1]  or slots[1] == slots[2]:
+            payout = slot_data[slots[1]]['payout'] * bet_amount
             total_net_gain += payout
             result_text = "You won!"
             embed.description = f"Congratulations! You gained {total_net_gain} {BANANA_COIN_EMOJI}"
@@ -74,7 +79,7 @@ def define_slots_command(tree, servers):
             embed.description = f"Sorry, you didn't win this time. You lost {abs(total_net_gain)} {BANANA_COIN_EMOJI}"
             embed.color = 0xff0000
 
-        embed.set_field_at(0, name=result_text, value=f"{slot1} | {slot2} | {slot3}", inline=True)
+        embed.set_field_at(0, name=result_text, value=f"{slots[0]} | {slots[1]} | {slots[2]}", inline=True)
         await slots_msg.edit(embed=embed)
 
         if total_net_gain > 0:

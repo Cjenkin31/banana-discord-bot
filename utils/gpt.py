@@ -11,4 +11,4 @@ async def generate_gpt_response(model, story, user_input):
                 {"role": "user", "content": user_input}
             ]
         )
-    return completion_response.choices[0].message.content[:1999]
+    return completion_response.choices[0].message.content
