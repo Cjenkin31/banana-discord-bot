@@ -138,10 +138,10 @@ async def define_roulette_command(tree, servers):
 
         if win:
             payout = payouts[bet_type.value] * bet_amount
-            add_bananas(user_id, payout)
+            await add_bananas(user_id, payout)
             result_embed.add_field(name="Result", value=f"Congratulations! You won {payout} {BANANA_COIN_EMOJI}!", inline=False)
         else:
-            remove_bananas(user_id, bet_amount)
+            await remove_bananas(user_id, bet_amount)
             result_embed.add_field(name="Result", value=f"Sorry, you lost {bet_amount} {BANANA_COIN_EMOJI}. Better luck next time!", inline=False)
 
         await interaction.edit_original_response(embed=result_embed, attachments=[])
