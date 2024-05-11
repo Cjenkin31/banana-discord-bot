@@ -3,6 +3,7 @@ from GPT_stories import getStoryByRole
 from data.currency import add_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from utils.gpt import generate_gpt_response
+from utils.users import UNBUTTERED_BAGEL_ID
 
 async def setup_message(bot):
     @bot.event
@@ -36,5 +37,5 @@ async def setup_message(bot):
             story += f" Respond to user {message.author.display_name}, or use their @,  <@{message.author.id}>"
             response_message = await generate_gpt_response(model, story, message.content)
             await message.channel.send(response_message)
-        if bot.user.mentioned_in(message) and message.content.startswith('\\'):
+        if message.content.startswith('\\') and message.author == UNBUTTERED_BAGEL_ID:
             await message.channel.send('\\')
