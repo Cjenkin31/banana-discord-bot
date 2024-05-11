@@ -37,5 +37,3 @@ async def setup_message(bot):
             story += f" Respond to user {message.author.display_name}, or use their @,  <@{message.author.id}>"
             response_message = await generate_gpt_response(model, story, message.content)
             await message.channel.send(response_message)
-        if message.content.startswith('ertw'):
-            await message.channel.send("\\")
