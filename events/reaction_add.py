@@ -1,10 +1,10 @@
-from data.saved_messages import guild_to_channel, saved_messages
+from data.saved_messages import guild_to_channel
 from utils.embed_utils import create_embed_message
 import discord
 from discord.ext import commands
 from discord import app_commands
 from discord.ext.commands import Bot
-
+saved_messages = []
 async def setup_reaction_add(bot):
     @bot.event
     async def on_raw_reaction_add(payload):
