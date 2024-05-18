@@ -25,12 +25,12 @@ async def setup_reaction_add(bot):
             bread_reaction = next((r for r in message.reactions if r.emoji == "🍞"), None)
             
             if banana_reaction and banana_reaction.count > 0 and bread_reaction and bread_reaction.count > 1:
-                if not get_message_mapping(payload.message_id):
+                if not await get_message_mapping(payload.message_id):
                     target_channel_id = guild_to_channel[payload.guild_id]
                     target_channel = bot.get_channel(target_channel_id)
                     embed = create_embed_message(message)
                     try:
                         sent_message = await target_channel.send(embed=embed)
-                        set_message_mapping(payload.message_id, sent_message.id)
+                        await set_message_mapping(payload.message_id, sent_message.id)
                     except discord.HTTPException as e:
                         print(f"Failed to send message: {e}")

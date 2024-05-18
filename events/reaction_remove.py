@@ -21,7 +21,7 @@ async def setup_reaction_remove(bot):
         
         reactions = {reaction.emoji: reaction.count for reaction in message.reactions}
         if ('🍌' not in reactions or reactions['🍌'] < 1) or ('🍞' not in reactions or reactions['🍞'] < 1):
-            forwarded_message_id = get_message_mapping(payload.message_id)
+            forwarded_message_id = await get_message_mapping(payload.message_id)
             if forwarded_message_id:
                 target_channel_id = guild_to_channel[payload.guild_id]
                 target_channel = bot.get_channel(target_channel_id)
@@ -34,4 +34,4 @@ async def setup_reaction_remove(bot):
                 except discord.HTTPException as e:
                     print(f"Failed to delete forwarded message: {e}")
                 finally:
-                    remove_message_mapping(payload.message_id)
+                    await remove_message_mapping(payload.message_id)
