@@ -23,9 +23,9 @@ async def setup_reaction_add(bot):
             # Check if 🍌 (banana) is already there
             banana_reaction = next((r for r in message.reactions if r.emoji == "🍌"), None)
             bread_reaction = next((r for r in message.reactions if r.emoji == "🍞"), None)
-            print(f"Banana Reaction: {banana_reaction}")
-            print(f"Bread Reaction: {bread_reaction}")
-            if banana_reaction and banana_reaction.count > 0 and bread_reaction and bread_reaction.count > 1:
+            print(f"Banana Reaction: {banana_reaction} Count: {banana_reaction.count}")
+            print(f"Bread Reaction: {bread_reaction} Count: {bread_reaction.count}")
+            if banana_reaction and banana_reaction.count > 0 and bread_reaction and bread_reaction.count > 0:
                 if not await get_message_mapping(payload.message_id):
                     target_channel_id = guild_to_channel[payload.guild_id]
                     target_channel = bot.get_channel(target_channel_id)
