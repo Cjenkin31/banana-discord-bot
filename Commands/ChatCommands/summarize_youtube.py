@@ -10,11 +10,13 @@ async def download_transcript(video_id):
         print(f"Vid ID: {video_id}")
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
         print(f"Transcript List: {transcript_list}")
-        transcript = transcript_list.find_transcript(['en'])
-        print(f"transcript: {transcript}")
-        if not transcript.is_generated:
+        try:
+            transcript = transcript_list.find_transcript(['en'])
+            print(f"Manual transcript: {transcript}")
+        except:
+            print("Manual transcript not found, trying generated transcript.")
             transcript = transcript_list.find_generated_transcript(['en'])
-
+            print(f"Generated transcript: {transcript}")
         transcript_fetch = transcript.fetch()
         print(f"transcript_fetch: {transcript_fetch}")
         transcript_text = ' '.join([item['text'] for item in transcript_fetch])
@@ -22,6 +24,7 @@ async def download_transcript(video_id):
     except Exception as e:
         print(e)
         return f"Failed to download transcript: {e}"
+
 
 async def define_summarize_youtube_video_command(tree, servers):
     @tree.command(name="summarize_youtube", description="Summarizes a YouTube video based on its transcript.", guilds=servers)
