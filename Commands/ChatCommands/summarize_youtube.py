@@ -9,16 +9,13 @@ async def download_transcript(video_id):
     try:
         print(f"Vid ID: {video_id}")
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-        print(f"Transcript List: {transcript_list}")
         try:
             transcript = transcript_list.find_transcript(['en'])
-            print(f"Manual transcript: {transcript}")
+            print(f"Manual transcript Found")
         except:
             print("Manual transcript not found, trying generated transcript.")
             transcript = transcript_list.find_generated_transcript(['en'])
-            print(f"Generated transcript: {transcript}")
         transcript_fetch = transcript.fetch()
-        print(f"transcript_fetch: {transcript_fetch}")
         transcript_text = ' '.join([item['text'] for item in transcript_fetch])
         return transcript_text
     except Exception as e:
