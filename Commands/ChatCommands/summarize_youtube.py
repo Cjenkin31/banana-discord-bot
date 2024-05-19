@@ -11,12 +11,15 @@ CHUNK_SIZE = 2000
 
 async def download_transcript(video_id):
     try:
+        print(video_id)
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
         try:
             transcript = transcript_list.find_transcript(['en'])
         except:
             transcript = transcript_list.find_generated_transcript(['en'])
+        print("Fetching Transcript...")
         transcript_fetch = transcript.fetch()
+        print("Fetched!")
         transcript_text = ' '.join([item['text'] for item in transcript_fetch])
         return transcript_text
     except Exception as e:
