@@ -66,7 +66,7 @@ async def define_slots_command(tree, servers):
             total_net_gain += payout
             result_text = f"Jackpot! You won {payout} {BANANA_COIN_EMOJI}"
             embed.color = 0x00ff00
-        elif slots[0] == slots[1]  or slots[1] == slots[2]:
+        elif slots[0] == slots[1] or slots[1] == slots[2]:
             payout = slot_data[slots[1]]['payout'] * bet_amount
             total_net_gain += payout
             result_text = f"Congratulations! You won {payout} {BANANA_COIN_EMOJI}"
@@ -75,6 +75,7 @@ async def define_slots_command(tree, servers):
             result_text = f"Sorry, you didn't win this time. You lost {bet_amount} {BANANA_COIN_EMOJI}"
             embed.color = 0xff0000
 
+        embed.clear_fields()
         embed.add_field(name="Result", value=f"{slots[0]} | {slots[1]} | {slots[2]}", inline=False)
         embed.description += f"\n{result_text}"
         await slots_msg.edit(embed=embed)
