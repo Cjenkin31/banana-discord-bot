@@ -75,8 +75,7 @@ async def define_slots_command(tree, servers):
             result_text = f"Sorry, you didn't win this time. You lost {bet_amount} {BANANA_COIN_EMOJI}"
             embed.color = 0xff0000
 
-        embed.clear_fields()
-        embed.add_field(name="Result", value=f"{slots[0]} | {slots[1]} | {slots[2]}", inline=False)
+        embed.set_field_at(0, name="Result", value=f"{slots[0]} | {slots[1]} | {slots[2]}", inline=False)
         embed.description += f"\n{result_text}"
         await slots_msg.edit(embed=embed)
 
