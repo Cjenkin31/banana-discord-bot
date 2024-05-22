@@ -64,15 +64,15 @@ async def define_slots_command(tree, servers):
         if slots[0] == slots[1] == slots[2]:
             payout = slot_data[slots[0]]['payout'] * bet_amount * 10
             total_net_gain += payout
-            result_text = f"Jackpot! You gained {total_net_gain} {BANANA_COIN_EMOJI}"
+            result_text = f"Jackpot! You won {payout} {BANANA_COIN_EMOJI}"
             embed.color = 0x00ff00
         elif slots[0] == slots[1]  or slots[1] == slots[2]:
             payout = slot_data[slots[1]]['payout'] * bet_amount
             total_net_gain += payout
-            result_text = f"Congratulations! You gained {total_net_gain} {BANANA_COIN_EMOJI}"
+            result_text = f"Congratulations! You won {payout} {BANANA_COIN_EMOJI}"
             embed.color = 0x00ff00
         else:
-            result_text = f"Sorry, you didn't win this time. You lost {abs(total_net_gain)} {BANANA_COIN_EMOJI}"
+            result_text = f"Sorry, you didn't win this time. You lost {bet_amount} {BANANA_COIN_EMOJI}"
             embed.color = 0xff0000
 
         embed.add_field(name="Result", value=f"{slots[0]} | {slots[1]} | {slots[2]}", inline=False)
