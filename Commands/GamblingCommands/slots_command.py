@@ -61,25 +61,22 @@ async def define_slots_command(tree, servers):
         await slots_msg.edit(embed=embed)
         await asyncio.sleep(0.5)
 
-        result_text = ""
         if slots[0] == slots[1] == slots[2]:
             payout = slot_data[slots[0]]['payout'] * bet_amount * 10
             total_net_gain += payout
-            result_text = "Jackpot!"
-            embed.description = f"Jackpot! You gained {total_net_gain} {BANANA_COIN_EMOJI}"
+            result_text = f"Jackpot! You won {payout} {BANANA_COIN_EMOJI}"
             embed.color = 0x00ff00
-        elif slots[0] == slots[1]  or slots[1] == slots[2]:
+        elif slots[0] == slots[1] or slots[1] == slots[2]:
             payout = slot_data[slots[1]]['payout'] * bet_amount
             total_net_gain += payout
-            result_text = "You won!"
-            embed.description = f"Congratulations! You gained {total_net_gain} {BANANA_COIN_EMOJI}"
+            result_text = f"Congratulations! You won {payout} {BANANA_COIN_EMOJI}"
             embed.color = 0x00ff00
         else:
-            result_text = "Try again!"
-            embed.description = f"Sorry, you didn't win this time. You lost {abs(total_net_gain)} {BANANA_COIN_EMOJI}"
+            result_text = f"Sorry, you didn't win this time. You lost {bet_amount} {BANANA_COIN_EMOJI}"
             embed.color = 0xff0000
 
-        embed.set_field_at(0, name=result_text, value=f"{slots[0]} | {slots[1]} | {slots[2]}", inline=True)
+        embed.set_field_at(0, name="Result", value=f"{slots[0]} | {slots[1]} | {slots[2]}", inline=False)
+        embed.description += f"\n{result_text}"
         await slots_msg.edit(embed=embed)
 
         if total_net_gain > 0:

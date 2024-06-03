@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from utils.gpt import generate_gpt_response
+from utils.message_utils import send_message_in_chunks
 from utils.users import UNBUTTERED_BAGEL_ID
 
 async def define_ask_bread_command(tree, servers):
@@ -18,14 +19,4 @@ async def define_ask_bread_command(tree, servers):
         model = "gpt-3.5-turbo"
         # Generate the completion response using the selected story
         response_message = await generate_gpt_response(model, story, user_input)
-        if len(response_message) > 1999:
-            chunks = [response_message[i:i + 1900] for i in range(0, len(response_message), 1800)]
-            for i, chunk in enumerate(chunks):
-                if i == 0:
-                    last_message = await interaction.followup.send(chunk)
-                else:
-                    last_message = await interaction.followup.send(f"{chunk}")
-        else:
-            last_message = await interaction.followup.send(response_message)
-            return
-        await last_message.reply("All parts of the message have been sent!")
+        await send_message_in_chunks(response_message, interaction)

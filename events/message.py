@@ -3,6 +3,7 @@ from GPT_stories import getStoryByRole
 from data.currency import add_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from utils.gpt import generate_gpt_response
+from utils.users import UNBUTTERED_BAGEL_ID
 
 async def setup_message(bot):
     @bot.event
