@@ -18,7 +18,7 @@ from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from game.deck import Deck
 
-def define_poker_command(tree, servers, bot):
+async def define_poker_command(tree, servers, bot):
     @tree.command(name="poker", description="Play Mississippi Stud poker", guilds=servers)
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
     async def poker(interaction: discord.Interaction, bet_amount: str):
