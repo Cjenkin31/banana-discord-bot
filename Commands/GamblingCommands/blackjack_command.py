@@ -17,6 +17,7 @@ async def define_blackjack_command(tree, servers, bot):
         valid, response = await bet_checks(bet_amount, interaction)
         if (not valid):
             await interaction.response.send_message(str(response))
+            return
         bet_amount = int(response)
         user_id = str(interaction.user.id)
         current_bananas = await get_bananas(user_id)
@@ -50,28 +51,28 @@ async def define_blackjack_command(tree, servers, bot):
                 active_text = "\> "
 
             player_text = f"**You** `{hand.score}` ({hand.bet} {BANANA_COIN_EMOJI})"
-            set_inline = True
             if hand.field_idx < 0 or hand.field_idx > len(embed.fields):
                 raise ValueError(f"Invalid field index: {hand.field_idx}")
-            elif hand.field_idx == 1:
+            elif hand.field_idx == 0:
                 player_text = f"**Dealer** `{hand.score}`"
-            elif hand.field_idx > 1:
-                set_inline = False
             
             if hand.field_idx == len(embed.fields):
                 embed.add_field(name=f"{active_text}{player_text}",  
                                 value=value_text,
-                                inline=set_inline)
+                                inline=False)
             else:
                 embed.set_field_at(hand.field_idx, 
                                 name=f"{active_text}{player_text}", 
                                 value=value_text,
-                                inline=set_inline)
+                                inline=False)
         
         # Blackjack Hand class, must be within command function scope
         class Hand:
-            def __init__(self, cards=[], bet=0, field_idx=0):
-                self.cards = cards
+            def __init__(self, cards=None, bet=0, field_idx=-1):
+                if cards is None:
+                    self.cards = []
+                else:
+                    self.cards = cards
                 self.bet = bet
                 self.field_idx = field_idx
                 self.score = self.calculate_score()
@@ -100,9 +101,12 @@ async def define_blackjack_command(tree, servers, bot):
         deck = Deck() # Game deck
         deck.shuffle_deck() # Shuffle game deck
         
+        dealer_hand = Hand(field_idx=0) # Dealer's hand
+        update_hand_display(dealer_hand)
+        
         player_hands = [] # List of all player's hands
         
-        player_hand = Hand(bet=bet_amount, field_idx=0) # Player's initial hand
+        player_hand = Hand(bet=bet_amount, field_idx=1) # Player's initial hand
         player_hands.append(player_hand)
         for _ in range(2): # Deal 2 cards to player to start
             player_hand.add_card(deck.deal_card())
@@ -111,12 +115,10 @@ async def define_blackjack_command(tree, servers, bot):
             await bj_msg.edit(embed=embed)
             
             await asyncio.sleep(0.5) # Quick pause between each card
-            
-        dealer_hand = Hand([deck.deal_card()], field_idx=1) # Dealer's hand
-    
+        
+        dealer_hand.add_card(deck.deal_card()) # Dealer's shown card
         update_hand_display(dealer_hand)
         await bj_msg.edit(embed=embed)
-        
         dealer_hand.add_card(deck.deal_card()) # Dealer's concealed card
         
         if player_hand.score == blackjack_score and len(player_hand.cards) == 2: # Blackjack
@@ -131,8 +133,8 @@ async def define_blackjack_command(tree, servers, bot):
             await add_bananas(user_id, bj_winnings)
             return
         
-        hands_to_calculate = []
-        reaction_set = []
+        hands_to_calculate = [] # Player hands to calculate winnings for
+        reaction_set = [] # Bot reactions on game message
         
         # Player's turn
         while len(player_hands): # Turns for each player's hand
@@ -250,8 +252,8 @@ async def define_blackjack_command(tree, servers, bot):
                     update_hand_display(dealer_hand, status="Bust!")
                 else:
                     update_hand_display(dealer_hand, active=True)
-                    
                 await bj_msg.edit(embed=embed)
+            update_hand_display(dealer_hand, active=False)
         
         # Calculate winnings
         winnings = 0
