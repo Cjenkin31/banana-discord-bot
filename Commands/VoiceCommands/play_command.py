@@ -9,18 +9,18 @@ import asyncio
 async def define_play_youtube_audio_command(tree, servers):
     @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video in a voice channel.", guilds=servers)
     @app_commands.describe(url="URL of the YouTube video")
-    async def play_youtube_audio(ctx: discord.app_commands.SlashCommand, url: str):
+    async def play_youtube_audio(interaction: discord.Interaction, url: str):
         try:
             # Check if URL is valid
             if not ('youtube.com/watch?v=' in url or 'youtu.be/' in url):
-                await ctx.send("Invalid YouTube URL provided.")
+                await interaction.response.send_message("Invalid YouTube URL provided.")
                 return
 
             # Download audio
             downloaded_audio = await download_youtube_audio(url)
 
             # Connect to voice channel
-            voice_channel = ctx.author.voice.channel
+            voice_channel = interaction.author.voice.channel
             voice_client = await voice_channel.connect()
 
             # Play audio
@@ -47,7 +47,7 @@ async def define_play_youtube_audio_command(tree, servers):
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
-            await ctx.send(f"Something went wrong! Please try again later.")
+            await interaction.response.send_message(f"Something went wrong! Please try again later.")
 
     async def download_youtube_audio(url: str) -> str:
         ydl_opts = {
