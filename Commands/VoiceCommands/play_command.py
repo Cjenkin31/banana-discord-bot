@@ -2,11 +2,13 @@ import os
 import youtube_dl
 import discord
 from discord.ext import commands
+from discord import app_commands
 from discord import FFmpegPCMAudio
 import asyncio
 
 async def define_play_youtube_audio_command(tree, servers):
-    @tree.slash_command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video in a voice channel.", guilds=servers)
+    @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video in a voice channel.", guilds=servers)
+    @app_commands.describe(url="URL of the YouTube video")
     async def play_youtube_audio(ctx: discord.app_commands.SlashCommand, url: str):
         try:
             # Check if URL is valid
