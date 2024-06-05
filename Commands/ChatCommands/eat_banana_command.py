@@ -5,11 +5,12 @@ from discord import app_commands
 import random
 
 from utils.emoji_helper import BANANA_COIN_EMOJI 
-from utils.message_utils import send_message_in_chunks, DISCORD_MESSAGE_LIMIT
+from utils.message_utils import send_message_in_chunks
 
 async def define_eat_banana_command(tree, servers):
     @tree.command(name="eat_banana", description="Monkie eat", guilds=servers)
     async def eat_banana(interaction: discord.Interaction, amt: int = 1):
+        await interaction.response.defer()
         banana_gif = "https://tenor.com/view/effy-gif-11375717773991506810"
         user_id = interaction.user.id
         user_banana = await get_bananas(user_id)
