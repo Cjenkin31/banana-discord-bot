@@ -1,10 +1,13 @@
 import os
+import time
 import youtube_dl
 import discord
 from discord.ext import commands
 from discord import app_commands
 from discord import FFmpegPCMAudio
 import asyncio
+from pytube import YouTube
+from moviepy.editor import AudioFileClip
 
 async def define_play_youtube_audio_command(tree, servers):
     @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video in a voice channel.", guilds=servers)
@@ -20,7 +23,7 @@ async def define_play_youtube_audio_command(tree, servers):
             downloaded_audio = await download_youtube_audio(url)
 
             # Connect to voice channel
-            voice_channel = interaction.author.voice.channel
+            voice_channel = interaction.user.voice.channel
             voice_client = await voice_channel.connect()
 
             # Play audio
@@ -50,18 +53,22 @@ async def define_play_youtube_audio_command(tree, servers):
             await interaction.response.send_message(f"Something went wrong! Please try again later.")
 
     async def download_youtube_audio(url: str) -> str:
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'outtmpl': 'downloaded_audio.mp3',
-        }
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-        return 'downloaded_audio.mp3'
+        try:
+            yt = YouTube(url)
+            stream = yt.streams.filter(only_audio=True).first()
+            output_path = stream.download(filename='downloaded_audio.mp4')
+
+            # Convert mp4 to mp3
+            audio_clip = AudioFileClip(output_path)
+            audio_clip.write_audiofile('downloaded_audio.mp3')
+            audio_clip.close()
+            os.remove(output_path)
+
+            return 'downloaded_audio.mp3'
+
+        except Exception as e:
+            print(f"Error downloading audio: {e}")
+            raise
 
     def remove_file_if_exists(file_path: str):
         if os.path.exists(file_path):

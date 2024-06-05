@@ -8,4 +8,5 @@ cachetools
 pillow
 firebase-admin
 youtube_transcript_api
-youtube_dl
+moviepy
+pytube
