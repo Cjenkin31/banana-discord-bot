@@ -48,7 +48,7 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
         return True, f"{target.mention}, {thief.mention} successfully stole {stolen_amount} {BANANA_COIN_EMOJI} from you."
     else:
         penalty_amount = stolen_amount = random.randint(1, max_steal_amount)
-        penalty = min(thief.bananas, penalty_amount)
+        penalty = min(thief_bananas, penalty_amount)
         await remove_bananas(thief_id, penalty)
         await add_bananas(target_id, penalty)
         await update_last_steal(thief_id)
