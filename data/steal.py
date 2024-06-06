@@ -48,7 +48,10 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
         await add_bananas(thief_id, stolen_amount)
         await remove_bananas(target_id, stolen_amount)
         await update_last_steal(thief_id)
-        return True, f"{target.mention}, {thief.mention} successfully stole {stolen_amount} {BANANA_COIN_EMOJI} from you."
+        story = "You are a Narrator making whacky and interesting turn around stories about how people steal money in the funniest ways possible. The story always ends up with the person stealing gaining money. He does it in one line. He always mentions how much was gained or lost"
+        user_input = f"{thief.mention} succeeded in stealing from {target.mention} and gained {penalty}"
+        gpt_response = await generate_gpt_response("gpt-3.5-turbo", story, user_input)
+        return True, "gpt_response"
     else:
         penalty_amount = stolen_amount = random.randint(1, max_steal_amount)
         penalty = min(thief_bananas, penalty_amount)
