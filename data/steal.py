@@ -40,6 +40,9 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
     if thief_bananas > target_bananas:
         steal_chance += 0.1
 
+    if thief_bananas == 0:
+        steal_chance = 0.05
+
     if random.random() < steal_chance:
         stolen_amount = random.randint(1, max_steal_amount)
         await add_bananas(thief_id, stolen_amount)
