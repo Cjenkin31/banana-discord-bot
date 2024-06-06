@@ -7,6 +7,7 @@ from discord.ext import commands
 from discord import app_commands
 import discord
 from utils.emoji_helper import BANANA_COIN_EMOJI
+from utils.gpt import generate_gpt_response
 
 async def get_last_steal(user_id):
     ref = db.reference(f'users/{user_id}/last_steal')
@@ -36,7 +37,7 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
     max_steal_amount = int(target_bananas * 0.1)
     steal_chance = 0.2
 
-    if thief_bananas < target_bananas:
+    if thief_bananas > target_bananas:
         steal_chance += 0.1
 
     if random.random() < steal_chance:
@@ -47,6 +48,12 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
         return True, f"{target.mention}, {thief.mention} successfully stole {stolen_amount} {BANANA_COIN_EMOJI} from you."
     else:
         penalty_amount = stolen_amount = random.randint(1, max_steal_amount)
-        await remove_bananas(thief_id, penalty_amount)
+        penalty = min(thief.bananas, penalty_amount)
+        await remove_bananas(thief_id, penalty)
+        await add_bananas(target_id, penalty)
         await update_last_steal(thief_id)
-        return False, f"{thief.mention}, your attempt to steal from {target.mention} failed. You lost {penalty_amount} {BANANA_COIN_EMOJI} as a penalty."
+
+        story = "You are a Narrator making whacky and interesting turn around stories about how people fail stealing in the funniest ways possible. The story always ends up with the person stealing losing the money and the target receiving it, as in they gain extra money that they would have lost. He does it in one line."
+        user_input = f"{thief.mention} failed to steal from {target.mention}"
+        gpt_response = await generate_gpt_response("gpt-3.5-turbo", story, user_input)
+        return False, gpt_response
