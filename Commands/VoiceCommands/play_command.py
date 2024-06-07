@@ -8,6 +8,12 @@ import asyncio
 from pytube import YouTube
 from moviepy.editor import AudioFileClip
 
+# TODO: Add a audio queue
+# TODO: Check to see if the bot can play in multiple servers at once, should append serverID to end of temp file to avid conflicts.
+# TODO: Improve Error Handling
+# TODO: Add skipping audio.
+# TODO: New command for playing audio from links. Soundcloud, Spotify, etc.
+
 async def define_play_youtube_audio_command(tree, servers):
     @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video in a voice channel.", guilds=servers)
     @app_commands.describe(url="URL of the YouTube video")
