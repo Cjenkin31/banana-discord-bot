@@ -42,7 +42,8 @@ async def define_play_youtube_audio_command(tree, servers):
                 voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
                 if voice_client is None:
                     voice_client = await voice_channel.connect()
-                await play_audio(voice_client, guild_id)
+                if not voice_client.is_playing():
+                    await play_audio(voice_client, guild_id)
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
