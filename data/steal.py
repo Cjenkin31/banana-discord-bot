@@ -1,5 +1,6 @@
 from data.currency import add_bananas, get_bananas, remove_bananas
 from datetime import datetime, timedelta, timezone
+from data.stats import get_luck
 from firebase_admin import credentials, db
 import random
 import config.firebase_config
@@ -36,6 +37,11 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
     thief_bananas = await get_bananas(thief_id)
     max_steal_amount = int(target_bananas * 0.1)
     steal_chance = 0.2
+
+    thief_luck = await get_luck(thief_id)
+    target_luck = await get_luck(target_id)
+
+    steal_chance += 0.1 if thief_luck > target_luck else -0.1
 
     if thief_bananas > target_bananas:
         steal_chance += 0.1
