@@ -1,3 +1,4 @@
+from Commands.VoiceCommands.skip_command import define_skip_youtube_audio_command
 from Commands.VoiceCommands.stop_command import define_stop_youtube_audio_command
 from openai import OpenAI
 import os
@@ -13,3 +14,4 @@ async def define_all_voice_commands(tree, servers, elevenlabskey):
     await define_cleanup_vc_command(tree, servers)
     await define_play_youtube_audio_command(tree, servers)
     await define_stop_youtube_audio_command(tree, servers)
+    await define_skip_youtube_audio_command(tree, servers)

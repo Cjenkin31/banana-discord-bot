@@ -6,7 +6,7 @@ from utils.audio_queue import AudioQueue
 
 audio_queue = AudioQueue()
 
-async def define_skip_command(tree, servers):
+async def define_skip_youtube_audio_command(tree, servers):
     @tree.command(name="skip", description="Skips the current audio playback and starts the next one in the queue.", guilds=servers)
     async def skip(interaction: discord.Interaction):
         guild_id = interaction.guild_id
