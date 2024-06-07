@@ -1,24 +1,31 @@
-# TODO
-[ ] - Store Cats on database
+# Banana Bread Bot
 
-[ ] - VoiceLine to ElevenLabs
+Banana Bread Bot is a feature-rich Discord bot built with Python, using the discord.py library. It offers a variety of commands and events that enhance user interaction and server engagement.
 
+## Key Features
 
-## The Farm Update
-[ ] - Banana farm upgrade with coins multiplayers
+- **Currency System**: Users can earn and spend bananas, the server's currency. The bot supports various commands related to the currency system, such as stealing bananas from other users.
 
-[ ] - investing
+- **Gambling Commands**: The bot provides several gambling-related commands, including a blackjack game.
 
-[X] - Add a shop to purchase items
+- **Voice State Update Events**: The bot can respond to changes in a user's voice state, such as joining, leaving, or switching voice channels.
 
-[ ] - Make functional Items
+- **GPT-3 Integration**: The bot uses OpenAI's GPT-3 model to generate responses to certain messages with many different roles.
 
-[ ] - Shield to block Timeouts
+- **Voice Channel Creation**: Makes new voice channels when someone needs one.
 
-## The Stat Update
+- **Custom Pinning**: Pins messages to a "Banana Bread" channel when certain emoji pairs are used
 
-[ ] - Luck Stat influencing all chances
+- **Valorant Profile Viewing**: Allows users to view their, or other's valorant profile
 
-[ ] - Attack Stat tied to timeout time.
+- **Overwatch Profile Viewing**: Allows users to view their, or other's overwatch profile
 
-[ ] - Defense stat tied to timeout block time.
+- **Music Playing**: Allows users to play youtube videos in the channel.
+
+- **Speaking Bot**: Allows users to have the bot speak responses to them using elevenLabs
+
+## Upcoming Features
+
+- **The Farm Update**: This update will introduce a banana farm upgrade with coin multipliers, investing, functional items, and a shield to block timeouts.
+
+- **The Stat Update**: The upcoming stat update will further enhance the stat system, tying the Attack and Defense stats to timeout time and block time, respectively.
