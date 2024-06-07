@@ -39,7 +39,7 @@ async def define_play_youtube_audio_command(tree, servers):
 
             voice_channel = interaction.user.voice.channel
             if voice_channel:
-                voice_client = discord.utils.get(interaction.guild.voice_clients, channel=voice_channel)
+                voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
                 if voice_client is None:
                     voice_client = await voice_channel.connect()
                 await play_audio(voice_client, guild_id)
