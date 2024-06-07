@@ -35,19 +35,18 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
         return False, f"{target.mention}, you are safe as you have no bananas to steal. {thief.mention} failed to steal."
 
     thief_bananas = await get_bananas(thief_id)
-    max_steal_amount = int(target_bananas * 0.1)
-    steal_chance = 0.2
-
     thief_luck = await get_luck(thief_id)
     target_luck = await get_luck(target_id)
+    
+    max_steal_amount = int(target_bananas * 0.1)
+
+    steal_chance = 0.2 if thief_bananas > 0 else 0.05
 
     steal_chance += 0.1 if thief_luck > target_luck else -0.1
 
     if thief_bananas > target_bananas:
         steal_chance += 0.1
 
-    if thief_bananas == 0:
-        steal_chance = 0.05
 
     if random.random() < steal_chance:
         stolen_amount = random.randint(1, max_steal_amount)
