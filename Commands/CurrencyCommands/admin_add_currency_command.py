@@ -10,7 +10,7 @@ async def define_admin_add_currency_command(tree, servers):
             return interaction.user.id == UNBUTTERED_BAGEL_ID
         return predicate
 
-    @tree.command(name="addcurrency", description="Add currency to a user", guilds=servers)
+    @tree.command(name="add_currency", description="Add currency to a user", guilds=servers)
     @app_commands.check(is_owner())
     async def add_currency(interaction: discord.Interaction, user: discord.User, amount: int):
         if not isinstance(amount, int) or amount <= 0:

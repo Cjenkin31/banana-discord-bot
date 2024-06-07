@@ -6,7 +6,7 @@ from data.currency import get_bananas, remove_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 
 async def define_assassinate_command(tree, servers):
-    @tree.command(name="assassinate", description="Timeout a specific user for 180 seconds", guilds=servers)
+    @tree.command(name="assassinate", description="Timeout a specific user for 180 seconds : 10000 coins", guilds=servers)
     async def assassinate(interaction: discord.Interaction, member: discord.Member):
         user_id = str(interaction.user.id)
         current_bananas = await get_bananas(user_id)

@@ -5,7 +5,7 @@ from data.currency import get_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 
 async def define_get_currency_command(tree, servers):
-    @tree.command(name="getcurrency", description="Get your currency amount", guilds=servers)
+    @tree.command(name="get_bananas", description="Get your banana coin amount", guilds=servers)
     async def get_currency(interaction: discord.Interaction):
         try:
             amount = await get_bananas(str(interaction.user.id))
