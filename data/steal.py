@@ -47,9 +47,9 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
     if thief_bananas > target_bananas:
         steal_chance += 0.1
 
+    stolen_amount = random.randint(1, max_steal_amount)
 
     if random.random() < steal_chance:
-        stolen_amount = random.randint(1, max_steal_amount)
         await add_bananas(thief_id, stolen_amount)
         await remove_bananas(target_id, stolen_amount)
         await update_last_steal(thief_id)
@@ -58,7 +58,7 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
         gpt_response = await generate_gpt_response("gpt-3.5-turbo", story, user_input)
         return True, "gpt_response"
     else:
-        penalty_amount = stolen_amount = random.randint(1, max_steal_amount)
+        penalty_amount = stolen_amount
         penalty = min(thief_bananas, penalty_amount)
         await remove_bananas(thief_id, penalty)
         await add_bananas(target_id, penalty)
