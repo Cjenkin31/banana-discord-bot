@@ -75,8 +75,8 @@ async def define_play_youtube_audio_command(tree, servers):
         except VideoUnavailable:
             print("The video is unavailable, possibly due to being private or deleted.")
             raise
-        except PyTubeException as e:
-            print(f"A PyTube error occurred: {e}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
             raise
 
     def remove_file_if_exists(file_path: str):
