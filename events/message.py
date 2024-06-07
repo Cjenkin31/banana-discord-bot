@@ -31,7 +31,7 @@ async def setup_message(bot):
             await message.channel.send(f"<@{message.author.id}> You just found {banana_amount} {BANANA_COIN_EMOJI}")
         if bot.user.mentioned_in(message):
             model = "gpt-3.5-turbo"
-            role = "bread"
+            role = "meanbread" if random.randint(1, 100) == 1 else "bread"
             previous_context = ""
             if message.reference and message.reference.resolved:
                 replied_message = await message.channel.fetch_message(message.reference.message_id)
