@@ -27,6 +27,7 @@ async def define_play_youtube_audio_command(tree, servers):
 
             # Play audio
             voice_client.play(FFmpegPCMAudio(executable="ffmpeg", source=downloaded_audio))
+            await interaction.response.send_message(f"Playing audio from {url} in {voice_channel.name}.")
 
             # Wait for audio to finish playing, then disconnect and remove file
             while voice_client.is_playing() and voice_channel.members:
