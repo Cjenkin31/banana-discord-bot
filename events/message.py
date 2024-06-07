@@ -1,6 +1,7 @@
 import random
 from GPT_stories import getStoryByRole
 from data.currency import add_bananas
+from data.stats import get_luck
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from utils.gpt import generate_gpt_response
 from utils.users import UNBUTTERED_BAGEL_ID
@@ -21,8 +22,11 @@ async def setup_message(bot):
             ]))
         if "🍞" in message.content:
             await message.add_reaction("🍞")
-        if random.randint(1, 100) == 1:
-            banana_amount = random.randint(1,100)
+        if random.randint(1, 150) == 1:
+            user_luck = get_luck(message.author.id)
+            lower_bound = max(1, user_luck - 10)
+            upper_bound = min(100, user_luck + 10)
+            banana_amount = random.randint(lower_bound, upper_bound)
             await add_bananas(message.author.id, banana_amount)
             await message.channel.send(f"<@{message.author.id}> You just found {banana_amount} {BANANA_COIN_EMOJI}")
         if bot.user.mentioned_in(message):
