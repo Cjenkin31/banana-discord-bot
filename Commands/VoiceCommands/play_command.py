@@ -6,6 +6,7 @@ from discord import app_commands
 from discord import FFmpegPCMAudio
 import asyncio
 from pytube import YouTube
+import uuid
 from moviepy.editor import AudioFileClip
 
 # TODO: Add a audio queue
@@ -13,70 +14,84 @@ from moviepy.editor import AudioFileClip
 # TODO: Improve Error Handling
 # TODO: Add skipping audio.
 # TODO: New command for playing audio from links. Soundcloud, Spotify, etc.
+class AudioQueue:
+    def __init__(self):
+        self.queues = {}
+
+    def get_queue(self, guild_id):
+        if guild_id not in self.queues:
+            self.queues[guild_id] = []
+        return self.queues[guild_id]
+
+    def add_to_queue(self, guild_id, track_info):
+        queue = self.get_queue(guild_id)
+        queue.append(track_info)
+
+    def next_track(self, guild_id):
+        queue = self.get_queue(guild_id)
+        if queue:
+            return queue.pop(0)
+
+    def show_queue(self, guild_id):
+        queue = self.get_queue(guild_id)
+        return queue
+
+audio_queue = AudioQueue()
 
 async def define_play_youtube_audio_command(tree, servers):
     @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video in a voice channel.", guilds=servers)
     @app_commands.describe(url="URL of the YouTube video")
     async def play_youtube_audio(interaction: discord.Interaction, url: str):
+        guild_id = interaction.guild_id
         await interaction.response.defer()
+
+        if not interaction.user.voice or not interaction.user.voice.channel:
+            await interaction.followup.send("You need to be in a voice channel to play audio.")
+            return
+
         try:
-            # Check if URL is valid
             if not ('youtube.com/watch?v=' in url or 'youtu.be/' in url):
                 await interaction.followup.send("Invalid YouTube URL provided.")
                 return
 
-            # Download audio
-            downloaded_audio = await download_youtube_audio(url)
+            downloaded_audio = await download_youtube_audio(url, guild_id)
+            audio_queue.add_to_queue(guild_id, downloaded_audio)
+            await interaction.followup.send(f"Added to queue. Position: {len(audio_queue.get_queue(guild_id))}")
 
-            # Connect to voice channel
             voice_channel = interaction.user.voice.channel
-            voice_client = await voice_channel.connect()
-
-            # Play audio
-            voice_client.play(FFmpegPCMAudio(executable="ffmpeg", source=downloaded_audio))
-            await interaction.followup.send(f"Playing audio from {url} in {voice_channel.name}.")
-
-            # Wait for audio to finish playing, then disconnect and remove file
-            while voice_client.is_playing() and voice_channel.members:
-                await asyncio.sleep(1)
-
-            if not voice_channel.members:
-                voice_client.stop()
-                await voice_client.disconnect()
-                remove_file_if_exists(downloaded_audio)
-                return
-
-            if 'youtube.com/watch?v=' in url or 'youtu.be/' in url:
-                voice_client.stop()
-                remove_file_if_exists(downloaded_audio)
-                downloaded_audio = await download_youtube_audio(url)
-                voice_client.play(FFmpegPCMAudio(executable="ffmpeg", source=downloaded_audio))
-
-            await voice_client.disconnect()
-            remove_file_if_exists(downloaded_audio)
+            if voice_channel:
+                voice_client = await voice_channel.connect()
+                await play_audio(voice_client, guild_id)
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
-            await interaction.followup.send(f"Something went wrong! Please try again later.")
+            await interaction.followup.send("Something went wrong! Please try again later.")
 
-    async def download_youtube_audio(url: str) -> str:
-        try:
-            yt = YouTube(url)
-            stream = yt.streams.filter(only_audio=True).first()
-            output_path = stream.download(filename='downloaded_audio.mp4')
+    async def play_audio(voice_client, guild_id):
+        while audio_queue.get_queue(guild_id):
+            track = audio_queue.next_track(guild_id)
+            voice_client.play(FFmpegPCMAudio(executable="ffmpeg", source=track))
+            while voice_client.is_playing():
+                await asyncio.sleep(1)
+            remove_file_if_exists(track)
+        await voice_client.disconnect()
 
-            # Convert mp4 to mp3
-            audio_clip = AudioFileClip(output_path)
-            audio_clip.write_audiofile('downloaded_audio.mp3')
-            audio_clip.close()
-            os.remove(output_path)
-
-            return 'downloaded_audio.mp3'
-
-        except Exception as e:
-            print(f"Error downloading audio: {e}")
-            raise
+    async def download_youtube_audio(url: str, guild_id: int) -> str:
+        yt = YouTube(url)
+        stream = yt.streams.filter(only_audio=True).first()
+        unique_id = uuid.uuid4()
+        output_path = stream.download(filename=f'{guild_id}_downloaded_audio_{unique_id}.mp4')
+        audio_clip = AudioFileClip(output_path)
+        mp3_path = f'{guild_id}_downloaded_audio_{unique_id}.mp3'
+        audio_clip.write_audiofile(mp3_path)
+        audio_clip.close()
+        remove_file_if_exists(output_path)
+        return mp3_path
 
     def remove_file_if_exists(file_path: str):
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                print(f"File removed: {file_path}")
+        except Exception as e:
+            print(f"Failed to remove file {file_path}: {e}")

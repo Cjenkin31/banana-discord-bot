@@ -10,3 +10,4 @@ firebase-admin
 youtube_transcript_api
 moviepy
 pytube
+uuid
