@@ -9,6 +9,8 @@ from pytube import YouTube
 import uuid
 from moviepy.editor import AudioFileClip
 from utils.audio_queue import AudioQueue
+from pytube.exceptions import PyTubeException, VideoUnavailable
+
 # TODO: Add a audio queue
 # TODO: Check to see if the bot can play in multiple servers at once, should append serverID to end of temp file to avid conflicts.
 # TODO: Improve Error Handling
@@ -59,16 +61,23 @@ async def define_play_youtube_audio_command(tree, servers):
         await voice_client.disconnect()
 
     async def download_youtube_audio(url: str, guild_id: int) -> str:
-        yt = YouTube(url)
-        stream = yt.streams.filter(only_audio=True).first()
-        unique_id = uuid.uuid4()
-        output_path = stream.download(filename=f'{guild_id}_downloaded_audio_{unique_id}.mp4')
-        audio_clip = AudioFileClip(output_path)
-        mp3_path = f'{guild_id}_downloaded_audio_{unique_id}.mp3'
-        audio_clip.write_audiofile(mp3_path)
-        audio_clip.close()
-        remove_file_if_exists(output_path)
-        return mp3_path
+        try:
+            yt = YouTube(url)
+            stream = yt.streams.filter(only_audio=True).first()
+            unique_id = uuid.uuid4()
+            output_path = stream.download(filename=f'{guild_id}_downloaded_audio_{unique_id}.mp4')
+            audio_clip = AudioFileClip(output_path)
+            mp3_path = f'{guild_id}_downloaded_audio_{unique_id}.mp3'
+            audio_clip.write_audiofile(mp3_path)
+            audio_clip.close()
+            remove_file_if_exists(output_path)
+            return mp3_path
+        except VideoUnavailable:
+            print("The video is unavailable, possibly due to being private or deleted.")
+            raise
+        except PyTubeException as e:
+            print(f"A PyTube error occurred: {e}")
+            raise
 
     def remove_file_if_exists(file_path: str):
         try:
