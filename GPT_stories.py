@@ -73,17 +73,15 @@ def getYoutubeSummarizer():
     return "I am a YouTube Summarizer. My job is to analyze transcripts of YouTube videos and extract the most important points. I provide concise summaries that highlight the key themes and takeaways from the video, making it easier for users to quickly grasp the content without watching the entire video."
 
 def getStoryByRole(role, user_id):
-    if role.lower() == 'bread':
-        return getMeanBananaBreadStory() if user_id in getBadUserList() else getBananaBreadStory()
-    elif role.lower() == 'obama':
-        return getObamaStory()
-    elif role.lower() == 'mangohawk':
-        return getMangoStory()
-    elif role.lower() == 'cd':
-        return getEngineerStory()
-    elif role.lower() == 'lou':
-        return getGamblingAddict()
-    elif role.lower() == 'youtube':
-        return getYoutubeSummarizer()
-    else:
-        return getBananaBreadStory()
+    role = role.lower()
+    role_to_story = {
+        'bread': getMeanBananaBreadStory() if user_id in getBadUserList() else getBananaBreadStory(),
+        'meanbread': getMeanBananaBreadStory(),
+        'obama': getObamaStory(),
+        'mangohawk': getMangoStory(),
+        'cd': getEngineerStory(),
+        'lou': getGamblingAddict(),
+        'youtube': getYoutubeSummarizer(),
+    }
+
+    return role_to_story.get(role, getBananaBreadStory())
