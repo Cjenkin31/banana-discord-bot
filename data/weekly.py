@@ -1,4 +1,5 @@
 from data.currency import add_bananas, get_bananas
+from data.stats import get_luck
 import firebase_admin
 import os
 import json
@@ -23,7 +24,10 @@ async def try_collect_weekly(user_id):
         now = datetime.now(timezone.utc)
         
         if last_weekly and (now - last_weekly >= timedelta(days=7)):
-            bananas_to_add = random.randint(1, 1000)
+            base_bananas = random.randint(1, 1000)
+            user_luck = await get_luck(user_id)
+            luck_multiplier = 1 + (user_luck / 250.0)
+            bananas_to_add = int(base_bananas * luck_multiplier)
             await add_bananas(user_id, bananas_to_add)
             await update_last_weekly(user_id)
             return True, bananas_to_add
@@ -31,7 +35,10 @@ async def try_collect_weekly(user_id):
             time_left = last_weekly + timedelta(days=7) - now
             return False, time_left
         else:
-            bananas_to_add = random.randint(1, 1000)
+            base_bananas = random.randint(1, 1000)
+            user_luck = await get_luck(user_id)
+            luck_multiplier = 1 + (user_luck / 250.0)
+            bananas_to_add = int(base_bananas * luck_multiplier)
             await add_bananas(user_id, bananas_to_add)
             await update_last_weekly(user_id)
             return True, bananas_to_add
