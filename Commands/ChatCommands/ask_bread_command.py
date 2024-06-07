@@ -16,7 +16,7 @@ async def define_ask_bread_command(tree, servers):
         # if interaction.user.id == UNBUTTERED_BAGEL_ID:
         #     model = "gpt-4-turbo"  # Way to expensive
         # else:
-        model = "gpt-3.5-turbo"
+        model = "gpt-4o"
         # Generate the completion response using the selected story
         response_message = await generate_gpt_response(model, story, user_input)
         await send_message_in_chunks(response_message, interaction)
