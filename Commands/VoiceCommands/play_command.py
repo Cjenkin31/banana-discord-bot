@@ -12,10 +12,11 @@ async def define_play_youtube_audio_command(tree, servers):
     @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video in a voice channel.", guilds=servers)
     @app_commands.describe(url="URL of the YouTube video")
     async def play_youtube_audio(interaction: discord.Interaction, url: str):
+        await interaction.response.defer()
         try:
             # Check if URL is valid
             if not ('youtube.com/watch?v=' in url or 'youtu.be/' in url):
-                await interaction.response.send_message("Invalid YouTube URL provided.")
+                await interaction.followup.send("Invalid YouTube URL provided.")
                 return
 
             # Download audio
@@ -27,7 +28,7 @@ async def define_play_youtube_audio_command(tree, servers):
 
             # Play audio
             voice_client.play(FFmpegPCMAudio(executable="ffmpeg", source=downloaded_audio))
-            await interaction.response.send_message(f"Playing audio from {url} in {voice_channel.name}.")
+            await interaction.followup.send(f"Playing audio from {url} in {voice_channel.name}.")
 
             # Wait for audio to finish playing, then disconnect and remove file
             while voice_client.is_playing() and voice_channel.members:
@@ -50,7 +51,7 @@ async def define_play_youtube_audio_command(tree, servers):
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
-            await interaction.response.send_message(f"Something went wrong! Please try again later.")
+            await interaction.followup.send(f"Something went wrong! Please try again later.")
 
     async def download_youtube_audio(url: str) -> str:
         try:
