@@ -8,33 +8,12 @@ import asyncio
 from pytube import YouTube
 import uuid
 from moviepy.editor import AudioFileClip
-
+from utils.audio_queue import AudioQueue
 # TODO: Add a audio queue
 # TODO: Check to see if the bot can play in multiple servers at once, should append serverID to end of temp file to avid conflicts.
 # TODO: Improve Error Handling
 # TODO: Add skipping audio.
 # TODO: New command for playing audio from links. Soundcloud, Spotify, etc.
-class AudioQueue:
-    def __init__(self):
-        self.queues = {}
-
-    def get_queue(self, guild_id):
-        if guild_id not in self.queues:
-            self.queues[guild_id] = []
-        return self.queues[guild_id]
-
-    def add_to_queue(self, guild_id, track_info):
-        queue = self.get_queue(guild_id)
-        queue.append(track_info)
-
-    def next_track(self, guild_id):
-        queue = self.get_queue(guild_id)
-        if queue:
-            return queue.pop(0)
-
-    def show_queue(self, guild_id):
-        queue = self.get_queue(guild_id)
-        return queue
 
 audio_queue = AudioQueue()
 
