@@ -9,7 +9,7 @@ from pytube import YouTube
 import uuid
 from moviepy.editor import AudioFileClip
 from utils.audio_queue import AudioQueue
-from pytube.exceptions import PyTubeException, VideoUnavailable
+from pytube.exceptions import VideoUnavailable
 
 # TODO: Add a audio queue
 # TODO: Check to see if the bot can play in multiple servers at once, should append serverID to end of temp file to avid conflicts.
