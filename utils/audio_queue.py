@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 class AudioQueue:
     _instance = None
@@ -32,8 +33,11 @@ class AudioQueue:
 
     async def clear_queue(self, guild_id):
         async with self._instance._lock:
-            if guild_id in self._instance.queues:
-                self._instance.queues[guild_id] = []
+            queue = self._instance.queues.get(guild_id, [])
+            for track_info in queue:
+                file_path = track_info["file"]
+                self.remove_file_if_exists(file_path)
+            self._instance.queues[guild_id] = []
 
     async def is_queue_empty(self, guild_id):
         async with self._instance._lock:
@@ -42,3 +46,11 @@ class AudioQueue:
     async def queue_length(self, guild_id):
         async with self._instance._lock:
             return len(self._instance.queues.get(guild_id, []))
+
+    def remove_file_if_exists(self, file_path: str):
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                print(f"File removed: {file_path}")
+        except Exception as e:
+            print(f"Failed to remove file {file_path}: {e}")
