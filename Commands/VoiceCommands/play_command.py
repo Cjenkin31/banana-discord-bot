@@ -112,20 +112,34 @@ async def define_play_youtube_audio_command(tree, servers):
     async def download_songs_in_lots(songs: List[str], guild_id: int, retry: bool):
         try:
             while songs:
-                print(f"Downloading {len(songs)} songs...")
+                print(f"Starting loop with {len(songs)} songs...")
+                
+                # Check if songs is a list and contains valid elements
+                if not isinstance(songs, list):
+                    print(f"Expected list of songs, got {type(songs)} instead. Exiting loop.")
+                    break
+                
+                if len(songs) == 0:
+                    print("Songs list is empty. Exiting loop.")
+                    break
+
                 songs_to_download = songs[:MAX_DOWNLOAD_SONGS_AT_A_TIME]
-                print(f"Downloading songs_to_download {len(songs_to_download)} songs...")
-                songs = songs[MAX_DOWNLOAD_SONGS_AT_A_TIME:]
+                print(f"Downloading {len(songs_to_download)} songs...")
+
+                try:
+                    songs = songs[MAX_DOWNLOAD_SONGS_AT_A_TIME:]
+                except Exception as e:
+                    print(f"Error while slicing songs: {e}")
+                    break
 
                 if songs is None:
-                    print("songs became None after slicing")
+                    print("Songs became None after slicing. Exiting loop.")
                     break
 
                 print(f"Remaining songs: {len(songs)}")
 
                 tasks = []
                 for song in songs_to_download:
-                    print(f"Downloading song: {song}")
                     if song is None:
                         print("Encountered a None URL in songs_to_download")
                         continue
@@ -145,8 +159,6 @@ async def define_play_youtube_audio_command(tree, servers):
 
         except Exception as e:
             print(f"An error occurred in download_songs_in_lots: {e}")
-
-
 
 async def play_audio(voice_client, guild_id, interaction, process_task):
     try:
