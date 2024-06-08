@@ -28,52 +28,37 @@ async def define_play_youtube_audio_command(tree, servers):
 
         try:
             if ('youtube.com/playlist?list=' in url or 'youtube.com/watch?v=' in url or 'youtu.be/' in url):
-                await process_url(url, guild_id, interaction)
+                async for track_info in process_url(url, guild_id):
+                    await audio_queue.add_to_queue(guild_id, track_info)
+
+                await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
+
+                voice_channel = interaction.user.voice.channel
+                voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
+                if voice_client is None:
+                    voice_client = await voice_channel.connect()
+                
+                if not voice_client.is_playing():
+                    await play_audio(voice_client, guild_id, interaction)
             else:
                 await interaction.followup.send("Invalid YouTube URL provided.")
                 return
-
-            voice_channel = interaction.user.voice.channel
-            voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
-            if voice_client is None:
-                voice_client = await voice_channel.connect()
-            
-            if not voice_client.is_playing():
-                await play_audio(voice_client, guild_id, interaction)
 
         except Exception as e:
             print(f"An error occurred in main play_youtube_audio: {str(e)}")
             await interaction.followup.send("Something went wrong! Please try again later.")
 
-    async def process_url(url, guild_id, interaction):
+    async def process_url(url, guild_id):
         if 'playlist?list=' in url:
             playlist = Playlist(url)
-            videos = playlist.videos
-            # Limit how many videos to download so that the bot doesn't get stuck downloading a huge playlist
-            for video in videos[:2]:
+            for video in playlist.videos:
                 downloaded_audio = await download_with_retry(video.watch_url, guild_id)
                 if downloaded_audio:
-                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
-
-            await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
-
-            # Start a background task to handle downloading remaining videos
-            asyncio.create_task(handle_playlist_download(videos[2:], guild_id))
+                    yield {"file": downloaded_audio, "url": video.watch_url}
         else:
             downloaded_audio = await download_with_retry(url, guild_id)
             if downloaded_audio:
-                await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
-                await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
-
-    async def handle_playlist_download(videos, guild_id):
-        for video in videos:
-            try:
-                downloaded_audio = await download_with_retry(video.watch_url, guild_id)
-                if downloaded_audio:
-                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
-                print(f"Downloaded and added to queue: {video.watch_url}")
-            except Exception as e:
-                print(f"Error occurred while downloading {video.watch_url}: {e}")
+                yield {"file": downloaded_audio, "url": url}
 
     async def play_audio(voice_client, guild_id, interaction):
         while not await audio_queue.is_queue_empty(guild_id):
@@ -112,6 +97,10 @@ async def define_play_youtube_audio_command(tree, servers):
         try:
             yt = YouTube(url)
             stream = yt.streams.filter(only_audio=True).first()
+            if stream is None:
+                print(f"No audio stream found for URL: {url}")
+                return None
+
             unique_id = uuid.uuid4()
             output_path = stream.download(filename=f'{guild_id}_downloaded_audio_{unique_id}.mp4')
             audio_clip = AudioFileClip(output_path)
