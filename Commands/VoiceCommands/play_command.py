@@ -127,26 +127,30 @@ async def define_play_youtube_audio_command(tree, servers):
             track_info = await audio_queue.next_track(guild_id)
             if track_info is None:
                 if process_task.done() and await audio_queue.is_queue_empty(guild_id):
+                    print("Process completed and queue is empty, disconnecting...")
                     break
                 await asyncio.sleep(1)  # Wait a bit before checking the queue again
                 continue
 
-            if voice_client and voice_client.is_connected():
-                track = track_info["file"]
-                track_url = track_info["url"]
-                print(f"Now playing: {track_url}")
-                voice_client.play(FFmpegPCMAudio(executable="ffmpeg", source=track))
-                await interaction.channel.send(f"Now playing: {track_url}")
-                while voice_client.is_playing():
-                    await asyncio.sleep(1)
-                remove_file_if_exists(track)
-        
-            else:
-                print("Voice client not connected or is None")
+            if not voice_client or not voice_client.is_connected():
+                print("Voice client not connected or is None, attempting to reconnect...")
+                # Try to reconnect or handle the error appropriately
                 break
+
+            track = track_info["file"]
+            track_url = track_info["url"]
+            print(f"Now playing: {track_url}, track file: {track}")
+            voice_client.play(FFmpegPCMAudio(executable="ffmpeg", source=track))
+            await interaction.channel.send(f"Now playing: {track_url}")
+
+            while voice_client.is_playing():
+                await asyncio.sleep(1)
+            
+            remove_file_if_exists(track)
         
         if voice_client:
             await voice_client.disconnect()
+
 
 
     async def download_with_retry(url: str, guild_id: int, max_retries=3):
