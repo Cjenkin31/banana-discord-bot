@@ -15,7 +15,7 @@ from typing import List
 # TODO: New command for playing audio from links. Soundcloud, Spotify, etc.
 
 audio_queue = AudioQueue()
-MAX_DOWNLOAD_SONGS_AT_A_TIME = 3  # Define the maximum number of simultaneous downloads
+MAX_DOWNLOAD_SONGS_AT_A_TIME = 2
 
 class Downloader:
     async def download_song(self, url: str, guild_id: int) -> str:
@@ -112,10 +112,12 @@ async def define_play_youtube_audio_command(tree, servers):
             first_song_path = await downloader.download_song(first_song, guild_id)
             if first_song_path:
                 await audio_queue.add_to_queue(guild_id, {"file": first_song_path, "url": first_song})
-                await play_audio(voice_client, guild_id, interaction)
+                play_task = asyncio.create_task(play_audio(voice_client, guild_id, interaction))
 
             # Continue downloading the rest of the songs in the background
             await download_songs_in_lots(songs, guild_id, retry=False)
+
+            await play_task
 
         except Exception as e:
             print(f"An error occurred in process_url_and_play_first_song: {e}")
@@ -186,8 +188,8 @@ async def define_play_youtube_audio_command(tree, servers):
                         track = track_info["file"]
                         track_url = track_info["url"]
                         print(f"Now playing: {track_url}, track file: {track}")
-                        await interaction.channel.send(f"Now playing: {track_url}")
                         voice_client.play(FFmpegPCMAudio(executable="ffmpeg", source=track))
+                        await interaction.channel.send(f"Now playing: {track_url}")
 
                         while voice_client.is_playing():
                             await asyncio.sleep(1)
