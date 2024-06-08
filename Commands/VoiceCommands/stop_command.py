@@ -17,7 +17,7 @@ async def define_stop_youtube_audio_command(tree, servers):
 
             await voice_client.disconnect()
 
-            audio_queue.clear_queue(guild_id)
+            await audio_queue.clear_queue(guild_id)
             await interaction.response.send_message("Disconnected and stopped playback. The queue has been cleared.")
         else:
             await interaction.response.send_message("The bot is not connected to any voice channel.")

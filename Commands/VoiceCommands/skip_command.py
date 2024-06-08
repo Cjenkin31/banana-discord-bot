@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-import os
 from utils.audio_queue import AudioQueue
 
 audio_queue = AudioQueue()
@@ -23,8 +22,8 @@ async def define_skip_youtube_audio_command(tree, servers):
             await interaction.response.send_message("The bot is not connected to any voice channel.")
 
     async def play_next_audio(voice_client, guild_id, interaction):
-        if not audio_queue.is_queue_empty(guild_id):
-            track_info = audio_queue.next_track(guild_id)
+        if not await audio_queue.is_queue_empty(guild_id):
+            track_info = await audio_queue.next_track(guild_id)
             track = track_info["file"]
             track_url = track_info["url"]
             voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=track))
