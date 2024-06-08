@@ -64,8 +64,10 @@ async def define_play_youtube_audio_command(tree, servers):
         for attempt in range(max_retries):
             try:
                 return await download_youtube_audio(url, guild_id)
-            except (VideoUnavailable, PytubeError) as e:
+            except (VideoUnavailable, PytubeError, KeyError) as e:
                 print(f"Error occurred: {e}")
+                if 'streamingData' in str(e):
+                    print("YouTube streaming data extraction failed.")
                 if attempt < max_retries - 1:
                     await asyncio.sleep(2 ** attempt)  # Exponential backoff
                 else:
@@ -91,6 +93,10 @@ async def define_play_youtube_audio_command(tree, servers):
             raise
         except PytubeError as e:
             print(f"An error occurred with PyTube: {e}")
+            raise
+        except KeyError as e:
+            if 'streamingData' in str(e):
+                print("YouTube streaming data extraction failed.")
             raise
         except Exception as e:
             print(f"An error occurred while downloading: {e}")
