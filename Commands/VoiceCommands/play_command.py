@@ -42,7 +42,7 @@ async def define_play_youtube_audio_command(tree, servers):
                 await play_audio(voice_client, guild_id, interaction)
 
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
+            print(f"An error occurred in main play_youtube_audio: {str(e)}")
             await interaction.followup.send("Something went wrong! Please try again later.")
 
     async def process_url(url, guild_id, interaction):
@@ -98,7 +98,7 @@ async def define_play_youtube_audio_command(tree, servers):
                 else:
                     raise
             except Exception as e:
-                print(f"An error occurred: {e}")
+                print(f"An error occurred in download_with_retry: {e}")
                 raise
 
     async def download_youtube_audio(url: str, guild_id: int) -> str:
@@ -124,7 +124,7 @@ async def define_play_youtube_audio_command(tree, servers):
                 print("YouTube streaming data extraction failed.")
             raise
         except Exception as e:
-            print(f"An error occurred while downloading: {e}")
+            print(f"An error occurred in download_youtube_audio: {e}")
             raise
 
     def remove_file_if_exists(file_path: str):
