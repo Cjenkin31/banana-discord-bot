@@ -1,5 +1,6 @@
 import asyncio
 import os
+import random
 
 class AudioQueue:
     _instance = None
@@ -46,6 +47,12 @@ class AudioQueue:
     async def queue_length(self, guild_id):
         async with self._instance._lock:
             return len(self._instance.queues.get(guild_id, []))
+
+    async def shuffle_queue(self, guild_id):
+        async with self._instance._lock:
+            queue = self._instance.queues.get(guild_id, [])
+            if queue:
+                random.shuffle(queue)
 
     def remove_file_if_exists(self, file_path: str):
         try:
