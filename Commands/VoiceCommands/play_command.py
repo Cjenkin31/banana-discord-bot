@@ -56,25 +56,32 @@ async def define_play_youtube_audio_command(tree, servers):
     async def play_youtube_audio(interaction: discord.Interaction, url: str):
         guild_id = interaction.guild_id
         await interaction.response.defer()
-
+        print("Received play_youtube_audio command")
         if not interaction.user.voice or not interaction.user.voice.channel:
             await interaction.followup.send("You need to be in a voice channel to play audio.")
+            print("User not in voice channel")
             return
-
         try:
             if 'youtube.com/playlist?list=' in url or 'youtube.com/watch?v=' in url or 'youtu.be/' in url:
+                print(f"Processing YouTube URL: {url}")
                 voice_channel = interaction.user.voice.channel
+                print(f"User is in voice channel: {voice_channel.name}")
                 voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
+                print(f"Voice client: {voice_client}")
                 if voice_client is None:
                     try:
                         voice_client = await voice_channel.connect()
+                        print(f"Joined voice channel: {voice_channel.name}")
                     except Exception as e:
                         await interaction.followup.send(f"Failed to join voice channel: {str(e)}")
                         return
 
                 # Start processing the URL and playing audio concurrently
+                print("Starting process_task")
                 process_task = asyncio.create_task(process_url(url, guild_id))
+                print("Starting play_task")
                 play_task = asyncio.create_task(play_audio(voice_client, guild_id, interaction, process_task))
+                print("Waiting for process_task and play_task to complete")
                 await asyncio.gather(process_task, play_task)
             else:
                 await interaction.followup.send("Invalid YouTube URL provided.")
@@ -83,46 +90,52 @@ async def define_play_youtube_audio_command(tree, servers):
         except Exception as e:
             print(f"An error occurred in main play_youtube_audio: {str(e)}")
             await interaction.followup.send("Something went wrong! Please try again later.")
-
     async def process_url(url, guild_id):
-        if 'playlist?list=' in url:
-            playlist = Playlist(url)
-            if playlist is None:
-                print("Playlist is None")
-                return
-            songs = playlist.video_urls
-            if songs is None:
-                print("Playlist video_urls is None")
-                return
+        try:
+            if 'playlist?list=' in url:
+                playlist = Playlist(url)
+                if playlist is None:
+                    print("Playlist is None")
+                    return
+                songs = playlist.video_urls
+                if songs is None:
+                    print("Playlist video_urls is None")
+                    return
+                else:
+                    print(f"Playlist contains {len(songs)} videos")
+                await download_songs_in_lots(songs, guild_id, retry=False)
             else:
-                print(f"Playlist contains {len(songs)} videos")
-            await download_songs_in_lots(songs, guild_id, retry=False)
-        else:
-            await download_songs_in_lots([url], guild_id, retry=True)
+                await download_songs_in_lots([url], guild_id, retry=True)
+        except Exception as e:
+            print(f"An error occurred in process_url: {e}")
 
     async def download_songs_in_lots(songs: List[str], guild_id: int, retry: bool):
-        while songs:
-            # Limit the number of concurrent downloads
-            songs_to_download = songs[:MAX_DOWNLOAD_SONGS_AT_A_TIME]
-            songs = songs[MAX_DOWNLOAD_SONGS_AT_A_TIME:]
+        try:
+            while songs:
+                songs_to_download = songs[:MAX_DOWNLOAD_SONGS_AT_A_TIME]
+                songs = songs[MAX_DOWNLOAD_SONGS_AT_A_TIME:]
 
-            tasks = []
-            for song in songs_to_download:
-                if song is None:
-                    print("Encountered a None URL in songs_to_download")
-                    continue
-                if retry:
-                    task = asyncio.create_task(download_with_retry(song, guild_id))
-                else:
-                    task = asyncio.create_task(downloader.download_song(song, guild_id))
-                tasks.append(task)
+                tasks = []
+                for song in songs_to_download:
+                    if song is None:
+                        print("Encountered a None URL in songs_to_download")
+                        continue
+                    if retry:
+                        task = asyncio.create_task(download_with_retry(song, guild_id))
+                    else:
+                        task = asyncio.create_task(downloader.download_song(song, guild_id))
+                    tasks.append(task)
 
-            for task in tasks:
-                downloaded_audio = await task
-                if downloaded_audio:
-                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": song})
+                for task in tasks:
+                    downloaded_audio = await task
+                    if downloaded_audio:
+                        await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": song})
+        except Exception as e:
+            print(f"An error occurred in download_songs_in_lots: {e}")
 
-    async def play_audio(voice_client, guild_id, interaction, process_task):
+
+async def play_audio(voice_client, guild_id, interaction, process_task):
+    try:
         while True:
             try:
                 track_info = await audio_queue.next_track(guild_id)
@@ -149,12 +162,13 @@ async def define_play_youtube_audio_command(tree, servers):
                     print("Voice client not connected or is None")
                     break
             except Exception as e:
-                print(f"An error occurred in play_audio: {e}")
+                print(f"An error occurred in play_audio loop: {e}")
                 break
-        
+    except Exception as e:
+        print(f"An error occurred in play_audio: {e}")
+    finally:
         if voice_client:
             await voice_client.disconnect()
-
 
     async def download_with_retry(url: str, guild_id: int, max_retries=3):
         for attempt in range(max_retries):
