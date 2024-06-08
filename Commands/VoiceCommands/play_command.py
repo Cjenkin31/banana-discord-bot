@@ -15,8 +15,40 @@ from typing import List
 # TODO: New command for playing audio from links. Soundcloud, Spotify, etc.
 
 audio_queue = AudioQueue()
-
 MAX_DOWNLOAD_SONGS_AT_A_TIME = 3  # Define the maximum number of simultaneous downloads
+
+class Downloader:
+    async def download_song(self, url: str, guild_id: int) -> str:
+        try:
+            yt = YouTube(url)
+            stream = yt.streams.filter(only_audio=True).first()
+            if stream is None:
+                print(f"No audio stream found for URL: {url}")
+                return None
+
+            unique_id = uuid.uuid4()
+            output_path = stream.download(filename=f'{guild_id}_downloaded_audio_{unique_id}.mp4')
+            audio_clip = AudioFileClip(output_path)
+            mp3_path = f'{guild_id}_downloaded_audio_{unique_id}.mp3'
+            audio_clip.write_audiofile(mp3_path)
+            audio_clip.close()
+            remove_file_if_exists(output_path)
+            return mp3_path
+        except VideoUnavailable:
+            print("The video is unavailable, possibly due to being private or deleted.")
+            raise
+        except PytubeError as e:
+            print(f"An error occurred with PyTube: {e}")
+            raise
+        except KeyError as e:
+            if 'streamingData' in str(e):
+                print("YouTube streaming data extraction failed.")
+            raise
+        except Exception as e:
+            print(f"An error occurred in download_youtube_audio: {e}")
+            raise
+
+downloader = Downloader()
 
 async def define_play_youtube_audio_command(tree, servers):
     @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video or playlist in a voice channel.", guilds=servers)
@@ -30,7 +62,7 @@ async def define_play_youtube_audio_command(tree, servers):
             return
 
         try:
-            if ('youtube.com/playlist?list=' in url or 'youtube.com/watch?v=' in url or 'youtu.be/' in url):
+            if 'youtube.com/playlist?list=' in url or 'youtube.com/watch?v=' in url or 'youtu.be/' in url:
                 voice_channel = interaction.user.voice.channel
                 voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
                 if voice_client is None:
@@ -56,6 +88,10 @@ async def define_play_youtube_audio_command(tree, servers):
         if 'playlist?list=' in url:
             playlist = Playlist(url)
             songs = playlist.video_urls
+            if songs is None:
+                print("Playlist video_urls is None")
+            else:
+                print(f"Playlist contains {len(songs)} videos")
             await download_songs_in_lots(songs, guild_id, retry=False)
         else:
             await download_songs_in_lots([url], guild_id, retry=True)
@@ -68,10 +104,13 @@ async def define_play_youtube_audio_command(tree, servers):
 
             tasks = []
             for song in songs_to_download:
+                if song is None:
+                    print("Encountered a None URL in songs_to_download")
+                    continue
                 if retry:
                     task = asyncio.create_task(download_with_retry(song, guild_id))
                 else:
-                    task = asyncio.create_task(download_youtube_audio(song, guild_id))
+                    task = asyncio.create_task(downloader.download_song(song, guild_id))
                 tasks.append(task)
 
             for task in tasks:
@@ -102,7 +141,7 @@ async def define_play_youtube_audio_command(tree, servers):
     async def download_with_retry(url: str, guild_id: int, max_retries=3):
         for attempt in range(max_retries):
             try:
-                return await download_youtube_audio(url, guild_id)
+                return await downloader.download_song(url, guild_id)
             except (VideoUnavailable, PytubeError, KeyError) as e:
                 print(f"Error occurred: {e}")
                 if 'streamingData' in str(e):
@@ -115,40 +154,10 @@ async def define_play_youtube_audio_command(tree, servers):
                 print(f"An error occurred in download_with_retry: {e}")
                 raise
 
-    async def download_youtube_audio(url: str, guild_id: int) -> str:
-        try:
-            yt = YouTube(url)
-            stream = yt.streams.filter(only_audio=True).first()
-            if stream is None:
-                print(f"No audio stream found for URL: {url}")
-                return None
-
-            unique_id = uuid.uuid4()
-            output_path = stream.download(filename=f'{guild_id}_downloaded_audio_{unique_id}.mp4')
-            audio_clip = AudioFileClip(output_path)
-            mp3_path = f'{guild_id}_downloaded_audio_{unique_id}.mp3'
-            audio_clip.write_audiofile(mp3_path)
-            audio_clip.close()
-            remove_file_if_exists(output_path)
-            return mp3_path
-        except VideoUnavailable:
-            print("The video is unavailable, possibly due to being private or deleted.")
-            raise
-        except PytubeError as e:
-            print(f"An error occurred with PyTube: {e}")
-            raise
-        except KeyError as e:
-            if 'streamingData' in str(e):
-                print("YouTube streaming data extraction failed.")
-            raise
-        except Exception as e:
-            print(f"An error occurred in download_youtube_audio: {e}")
-            raise
-
-    def remove_file_if_exists(file_path: str):
-        try:
-            if os.path.exists(file_path):
-                os.remove(file_path)
-                print(f"File removed: {file_path}")
-        except Exception as e:
-            print(f"Failed to remove file {file_path}: {e}")
+def remove_file_if_exists(file_path: str):
+    try:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"File removed: {file_path}")
+    except Exception as e:
+        print(f"Failed to remove file {file_path}: {e}")
