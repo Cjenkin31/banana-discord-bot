@@ -39,7 +39,7 @@ async def define_play_youtube_audio_command(tree, servers):
                 voice_client = await voice_channel.connect()
             
             if not voice_client.is_playing():
-                await play_audio(voice_client, guild_id, interaction)
+                await play_audio(voice_client, guild_id, interaction, url)
 
         except Exception as e:
             print(f"An error occurred in main play_youtube_audio: {str(e)}")
@@ -60,9 +60,6 @@ async def define_play_youtube_audio_command(tree, servers):
                     await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
 
             await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
-
-            # Start a background task to handle downloading remaining videos
-            asyncio.create_task(handle_playlist_download(videos[2:], guild_id))
         else:
             downloaded_audio = await download_with_retry(url, guild_id)
             if downloaded_audio:
@@ -78,7 +75,17 @@ async def define_play_youtube_audio_command(tree, servers):
             except Exception as e:
                 print(f"Error downloading video {video.watch_url}: {str(e)}")
 
-    async def play_audio(voice_client, guild_id, interaction):
+    async def play_audio(voice_client, guild_id, interaction, url):
+        # If it's a playlist, start the background download for remaining videos
+        if 'playlist?list=' in url:
+            playlist = Playlist(url)
+            videos = playlist.videos
+            if videos is None:
+                await interaction.channel.send("Failed to retrieve videos from the playlist.")
+                return
+
+            asyncio.create_task(handle_playlist_download(videos[2:], guild_id))
+
         while not await audio_queue.is_queue_empty(guild_id):
             track_info = await audio_queue.next_track(guild_id)
             if not track_info:
@@ -144,4 +151,3 @@ async def define_play_youtube_audio_command(tree, servers):
                 print(f"File removed: {file_path}")
         except Exception as e:
             print(f"Failed to remove file {file_path}: {e}")
-
