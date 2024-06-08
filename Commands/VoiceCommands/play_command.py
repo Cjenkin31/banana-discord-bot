@@ -49,6 +49,10 @@ async def define_play_youtube_audio_command(tree, servers):
         if 'playlist?list=' in url:
             playlist = Playlist(url)
             videos = playlist.videos
+            if videos is None:
+                await interaction.followup.send("Failed to retrieve videos from the playlist.")
+                return
+            
             # Limit how many videos to download so that the bot doesn't get stuck downloading a huge playlist
             for video in videos[:2]:
                 downloaded_audio = await download_with_retry(video.watch_url, guild_id)
@@ -67,9 +71,12 @@ async def define_play_youtube_audio_command(tree, servers):
 
     async def handle_playlist_download(videos, guild_id):
         for video in videos:
-            downloaded_audio = await download_with_retry(video.watch_url, guild_id)
-            if downloaded_audio:
-                await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
+            try:
+                downloaded_audio = await download_with_retry(video.watch_url, guild_id)
+                if downloaded_audio:
+                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
+            except Exception as e:
+                print(f"Error downloading video {video.watch_url}: {str(e)}")
 
     async def play_audio(voice_client, guild_id, interaction):
         while not await audio_queue.is_queue_empty(guild_id):
@@ -137,3 +144,4 @@ async def define_play_youtube_audio_command(tree, servers):
                 print(f"File removed: {file_path}")
         except Exception as e:
             print(f"Failed to remove file {file_path}: {e}")
+
