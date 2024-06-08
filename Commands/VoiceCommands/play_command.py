@@ -36,12 +36,10 @@ async def define_play_youtube_audio_command(tree, servers):
             voice_channel = interaction.user.voice.channel
             voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
             if voice_client is None:
-                print("Connecting to voice channel...")
                 voice_client = await voice_channel.connect()
-                print("Connected to voice channel.")
             
             if not voice_client.is_playing():
-                await play_audio(voice_client, guild_id, interaction, url)
+                await play_audio(voice_client, guild_id, interaction)
 
         except Exception as e:
             print(f"An error occurred in main play_youtube_audio: {str(e)}")
@@ -50,44 +48,34 @@ async def define_play_youtube_audio_command(tree, servers):
     async def process_url(url, guild_id, interaction):
         if 'playlist?list=' in url:
             playlist = Playlist(url)
-            video_urls = playlist.video_urls
-            if not video_urls:
-                await interaction.followup.send("Failed to retrieve videos from the playlist.")
-                return
-            
+            videos = playlist.videos
             # Limit how many videos to download so that the bot doesn't get stuck downloading a huge playlist
-            for video_url in video_urls[:2]:
-                downloaded_audio = await download_with_retry(video_url, guild_id)
+            for video in videos[:2]:
+                downloaded_audio = await download_with_retry(video.watch_url, guild_id)
                 if downloaded_audio:
-                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video_url})
+                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
 
             await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
+
+            # Start a background task to handle downloading remaining videos
+            asyncio.create_task(handle_playlist_download(videos[2:], guild_id))
         else:
             downloaded_audio = await download_with_retry(url, guild_id)
             if downloaded_audio:
                 await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
                 await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
 
-    async def handle_playlist_download(video_urls, guild_id):
-        for video_url in video_urls:
+    async def handle_playlist_download(videos, guild_id):
+        for video in videos:
             try:
-                downloaded_audio = await download_with_retry(video_url, guild_id)
+                downloaded_audio = await download_with_retry(video.watch_url, guild_id)
                 if downloaded_audio:
-                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video_url})
+                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
+                print(f"Downloaded and added to queue: {video.watch_url}")
             except Exception as e:
-                print(f"Error downloading video {video_url}: {str(e)}")
+                print(f"Error occurred while downloading {video.watch_url}: {e}")
 
-    async def play_audio(voice_client, guild_id, interaction, url):
-        # If it's a playlist, start the background download for remaining videos
-        if 'playlist?list=' in url:
-            playlist = Playlist(url)
-            video_urls = playlist.video_urls
-            if not video_urls:
-                await interaction.channel.send("Failed to retrieve videos from the playlist.")
-                return
-
-            asyncio.create_task(handle_playlist_download(video_urls[2:], guild_id))
-
+    async def play_audio(voice_client, guild_id, interaction):
         while not await audio_queue.is_queue_empty(guild_id):
             track_info = await audio_queue.next_track(guild_id)
             if not track_info:
