@@ -24,6 +24,7 @@ class AudioQueue:
     async def next_track(self, guild_id):
         async with self._instance._lock:
             queue = self._instance.queues.get(guild_id, [])
+            print("Queue AUDIO QUEUE NEXT TRACK: ", queue)
             if queue:
                 return queue.pop(0)
             return None

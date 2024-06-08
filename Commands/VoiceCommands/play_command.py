@@ -127,7 +127,8 @@ async def define_play_youtube_audio_command(tree, servers):
             try:
                 track_info = await audio_queue.next_track(guild_id)
                 if track_info is None:
-                    if process_task.done() and await audio_queue.is_queue_empty(guild_id):
+                    queue_empty = await audio_queue.is_queue_empty(guild_id)
+                    if process_task.done() and queue_empty:
                         print("Process completed and queue is empty, disconnecting...")
                         break
                     await asyncio.sleep(1)  # Wait a bit before checking the queue again
@@ -153,8 +154,6 @@ async def define_play_youtube_audio_command(tree, servers):
         
         if voice_client:
             await voice_client.disconnect()
-
-
 
 
     async def download_with_retry(url: str, guild_id: int, max_retries=3):
