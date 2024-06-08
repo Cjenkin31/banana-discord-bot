@@ -112,11 +112,15 @@ async def define_play_youtube_audio_command(tree, servers):
     async def download_songs_in_lots(songs: List[str], guild_id: int, retry: bool):
         try:
             while songs:
+                print(f"Downloading {len(songs)} songs...")
                 songs_to_download = songs[:MAX_DOWNLOAD_SONGS_AT_A_TIME]
+                print(f"Downloading songs_to_download{len(songs_to_download)} songs...")
                 songs = songs[MAX_DOWNLOAD_SONGS_AT_A_TIME:]
+                print(f"Remaining songs: {len(songs)}")
 
                 tasks = []
                 for song in songs_to_download:
+                    print(f"Downloading song: {song}")
                     if song is None:
                         print("Encountered a None URL in songs_to_download")
                         continue
@@ -170,21 +174,21 @@ async def play_audio(voice_client, guild_id, interaction, process_task):
         if voice_client:
             await voice_client.disconnect()
 
-    async def download_with_retry(url: str, guild_id: int, max_retries=3):
-        for attempt in range(max_retries):
-            try:
-                return await downloader.download_song(url, guild_id)
-            except (VideoUnavailable, PytubeError, KeyError) as e:
-                print(f"Error occurred: {e}")
-                if 'streamingData' in str(e):
-                    print("YouTube streaming data extraction failed.")
-                if attempt < max_retries - 1:
-                    await asyncio.sleep(2 ** attempt)  # Exponential backoff
-                else:
-                    raise
-            except Exception as e:
-                print(f"An error occurred in download_with_retry: {e}")
+async def download_with_retry(url: str, guild_id: int, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            return await downloader.download_song(url, guild_id)
+        except (VideoUnavailable, PytubeError, KeyError) as e:
+            print(f"Error occurred: {e}")
+            if 'streamingData' in str(e):
+                print("YouTube streaming data extraction failed.")
+            if attempt < max_retries - 1:
+                await asyncio.sleep(2 ** attempt)  # Exponential backoff
+            else:
                 raise
+        except Exception as e:
+            print(f"An error occurred in download_with_retry: {e}")
+            raise
 
 def remove_file_if_exists(file_path: str):
     try:
