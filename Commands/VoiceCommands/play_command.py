@@ -28,14 +28,14 @@ async def define_play_youtube_audio_command(tree, servers):
 
         try:
             if ('youtube.com/playlist?list=' in url or 'youtube.com/watch?v=' in url or 'youtu.be/' in url):
-                process_task = asyncio.create_task(process_url(url, guild_id))
                 voice_channel = interaction.user.voice.channel
                 voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
                 if voice_client is None:
                     voice_client = await voice_channel.connect()
                 
+                process_task = asyncio.create_task(process_url(url, guild_id))
                 if not voice_client.is_playing():
-                    play_task = asyncio.create_task(play_audio(voice_client, guild_id, interaction))
+                    play_task = asyncio.create_task(play_audio(voice_client, guild_id, interaction, process_task))
                     await asyncio.gather(process_task, play_task)
                 else:
                     await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
@@ -59,11 +59,14 @@ async def define_play_youtube_audio_command(tree, servers):
             if downloaded_audio:
                 await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
 
-    async def play_audio(voice_client, guild_id, interaction):
-        while not await audio_queue.is_queue_empty(guild_id):
+    async def play_audio(voice_client, guild_id, interaction, process_task):
+        while True:
             track_info = await audio_queue.next_track(guild_id)
             if not track_info:
-                break
+                if process_task.done() and await audio_queue.is_queue_empty(guild_id):
+                    break
+                await asyncio.sleep(1)  # Wait a bit before checking the queue again
+                continue
 
             track = track_info["file"]
             track_url = track_info["url"]
