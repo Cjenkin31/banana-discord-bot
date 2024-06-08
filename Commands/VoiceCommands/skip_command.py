@@ -24,9 +24,10 @@ async def define_skip_youtube_audio_command(tree, servers):
     async def play_next_audio(voice_client, guild_id, interaction):
         if not await audio_queue.is_queue_empty(guild_id):
             track_info = await audio_queue.next_track(guild_id)
-            track = track_info["file"]
-            track_url = track_info["url"]
-            voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=track))
-            await interaction.channel.send(f"Now playing: {track_url}")
+            if track_info:
+                track = track_info["file"]
+                track_url = track_info["url"]
+                voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=track))
+                await interaction.channel.send(f"Now playing: {track_url}")
         else:
             await interaction.channel.send("No more audios in the queue.")

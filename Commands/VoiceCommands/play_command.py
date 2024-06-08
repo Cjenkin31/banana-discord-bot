@@ -1,5 +1,4 @@
 import os
-import time
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -34,15 +33,15 @@ async def define_play_youtube_audio_command(tree, servers):
 
             downloaded_audio = await download_with_retry(url, guild_id)
             await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
-            await interaction.followup.send(f"Added to queue. Position: {len(await audio_queue.get_queue(guild_id))}")
+            await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
 
             voice_channel = interaction.user.voice.channel
-            if voice_channel:
-                voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
-                if voice_client is None:
-                    voice_client = await voice_channel.connect()
-                if not voice_client.is_playing():
-                    await play_audio(voice_client, guild_id, interaction)
+            voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
+            if voice_client is None:
+                voice_client = await voice_channel.connect()
+            
+            if not voice_client.is_playing():
+                await play_audio(voice_client, guild_id, interaction)
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
@@ -51,6 +50,9 @@ async def define_play_youtube_audio_command(tree, servers):
     async def play_audio(voice_client, guild_id, interaction):
         while not await audio_queue.is_queue_empty(guild_id):
             track_info = await audio_queue.next_track(guild_id)
+            if not track_info:
+                break
+
             track = track_info["file"]
             track_url = track_info["url"]
             voice_client.play(FFmpegPCMAudio(executable="ffmpeg", source=track))
@@ -58,6 +60,7 @@ async def define_play_youtube_audio_command(tree, servers):
             while voice_client.is_playing():
                 await asyncio.sleep(1)
             remove_file_if_exists(track)
+        
         await voice_client.disconnect()
 
     async def download_with_retry(url: str, guild_id: int, max_retries=3):

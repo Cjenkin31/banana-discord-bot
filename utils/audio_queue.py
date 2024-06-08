@@ -12,24 +12,23 @@ class AudioQueue:
 
     async def get_queue(self, guild_id):
         async with self._instance._lock:
-            if guild_id not in self._instance.queues:
-                self._instance.queues[guild_id] = []
-            return self._instance.queues[guild_id]
+            return self._instance.queues.setdefault(guild_id, [])
 
     async def add_to_queue(self, guild_id, track_info):
         async with self._instance._lock:
-            queue = await self.get_queue(guild_id)
+            queue = self._instance.queues.setdefault(guild_id, [])
             queue.append(track_info)
 
     async def next_track(self, guild_id):
         async with self._instance._lock:
-            queue = await self.get_queue(guild_id)
+            queue = self._instance.queues.get(guild_id, [])
             if queue:
                 return queue.pop(0)
+            return None
 
     async def show_queue(self, guild_id):
         async with self._instance._lock:
-            return await self.get_queue(guild_id)
+            return list(self._instance.queues.get(guild_id, []))
 
     async def clear_queue(self, guild_id):
         async with self._instance._lock:
@@ -38,10 +37,8 @@ class AudioQueue:
 
     async def is_queue_empty(self, guild_id):
         async with self._instance._lock:
-            queue = await self.get_queue(guild_id)
-            return len(queue) == 0
+            return not self._instance.queues.get(guild_id, [])
 
     async def queue_length(self, guild_id):
         async with self._instance._lock:
-            queue = await self.get_queue(guild_id)
-            return len(queue)
+            return len(self._instance.queues.get(guild_id, []))
