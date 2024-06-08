@@ -52,7 +52,8 @@ async def define_play_youtube_audio_command(tree, servers):
             # Limit how many videos to download so that the bot doesn't get stuck downloading a huge playlist
             for video in videos[:2]:
                 downloaded_audio = await download_with_retry(video.watch_url, guild_id)
-                await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
+                if downloaded_audio:
+                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
 
             await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
 
@@ -60,13 +61,15 @@ async def define_play_youtube_audio_command(tree, servers):
             asyncio.create_task(handle_playlist_download(videos[2:], guild_id))
         else:
             downloaded_audio = await download_with_retry(url, guild_id)
-            await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
-            await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
+            if downloaded_audio:
+                await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
+                await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
 
     async def handle_playlist_download(videos, guild_id):
         for video in videos:
             downloaded_audio = await download_with_retry(video.watch_url, guild_id)
-            await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
+            if downloaded_audio:
+                await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
 
     async def play_audio(voice_client, guild_id, interaction):
         while not await audio_queue.is_queue_empty(guild_id):
