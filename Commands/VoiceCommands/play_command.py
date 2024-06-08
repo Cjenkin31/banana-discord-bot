@@ -97,7 +97,7 @@ async def define_play_youtube_audio_command(tree, servers):
                 if playlist is None:
                     print("Playlist is None")
                     return
-                songs = playlist.video_urls
+                songs = list(playlist.video_urls)  # Convert DeferredGeneratorList to a regular list
                 if songs is None:
                     print("Playlist video_urls is None")
                     return
