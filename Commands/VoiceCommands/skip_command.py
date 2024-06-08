@@ -15,13 +15,19 @@ async def define_skip_youtube_audio_command(tree, servers):
         if voice_client and voice_client.is_connected():
             if voice_client.is_playing():
                 voice_client.stop()
-                next_audio = audio_queue.get_next_audio(guild_id)
-                if next_audio:
-                    voice_client.play(next_audio)
-                    await interaction.response.send_message("Skipped to the next audio in the queue.")
-                else:
-                    await interaction.response.send_message("No more audios in the queue.")
+                await play_next_audio(voice_client, guild_id, interaction)
+                await interaction.response.send_message("Skipped to the next audio in the queue.")
             else:
                 await interaction.response.send_message("No audio is currently playing.")
         else:
             await interaction.response.send_message("The bot is not connected to any voice channel.")
+
+    async def play_next_audio(voice_client, guild_id, interaction):
+        if not audio_queue.is_queue_empty(guild_id):
+            track_info = audio_queue.next_track(guild_id)
+            track = track_info["file"]
+            track_url = track_info["url"]
+            voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=track))
+            await interaction.channel.send(f"Now playing: {track_url}")
+        else:
+            await interaction.channel.send("No more audios in the queue.")
