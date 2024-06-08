@@ -56,17 +56,24 @@ async def define_play_youtube_audio_command(tree, servers):
         if 'playlist?list=' in url:
             playlist = Playlist(url)
             songs = playlist.video_urls
-            await download_songs_in_lots(songs, guild_id)
+            await download_songs_in_lots(songs, guild_id, retry=False)
         else:
-            await download_songs_in_lots([url], guild_id)
+            await download_songs_in_lots([url], guild_id, retry=True)
 
-    async def download_songs_in_lots(songs: List[str], guild_id: int):
+    async def download_songs_in_lots(songs: List[str], guild_id: int, retry: bool):
         while songs:
             # Limit the number of concurrent downloads
             songs_to_download = songs[:MAX_DOWNLOAD_SONGS_AT_A_TIME]
             songs = songs[MAX_DOWNLOAD_SONGS_AT_A_TIME:]
 
-            tasks = [asyncio.create_task(download_with_retry(song, guild_id)) for song in songs_to_download]
+            tasks = []
+            for song in songs_to_download:
+                if retry:
+                    task = asyncio.create_task(download_with_retry(song, guild_id))
+                else:
+                    task = asyncio.create_task(download_youtube_audio(song, guild_id))
+                tasks.append(task)
+
             for task in tasks:
                 downloaded_audio = await task
                 if downloaded_audio:
