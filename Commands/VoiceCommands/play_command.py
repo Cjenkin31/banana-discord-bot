@@ -28,18 +28,17 @@ async def define_play_youtube_audio_command(tree, servers):
 
         try:
             if ('youtube.com/playlist?list=' in url or 'youtube.com/watch?v=' in url or 'youtu.be/' in url):
-                async for track_info in process_url(url, guild_id):
-                    await audio_queue.add_to_queue(guild_id, track_info)
-
-                await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
-
+                process_task = asyncio.create_task(process_url(url, guild_id))
                 voice_channel = interaction.user.voice.channel
                 voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
                 if voice_client is None:
                     voice_client = await voice_channel.connect()
                 
                 if not voice_client.is_playing():
-                    await play_audio(voice_client, guild_id, interaction)
+                    play_task = asyncio.create_task(play_audio(voice_client, guild_id, interaction))
+                    await asyncio.gather(process_task, play_task)
+                else:
+                    await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
             else:
                 await interaction.followup.send("Invalid YouTube URL provided.")
                 return
@@ -54,11 +53,11 @@ async def define_play_youtube_audio_command(tree, servers):
             for video in playlist.videos:
                 downloaded_audio = await download_with_retry(video.watch_url, guild_id)
                 if downloaded_audio:
-                    yield {"file": downloaded_audio, "url": video.watch_url}
+                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
         else:
             downloaded_audio = await download_with_retry(url, guild_id)
             if downloaded_audio:
-                yield {"file": downloaded_audio, "url": url}
+                await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
 
     async def play_audio(voice_client, guild_id, interaction):
         while not await audio_queue.is_queue_empty(guild_id):
