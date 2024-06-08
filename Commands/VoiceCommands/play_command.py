@@ -31,14 +31,16 @@ async def define_play_youtube_audio_command(tree, servers):
                 voice_channel = interaction.user.voice.channel
                 voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
                 if voice_client is None:
-                    voice_client = await voice_channel.connect()
-                
+                    try:
+                        voice_client = await voice_channel.connect()
+                    except Exception as e:
+                        await interaction.followup.send(f"Failed to join voice channel: {str(e)}")
+                        return
+
+                # Start processing the URL and playing audio concurrently
                 process_task = asyncio.create_task(process_url(url, guild_id))
-                if not voice_client.is_playing():
-                    play_task = asyncio.create_task(play_audio(voice_client, guild_id, interaction, process_task))
-                    await asyncio.gather(process_task, play_task)
-                else:
-                    await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
+                play_task = asyncio.create_task(play_audio(voice_client, guild_id, interaction, process_task))
+                await asyncio.gather(process_task, play_task)
             else:
                 await interaction.followup.send("Invalid YouTube URL provided.")
                 return

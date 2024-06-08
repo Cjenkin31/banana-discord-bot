@@ -13,6 +13,7 @@ INTENTS.messages = True
 INTENTS.reactions = True
 INTENTS.members = True
 INTENTS.message_content = True
+INTENTS.voice_states = True
 
 SERVERS = [OVERBOTCHED_ID, BONK_BRIGADE_ID]
 
