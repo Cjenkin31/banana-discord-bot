@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord import app_commands
 from discord import FFmpegPCMAudio
 import asyncio
-from pytube import YouTube
+from pytube import YouTube, Playlist
 import uuid
 from moviepy.editor import AudioFileClip
 from utils.audio_queue import AudioQueue
@@ -16,8 +16,8 @@ from pytube.exceptions import VideoUnavailable, PytubeError
 audio_queue = AudioQueue()
 
 async def define_play_youtube_audio_command(tree, servers):
-    @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video in a voice channel.", guilds=servers)
-    @app_commands.describe(url="URL of the YouTube video")
+    @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video or playlist in a voice channel.", guilds=servers)
+    @app_commands.describe(url="URL of the YouTube video or playlist")
     async def play_youtube_audio(interaction: discord.Interaction, url: str):
         guild_id = interaction.guild_id
         await interaction.response.defer()
@@ -27,13 +27,11 @@ async def define_play_youtube_audio_command(tree, servers):
             return
 
         try:
-            if not ('youtube.com/watch?v=' in url or 'youtu.be/' in url):
+            if ('youtube.com/playlist?list=' in url or 'youtube.com/watch?v=' in url or 'youtu.be/' in url):
+                await process_url(url, guild_id, interaction)
+            else:
                 await interaction.followup.send("Invalid YouTube URL provided.")
                 return
-
-            downloaded_audio = await download_with_retry(url, guild_id)
-            await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
-            await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
 
             voice_channel = interaction.user.voice.channel
             voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
@@ -46,6 +44,18 @@ async def define_play_youtube_audio_command(tree, servers):
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             await interaction.followup.send("Something went wrong! Please try again later.")
+
+    async def process_url(url, guild_id, interaction):
+        if 'playlist?list=' in url:
+            playlist = Playlist(url)
+            for video in playlist.videos:
+                downloaded_audio = await download_with_retry(video.watch_url, guild_id)
+                await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
+        else:
+            downloaded_audio = await download_with_retry(url, guild_id)
+            await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
+        
+        await interaction.followup.send(f"Added to queue. Position: {await audio_queue.queue_length(guild_id)}")
 
     async def play_audio(voice_client, guild_id, interaction):
         while not await audio_queue.is_queue_empty(guild_id):
