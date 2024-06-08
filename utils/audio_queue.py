@@ -42,11 +42,17 @@ class AudioQueue:
 
     async def is_queue_empty(self, guild_id):
         async with self._instance._lock:
-            return not self._instance.queues.get(guild_id, [])
+            queue = self._instance.queues.get(guild_id, [])
+            if queue is None:
+                return True
+            return not queue
 
     async def queue_length(self, guild_id):
         async with self._instance._lock:
-            return len(self._instance.queues.get(guild_id, []))
+            queue = self._instance.queues.get(guild_id, [])
+            if queue is None:
+                return 0
+            return len(queue)
 
     async def shuffle_queue(self, guild_id):
         async with self._instance._lock:
