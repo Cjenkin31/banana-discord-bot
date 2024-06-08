@@ -37,7 +37,7 @@ async def define_play_youtube_audio_command(tree, servers):
 
             downloaded_audio = await download_youtube_audio(url, guild_id)
             audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
-            await interaction.followup.send(f"Added to queue. Position: {len(audio_queue.get_queue(guild_id))}")
+            await interaction.followup.send(f"Added to queue. Position: {audio_queue.queue_length(guild_id)}")
 
             voice_channel = interaction.user.voice.channel
             if voice_channel:
@@ -52,7 +52,7 @@ async def define_play_youtube_audio_command(tree, servers):
             await interaction.followup.send("Something went wrong! Please try again later.")
 
     async def play_audio(voice_client, guild_id, interaction):
-        while audio_queue.get_queue(guild_id):
+        while not audio_queue.is_queue_empty(guild_id):
             track_info = audio_queue.next_track(guild_id)
             track = track_info["file"]
             track_url = track_info["url"]
