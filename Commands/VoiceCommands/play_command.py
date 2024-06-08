@@ -12,7 +12,7 @@ from utils.audio_queue import AudioQueue
 from pytube.exceptions import VideoUnavailable
 
 # TODO: Add a audio queue
-# TODO: Check to see if the bot can play in multiple servers at once, should append serverID to end of temp file to avid conflicts.
+# TODO: Check to see if the bot can play in multiple servers at once, should append serverID to end of temp file to avoid conflicts.
 # TODO: Improve Error Handling
 # TODO: Add skipping audio.
 # TODO: New command for playing audio from links. Soundcloud, Spotify, etc.
@@ -36,7 +36,7 @@ async def define_play_youtube_audio_command(tree, servers):
                 return
 
             downloaded_audio = await download_youtube_audio(url, guild_id)
-            audio_queue.add_to_queue(guild_id, downloaded_audio)
+            audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
             await interaction.followup.send(f"Added to queue. Position: {len(audio_queue.get_queue(guild_id))}")
 
             voice_channel = interaction.user.voice.channel
@@ -45,16 +45,19 @@ async def define_play_youtube_audio_command(tree, servers):
                 if voice_client is None:
                     voice_client = await voice_channel.connect()
                 if not voice_client.is_playing():
-                    await play_audio(voice_client, guild_id)
+                    await play_audio(voice_client, guild_id, interaction)
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             await interaction.followup.send("Something went wrong! Please try again later.")
 
-    async def play_audio(voice_client, guild_id):
+    async def play_audio(voice_client, guild_id, interaction):
         while audio_queue.get_queue(guild_id):
-            track = audio_queue.next_track(guild_id)
+            track_info = audio_queue.next_track(guild_id)
+            track = track_info["file"]
+            track_url = track_info["url"]
             voice_client.play(FFmpegPCMAudio(executable="ffmpeg", source=track))
+            await interaction.channel.send(f"Now playing: {track_url}")
             while voice_client.is_playing():
                 await asyncio.sleep(1)
             remove_file_if_exists(track)
