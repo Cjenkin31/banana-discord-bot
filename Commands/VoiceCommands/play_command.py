@@ -87,9 +87,13 @@ async def define_play_youtube_audio_command(tree, servers):
     async def process_url(url, guild_id):
         if 'playlist?list=' in url:
             playlist = Playlist(url)
+            if playlist is None:
+                print("Playlist is None")
+                return
             songs = playlist.video_urls
             if songs is None:
                 print("Playlist video_urls is None")
+                return
             else:
                 print(f"Playlist contains {len(songs)} videos")
             await download_songs_in_lots(songs, guild_id, retry=False)
