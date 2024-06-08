@@ -11,10 +11,7 @@ from moviepy.editor import AudioFileClip
 from utils.audio_queue import AudioQueue
 from pytube.exceptions import VideoUnavailable, PytubeError
 
-# TODO: Add a audio queue
-# TODO: Check to see if the bot can play in multiple servers at once, should append serverID to end of temp file to avoid conflicts.
-# TODO: Improve Error Handling
-# TODO: Add skipping audio.
+# TODO: Support for playlists
 # TODO: New command for playing audio from links. Soundcloud, Spotify, etc.
 
 audio_queue = AudioQueue()
