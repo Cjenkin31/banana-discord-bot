@@ -18,7 +18,6 @@ from utils.downloader import Downloader
 MAX_DOWNLOAD_SONGS_AT_A_TIME = 2
 
 audio_queue = AudioQueue()
-downloader = Downloader()
 
 async def define_play_youtube_audio_command(tree, servers):
     @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video or playlist in a voice channel.", guilds=servers)
@@ -26,6 +25,8 @@ async def define_play_youtube_audio_command(tree, servers):
     async def play_youtube_audio(interaction: discord.Interaction, url: str):
         guild_id = interaction.guild_id
         await interaction.response.defer()
+        global downloader
+        downloader = Downloader(guild_id)
 
         if not interaction.user.voice or not interaction.user.voice.channel:
             await interaction.followup.send("You need to be in a voice channel to play audio.")
