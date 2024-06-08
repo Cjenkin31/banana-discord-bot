@@ -9,7 +9,7 @@ from pytube import YouTube
 import uuid
 from moviepy.editor import AudioFileClip
 from utils.audio_queue import AudioQueue
-from pytube.exceptions import VideoUnavailable
+from pytube.exceptions import VideoUnavailable, PytubeError
 
 # TODO: Add a audio queue
 # TODO: Check to see if the bot can play in multiple servers at once, should append serverID to end of temp file to avoid conflicts.
@@ -35,7 +35,7 @@ async def define_play_youtube_audio_command(tree, servers):
                 await interaction.followup.send("Invalid YouTube URL provided.")
                 return
 
-            downloaded_audio = await download_youtube_audio(url, guild_id)
+            downloaded_audio = await download_with_retry(url, guild_id)
             audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
             await interaction.followup.send(f"Added to queue. Position: {audio_queue.queue_length(guild_id)}")
 
@@ -63,6 +63,20 @@ async def define_play_youtube_audio_command(tree, servers):
             remove_file_if_exists(track)
         await voice_client.disconnect()
 
+    async def download_with_retry(url: str, guild_id: int, max_retries=3):
+        for attempt in range(max_retries):
+            try:
+                return await download_youtube_audio(url, guild_id)
+            except (VideoUnavailable, PytubeError) as e:
+                print(f"Error occurred: {e}")
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(2 ** attempt)  # Exponential backoff
+                else:
+                    raise
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                raise
+
     async def download_youtube_audio(url: str, guild_id: int) -> str:
         try:
             yt = YouTube(url)
@@ -78,8 +92,11 @@ async def define_play_youtube_audio_command(tree, servers):
         except VideoUnavailable:
             print("The video is unavailable, possibly due to being private or deleted.")
             raise
+        except PytubeError as e:
+            print(f"An error occurred with PyTube: {e}")
+            raise
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred while downloading: {e}")
             raise
 
     def remove_file_if_exists(file_path: str):
