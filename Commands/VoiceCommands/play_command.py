@@ -9,11 +9,14 @@ import uuid
 from moviepy.editor import AudioFileClip
 from utils.audio_queue import AudioQueue
 from pytube.exceptions import VideoUnavailable, PytubeError
+from typing import List
 
 # TODO: Support for playlists
 # TODO: New command for playing audio from links. Soundcloud, Spotify, etc.
 
 audio_queue = AudioQueue()
+
+MAX_DOWNLOAD_SONGS_AT_A_TIME = 3  # Define the maximum number of simultaneous downloads
 
 async def define_play_youtube_audio_command(tree, servers):
     @tree.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video or playlist in a voice channel.", guilds=servers)
@@ -52,14 +55,22 @@ async def define_play_youtube_audio_command(tree, servers):
     async def process_url(url, guild_id):
         if 'playlist?list=' in url:
             playlist = Playlist(url)
-            for video in playlist.videos:
-                downloaded_audio = await download_with_retry(video.watch_url, guild_id)
-                if downloaded_audio:
-                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": video.watch_url})
+            songs = playlist.video_urls
+            await download_songs_in_lots(songs, guild_id)
         else:
-            downloaded_audio = await download_with_retry(url, guild_id)
-            if downloaded_audio:
-                await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": url})
+            await download_songs_in_lots([url], guild_id)
+
+    async def download_songs_in_lots(songs: List[str], guild_id: int):
+        while songs:
+            # Limit the number of concurrent downloads
+            songs_to_download = songs[:MAX_DOWNLOAD_SONGS_AT_A_TIME]
+            songs = songs[MAX_DOWNLOAD_SONGS_AT_A_TIME:]
+
+            tasks = [asyncio.create_task(download_with_retry(song, guild_id)) for song in songs_to_download]
+            for task in tasks:
+                downloaded_audio = await task
+                if downloaded_audio:
+                    await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": song})
 
     async def play_audio(voice_client, guild_id, interaction, process_task):
         while True:
