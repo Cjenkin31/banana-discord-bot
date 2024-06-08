@@ -114,8 +114,13 @@ async def define_play_youtube_audio_command(tree, servers):
             while songs:
                 print(f"Downloading {len(songs)} songs...")
                 songs_to_download = songs[:MAX_DOWNLOAD_SONGS_AT_A_TIME]
-                print(f"Downloading songs_to_download{len(songs_to_download)} songs...")
+                print(f"Downloading songs_to_download {len(songs_to_download)} songs...")
                 songs = songs[MAX_DOWNLOAD_SONGS_AT_A_TIME:]
+
+                if songs is None:
+                    print("songs became None after slicing")
+                    break
+
                 print(f"Remaining songs: {len(songs)}")
 
                 tasks = []
@@ -131,11 +136,16 @@ async def define_play_youtube_audio_command(tree, servers):
                     tasks.append(task)
 
                 for task in tasks:
-                    downloaded_audio = await task
-                    if downloaded_audio:
-                        await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": song})
+                    try:
+                        downloaded_audio = await task
+                        if downloaded_audio:
+                            await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": song})
+                    except Exception as e:
+                        print(f"An error occurred while downloading a song: {e}")
+
         except Exception as e:
             print(f"An error occurred in download_songs_in_lots: {e}")
+
 
 
 async def play_audio(voice_client, guild_id, interaction, process_task):
@@ -145,6 +155,7 @@ async def play_audio(voice_client, guild_id, interaction, process_task):
                 track_info = await audio_queue.next_track(guild_id)
                 if track_info is None:
                     queue_empty = await audio_queue.is_queue_empty(guild_id)
+                    print(f"Queue empty: {queue_empty}")
                     if process_task.done() and queue_empty:
                         print("Process completed and queue is empty, disconnecting...")
                         break
