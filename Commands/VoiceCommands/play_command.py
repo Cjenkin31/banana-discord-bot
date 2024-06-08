@@ -11,43 +11,13 @@ from utils.audio_queue import AudioQueue
 from pytube.exceptions import VideoUnavailable, PytubeError
 from typing import List
 
+from utils.downloader import Downloader
+
 # TODO: Support for playlists
 # TODO: New command for playing audio from links. Soundcloud, Spotify, etc.
-
-audio_queue = AudioQueue()
 MAX_DOWNLOAD_SONGS_AT_A_TIME = 2
 
-class Downloader:
-    async def download_song(self, url: str, guild_id: int) -> str:
-        try:
-            yt = YouTube(url)
-            stream = yt.streams.filter(only_audio=True).first()
-            if stream is None:
-                print(f"No audio stream found for URL: {url}")
-                return None
-
-            unique_id = uuid.uuid4()
-            output_path = stream.download(filename=f'{guild_id}_downloaded_audio_{unique_id}.mp4')
-            audio_clip = AudioFileClip(output_path)
-            mp3_path = f'{guild_id}_downloaded_audio_{unique_id}.mp3'
-            audio_clip.write_audiofile(mp3_path)
-            audio_clip.close()
-            remove_file_if_exists(output_path)
-            return mp3_path
-        except VideoUnavailable:
-            print("The video is unavailable, possibly due to being private or deleted.")
-            raise
-        except PytubeError as e:
-            print(f"An error occurred with PyTube: {e}")
-            raise
-        except KeyError as e:
-            if 'streamingData' in str(e):
-                print("YouTube streaming data extraction failed.")
-            raise
-        except Exception as e:
-            print(f"An error occurred in download_youtube_audio: {e}")
-            raise
-
+audio_queue = AudioQueue()
 downloader = Downloader()
 
 async def define_play_youtube_audio_command(tree, servers):
@@ -56,24 +26,18 @@ async def define_play_youtube_audio_command(tree, servers):
     async def play_youtube_audio(interaction: discord.Interaction, url: str):
         guild_id = interaction.guild_id
         await interaction.response.defer()
-        print("Received play_youtube_audio command")
 
         if not interaction.user.voice or not interaction.user.voice.channel:
             await interaction.followup.send("You need to be in a voice channel to play audio.")
-            print("User not in voice channel")
             return
 
         try:
             if 'youtube.com/playlist?list=' in url or 'youtube.com/watch?v=' in url or 'youtu.be/' in url:
-                print(f"Processing YouTube URL: {url}")
                 voice_channel = interaction.user.voice.channel
-                print(f"User is in voice channel: {voice_channel.name}")
                 voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
-                print(f"Voice client: {voice_client}")
                 if voice_client is None:
                     try:
                         voice_client = await voice_channel.connect()
-                        print(f"Joined voice channel: {voice_channel.name}")
                     except Exception as e:
                         await interaction.followup.send(f"Failed to join voice channel: {str(e)}")
                         return
@@ -96,7 +60,6 @@ async def define_play_youtube_audio_command(tree, servers):
             if 'playlist?list=' in url:
                 playlist = Playlist(url)
                 if playlist is None:
-                    print("Playlist is None")
                     return
                 songs = list(playlist.video_urls)
                 if songs is None or len(songs) == 0:
@@ -115,18 +78,16 @@ async def define_play_youtube_audio_command(tree, servers):
                 play_task = asyncio.create_task(play_audio(voice_client, guild_id, interaction))
 
             # Continue downloading the rest of the songs in the background
-            await download_songs_in_lots(songs, guild_id, retry=False)
+            await download_songs_in_groups(songs, guild_id, retry=False)
 
             await play_task
 
         except Exception as e:
             print(f"An error occurred in process_url_and_play_first_song: {e}")
 
-    async def download_songs_in_lots(songs: List[str], guild_id: int, retry: bool):
+    async def download_songs_in_groups(songs: List[str], guild_id: int, retry: bool):
         try:
             while songs:
-                print(f"Starting loop with {len(songs)} songs...")
-
                 if not isinstance(songs, list):
                     print(f"Expected list of songs, got {type(songs)} instead. Exiting loop.")
                     break
@@ -143,12 +104,6 @@ async def define_play_youtube_audio_command(tree, servers):
                 except Exception as e:
                     print(f"Error while slicing songs: {e}")
                     break
-
-                if songs is None:
-                    print("Songs became None after slicing. Exiting loop.")
-                    break
-
-                print(f"Remaining songs: {len(songs)}")
 
                 tasks = []
                 for song in songs_to_download:
@@ -170,7 +125,7 @@ async def define_play_youtube_audio_command(tree, servers):
                         print(f"An error occurred while downloading a song: {e}")
 
         except Exception as e:
-            print(f"An error occurred in download_songs_in_lots: {e}")
+            print(f"An error occurred in download_songs_in_groups: {e}")
 
     async def play_audio(voice_client, guild_id, interaction):
         try:
