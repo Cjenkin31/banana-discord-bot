@@ -5,6 +5,7 @@ from openai import OpenAI
 # Server Ids
 OVERBOTCHED_ID = discord.Object(id=1101665956314501180)
 BONK_BRIGADE_ID = discord.Object(id=1210021401772429352)
+PERSONAL_TEST_SERVER = discord.Object(id=844017098022715402)
 
 # Discord Token + Intents
 TOKEN = os.getenv('BOT_TOKEN')
@@ -15,7 +16,7 @@ INTENTS.members = True
 INTENTS.message_content = True
 INTENTS.voice_states = True
 
-SERVERS = [OVERBOTCHED_ID, BONK_BRIGADE_ID]
+SERVERS = [OVERBOTCHED_ID, BONK_BRIGADE_ID, PERSONAL_TEST_SERVER]
 
 GPTKEY = os.environ.get('OPENAI_API_KEY')
 CLIENT = OpenAI(api_key=GPTKEY)
