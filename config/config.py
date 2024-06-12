@@ -19,3 +19,4 @@ SERVERS = [OVERBOTCHED_ID, BONK_BRIGADE_ID]
 
 GPTKEY = os.environ.get('OPENAI_API_KEY')
 CLIENT = OpenAI(api_key=GPTKEY)
+ELEVEN_LABS_KEY = os.environ.get('xi-api-key')
