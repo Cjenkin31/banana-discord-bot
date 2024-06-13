@@ -10,8 +10,8 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-async def define_all_voice_commands(tree, servers, elevenlabskey):
-    await define_speak_command(tree, servers, elevenlabskey)
+async def define_all_voice_commands(tree, servers):
+    await define_speak_command(tree, servers)
     await define_cleanup_vc_command(tree, servers)
     await define_play_youtube_audio_command(tree, servers)
     await define_stop_youtube_audio_command(tree, servers)
