@@ -11,4 +11,4 @@ youtube_transcript_api
 moviepy
 pytube
 uuid
-dotenv
+python-dotenv
