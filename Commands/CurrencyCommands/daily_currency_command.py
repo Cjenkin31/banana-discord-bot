@@ -1,4 +1,5 @@
 from data.Currency.daily import try_collect_daily
+from data.name import add_name_if_not_exist_to_database
 from discord.ext import commands
 from discord import app_commands
 import discord
@@ -9,6 +10,7 @@ async def define_daily_command(tree, servers):
     @tree.command(name="daily", description="Collect your daily bananas", guilds=servers)
     async def daily(interaction: discord.Interaction):
         user_id = str(interaction.user.id)
+        await add_name_if_not_exist_to_database(user_id, interaction.user.display_name)
         can_collect, result = await try_collect_daily(user_id)
         if not can_collect:
             wait_time = result
