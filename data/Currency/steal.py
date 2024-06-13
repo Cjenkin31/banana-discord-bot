@@ -35,8 +35,8 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
         return False, f"{target.mention}, you are safe as you have no bananas to steal. {thief.mention} failed to steal."
 
     thief_bananas = await get_bananas(thief_id)
-    thief_luck = await get_luck(thief_id)
-    target_luck = await get_luck(target_id)
+    thief_luck = await get_luck(thief_id) or 0
+    target_luck = await get_luck(target_id) or 0
     
     max_steal_amount = int(target_bananas * 0.1)
 
@@ -62,8 +62,11 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
     else:
         penalty_amount = stolen_amount
         penalty = min(thief_bananas, penalty_amount)
+        print(f"Penalty: {penalty}")
+        print(f"awaited target bananas: {await get_bananas(target_id)}")
         await remove_bananas(thief_id, penalty)
         await add_bananas(target_id, penalty)
+        print(f"awaited target bananas: {await get_bananas(target_id)}")
         await update_last_steal(thief_id)
 
         story = "You are a Narrator making whacky and interesting turn around stories about how people fail stealing in the funniest ways possible. The story always ends up with the person stealing losing the money and the target receiving it, as in they gain extra money that they would have lost. He does it in one line. He never mentions how much was gained or lost"

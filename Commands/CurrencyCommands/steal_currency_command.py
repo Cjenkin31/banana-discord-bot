@@ -17,7 +17,4 @@ async def define_steal_bananas_command(tree, servers):
         # Passing both user objects for better message formatting
         success, message = await try_steal(str(thief.id), str(target.id), thief, target)
 
-        if success:
-            await interaction.response.send_message(f"{message}", ephemeral=False)
-        else:
-            await interaction.response.send_message(f"{message}", ephemeral=False)
+        await interaction.response.send_message(f"{message}", ephemeral=False)
