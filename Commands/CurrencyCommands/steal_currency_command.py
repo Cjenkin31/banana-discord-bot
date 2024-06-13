@@ -1,4 +1,4 @@
-from data.steal import try_steal
+from data.Currency.steal import try_steal
 from discord.ext import commands
 from discord import app_commands
 import discord

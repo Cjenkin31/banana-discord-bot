@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 import discord
 import random
-from data.currency import get_bananas, remove_bananas
+from data.Currency.currency import get_bananas, remove_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 
 async def define_random_timeout_command(tree, servers):

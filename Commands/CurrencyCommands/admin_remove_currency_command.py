@@ -1,7 +1,7 @@
 from discord.ext import commands
 from discord import app_commands
 import discord
-from data.currency import remove_bananas
+from data.Currency.currency import remove_bananas
 from utils.users import UNBUTTERED_BAGEL_ID
 
 async def define_admin_remove_currency_command(tree, servers):

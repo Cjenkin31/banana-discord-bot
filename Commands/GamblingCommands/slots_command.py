@@ -3,7 +3,7 @@ import random
 from data.stats import get_luck
 from discord import app_commands
 import discord
-from data.currency import get_bananas, add_bananas, remove_bananas
+from data.Currency.currency import get_bananas, add_bananas, remove_bananas
 from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI, SLOT_ROW_1_EMOJI, SLOT_ROW_2_EMOJI, SLOT_ROW_3_EMOJI, SLOT_EMOJI
 

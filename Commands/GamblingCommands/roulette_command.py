@@ -2,7 +2,7 @@ import asyncio
 from discord import app_commands
 import discord
 import random
-from data.currency import get_bananas, add_bananas, remove_bananas
+from data.Currency.currency import get_bananas, add_bananas, remove_bananas
 from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from discord import Embed

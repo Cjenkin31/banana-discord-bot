@@ -1,4 +1,4 @@
-from data.currency import add_bananas, get_bananas
+from data.Currency.currency import add_bananas, get_bananas
 from data.stats import get_luck
 import firebase_admin
 import os

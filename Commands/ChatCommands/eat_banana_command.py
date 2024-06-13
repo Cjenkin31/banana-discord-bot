@@ -1,4 +1,4 @@
-from data.currency import add_bananas, get_bananas, remove_bananas
+from data.Currency.currency import add_bananas, get_bananas, remove_bananas
 import discord
 from discord.ext import commands
 from discord import app_commands

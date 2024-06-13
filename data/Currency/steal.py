@@ -1,4 +1,4 @@
-from data.currency import add_bananas, get_bananas, remove_bananas
+from data.Currency.currency import add_bananas, get_bananas, remove_bananas
 from datetime import datetime, timedelta, timezone
 from data.stats import get_luck
 from firebase_admin import credentials, db

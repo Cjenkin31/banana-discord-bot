@@ -1,7 +1,8 @@
+from data.nickname import get_nickname
 from discord.ext import commands
 from discord import app_commands
 import discord
-from data.currency import get_leaderboard
+from data.Currency.currency import get_leaderboard
 from utils.image_helpers import download_from_github
 from utils.emoji_helper import BANANA_COIN_EMOJI
 
@@ -17,7 +18,7 @@ async def define_leaderboard_command(tree, servers):
             
             for index, (user_id, amount) in enumerate(leaderboard_data[:10], start=1):
                 user = await interaction.client.fetch_user(user_id)
-                embed.add_field(name=f"{index}. {BANANA_COIN_EMOJI} {user.display_name}", value=f"{amount}", inline=False)
+                embed.add_field(name=f"{index}. {BANANA_COIN_EMOJI} {get_nickname(user_id) or user.display_name}", value=f"{amount}", inline=False)
             if thumbnail_file:
                 await interaction.response.send_message(embed=embed, file=thumbnail_file)
             else:

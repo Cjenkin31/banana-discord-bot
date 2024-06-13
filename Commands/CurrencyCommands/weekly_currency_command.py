@@ -1,4 +1,4 @@
-from data.weekly import try_collect_weekly
+from data.Currency.weekly import try_collect_weekly
 from discord.ext import commands
 from discord import app_commands
 import discord
