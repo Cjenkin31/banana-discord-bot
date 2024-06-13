@@ -1,14 +1,25 @@
 import os
 import discord
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 # Server Ids
 OVERBOTCHED_ID = discord.Object(id=1101665956314501180)
 BONK_BRIGADE_ID = discord.Object(id=1210021401772429352)
-PERSONAL_TEST_SERVER = discord.Object(id=844017098022715402)
+TEST_SERVER_ID = discord.Object(id=844017098022715402)
 
-# Discord Token + Intents
-TOKEN = os.getenv('BOT_TOKEN')
+environment = os.getenv('ENV', 'DEVELOPMENT')
+if environment == "PRODUCTION":
+    TOKEN = os.getenv('BOT_TOKEN')
+    SERVERS = [OVERBOTCHED_ID, BONK_BRIGADE_ID]
+    debug_mode = False
+else:
+    TOKEN = os.getenv('DEVELOPMENT_BOT_TOKEN')
+    SERVERS = [TEST_SERVER_ID]
+    debug_mode = True
+
 INTENTS = discord.Intents.default()
 INTENTS.messages = True
 INTENTS.reactions = True
@@ -16,8 +27,7 @@ INTENTS.members = True
 INTENTS.message_content = True
 INTENTS.voice_states = True
 
-SERVERS = [OVERBOTCHED_ID, BONK_BRIGADE_ID, PERSONAL_TEST_SERVER]
-
-GPTKEY = os.environ.get('OPENAI_API_KEY')
+ELEVEN_LABS_API_KEY = os.getenv('xi-api-key')
+FIREBASE_SERVICE_ACCOUNT = os.getenv('FIREBASE_SERVICE_ACCOUNT')
+GPTKEY = os.getenv('OPENAI_API_KEY')
 CLIENT = OpenAI(api_key=GPTKEY)
-ELEVEN_LABS_KEY = os.environ.get('xi-api-key')

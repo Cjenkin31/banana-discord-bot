@@ -1,8 +1,8 @@
+import asyncio
 import os
 import discord
 from discord.ext import commands
 from config.config import SERVERS, TOKEN, INTENTS
-from events.setup_events import setup_events
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
@@ -19,9 +19,16 @@ async def load_cogs():
 
 @bot.event
 async def on_ready():
-    await setup_events(bot)
     print(f'Logged in as {bot.user}!')
 
+async def main():
+    try:
+        await load_cogs()
+        await bot.start(TOKEN)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        await bot.close()
+
 if __name__ == "__main__":
-    bot.loop.run_until_complete(load_cogs())
-    bot.run(TOKEN)
+    asyncio.run(main())
