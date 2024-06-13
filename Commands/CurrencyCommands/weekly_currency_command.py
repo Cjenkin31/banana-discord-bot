@@ -8,13 +8,14 @@ from utils.gpt import generate_gpt_response
 async def define_weekly_command(tree, servers):
     @tree.command(name="weekly", description="Collect your weekly bananas", guilds=servers)
     async def weekly(interaction: discord.Interaction):
+        await interaction.response.defer()
         user_id = str(interaction.user.id)
         can_collect, result = await try_collect_weekly(user_id)
         
         if not can_collect:
             wait_time = result
             formatted_wait_time = f"{wait_time.days} days, {wait_time.seconds // 3600} hours, and {(wait_time.seconds // 60) % 60} minutes"
-            await interaction.response.send_message(f"Please wait {formatted_wait_time} to collect your weekly bananas.")
+            await interaction.followup.send(f"Please wait {formatted_wait_time} to collect your weekly bananas.")
         else:
             bananas_collected = result
             model = "gpt-4o"
