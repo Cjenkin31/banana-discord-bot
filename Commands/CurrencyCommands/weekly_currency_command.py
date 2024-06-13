@@ -18,7 +18,9 @@ async def define_weekly_command(tree, servers):
         else:
             bananas_collected = result
             model = "gpt-4o"
-            story = f"You are a narrator talking about how somebody came across money. You do this in 1 or 2 lines and always mention the user along with how many banana coins, you can also use the emoji {BANANA_COIN_EMOJI}"
-            user_input = f"{interaction.user.mention} collected {bananas_collected} bananas."
+            story = (f"You are a narrator telling a short story about how {interaction.user.mention} came across some money. Use 1 or 2 lines in BASIC markdown. At the end of your story, say '{interaction.user.mention} found: Then put some type of object'. Never any currency numbers. ")
+            user_input = f"{interaction.user.mention} went on an adventure found their daily currency."
             response_message = await generate_gpt_response(model, story, user_input)
+            response_message += f"\n +{bananas_collected} {BANANA_COIN_EMOJI}"
+
             await interaction.followup.send(response_message)
