@@ -18,7 +18,7 @@ async def define_admin_add_currency_command(tree, servers):
             return
         try:
             await add_bananas(str(user.id), amount)
-            await interaction.response.send_message(f"Added {amount} bananas to {get_nickname(user.id) or user.display_name}'s account.")
+            await interaction.response.send_message(f"Added {amount} bananas to {await get_nickname(user.id) or user.display_name}'s account.")
         except Exception as e:
             await interaction.response.send_message(f"Failed to add currency: {str(e)}")
 

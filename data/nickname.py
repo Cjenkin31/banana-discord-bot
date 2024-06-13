@@ -13,5 +13,10 @@ async def get_nickname(user_id):
 async def set_nickname(user_id, nickname):
     ref = db.reference(f'users/{user_id}')
     ref.set({'nickname': nickname})
+    get_nickname_sync.cache_clear()
     return nickname
+
+async def remove_nickname(user_id):
+    ref = db.reference(f'users/{user_id}/nickname')
+    ref.delete()
     get_nickname_sync.cache_clear()

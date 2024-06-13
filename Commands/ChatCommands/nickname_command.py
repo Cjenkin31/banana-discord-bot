@@ -9,5 +9,5 @@ from data.nickname import set_nickname as nn
 async def define_set_nickname_command(tree, servers):
     @tree.command(name="set_nickname", description="Sets your nickname for all banana bread related activities", guilds=servers)
     async def set_nickname(interaction: discord.Interaction, user_input: str):
-        new_nickname = nn(interaction.user.id, user_input)
+        new_nickname = await nn(interaction.user.id, user_input)
         await interaction.response.send_message(f"Your nickname has been set to {new_nickname}.")
