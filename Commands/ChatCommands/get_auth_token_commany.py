@@ -27,7 +27,7 @@ async def define_auth_token_command(tree, servers):
                 return
             token = new_token
         
-        message = f"Here is your userID\n```{user_id}```\nHere is your authentication token:\n ```{token}```\nKeep it safe!"
+        message = f"Here is your userID\n```{user_id}```\nHere is your authentication token( This is specific to banana bread activites ):\n ```{token}```\nKeep it safe!"
         
         if not await dm_user(interaction.user, message):
             await interaction.followup.send("I couldn't send you a DM. Please check your privacy settings and try again.", ephemeral=True)
