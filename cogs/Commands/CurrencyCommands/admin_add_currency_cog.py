@@ -16,7 +16,7 @@ class AdminAddCurrencyCog(commands.Cog):
 
     @app_commands.command(name="add_currency", description="Add currency to a user")
     @app_commands.check(is_owner())
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     async def add_currency(self, interaction: discord.Interaction, user: discord.User, amount: int):
         if not isinstance(amount, int) or amount <= 0:
             await interaction.response.send_message("Invalid amount. Please enter a positive number.")
@@ -34,5 +34,5 @@ class AdminAddCurrencyCog(commands.Cog):
         else:
             await interaction.response.send_message("An error occurred while processing your command.", ephemeral=True)
 
-def setup(bot):
-    bot.add_cog(AdminAddCurrencyCog(bot))
+async def setup(bot):
+    await bot.add_cog(AdminAddCurrencyCog(bot))

@@ -1,4 +1,5 @@
 from config.config import SERVERS
+from discord.ext import commands
 from discord import app_commands
 import discord
 import random
@@ -11,7 +12,7 @@ class Coinflip(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="coinflip", description="Guess Heads or Tails to double your bet or lose it")
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     @app_commands.describe(choice="Choose Heads or Tails", bet_amount="Amount of bananas to bet or 'all'")
     async def coinflip(self, interaction: discord.Interaction, choice: str, bet_amount: str):
         user_choice = choice.strip().lower()
@@ -42,5 +43,5 @@ class Coinflip(commands.Cog):
 
         await interaction.response.send_message(message)
 
-def setup(bot):
-    bot.add_cog(Coinflip(bot))
+async def setup(bot):
+    await bot.add_cog(Coinflip(bot))

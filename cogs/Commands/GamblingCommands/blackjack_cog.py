@@ -17,7 +17,7 @@ class BlackjackCog(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="blackjack", description="Play blackjack")
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
     async def blackjack(self, interaction: discord.Interaction, bet_amount: str):
         valid, response = await bet_checks(bet_amount, interaction)

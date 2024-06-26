@@ -10,7 +10,7 @@ class SendBananas(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="send_bananas", description="Send bananas to another user")
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     async def send_bananas(self, interaction: discord.Interaction, user: discord.User, amount: int):
         if (interaction.user.id == user.id):
             await interaction.response.send_message(f"You cannot send yourself coins!", ephemeral=True)
@@ -66,5 +66,5 @@ class ConfirmView(discord.ui.View):
         await interaction.response.edit_message(content="Canceled trade.", view=None)
         self.stop()
 
-def setup(bot):
-    bot.add_cog(SendBananas(bot))
+async def setup(bot):
+    await bot.add_cog(SendBananas(bot))

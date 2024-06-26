@@ -1,5 +1,6 @@
 from config.config import SERVERS
 import discord
+from discord.ext import commands
 from discord import app_commands
 from discord.ui import View, Button
 from data.items import add_item
@@ -7,12 +8,12 @@ from data.currency import get_bananas, remove_bananas
 from data.stats import random_luck, set_luck
 from utils.emoji_helper import BANANA_COIN_EMOJI
 
-class RerollLuckCommand(discord.app_commands.Cog):
+class RerollLuckCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @app_commands.command(name="reroll_luck", description="Reroll your luck for currency!")
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     @app_commands.describe(amount="Amount of bananas to spend on rerolling luck")
     async def reroll_luck(self, interaction: discord.Interaction, amount: int):
         user_id = str(interaction.user.id)
@@ -33,5 +34,5 @@ class RerollLuckCommand(discord.app_commands.Cog):
         else:
             await interaction.response.send_message(f"You need {amount} bananas to reroll your luck, but you only have {user_bananas}{BANANA_COIN_EMOJI}.", ephemeral=False)
 
-def setup(bot):
-    bot.add_cog(RerollLuckCommand(bot))
+async def setup(bot):
+    await bot.add_cog(RerollLuckCommand(bot))

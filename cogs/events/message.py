@@ -45,3 +45,6 @@ class MessageCog(commands.Cog):
             story += f" Respond to user {message.author.display_name}, or use their @,  <@{message.author.id}>"
             response_message = await generate_gpt_response(model, story, message.content)
             await message.channel.send(response_message)
+
+async def setup(bot):
+    await bot.add_cog(MessageCog(bot))

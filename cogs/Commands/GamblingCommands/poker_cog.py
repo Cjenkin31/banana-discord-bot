@@ -1,7 +1,7 @@
 import asyncio
 from config.config import SERVERS
+from discord.ext import commands
 from discord import app_commands
-from discord import commands
 import discord
 import math
 from data.currency import get_bananas, add_bananas, remove_bananas
@@ -24,7 +24,7 @@ class PokerCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     @app_commands.command(name="poker", description="Play Mississippi Stud poker")
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
     async def poker(self, interaction: discord.Interaction, bet_amount: str):
@@ -228,5 +228,5 @@ class PokerCommands(commands.Cog):
         embed.set_footer(text="Game over!")
         await poker_msg.edit(embed=embed)
 
-def setup(bot):
-    bot.add_cog(PokerCommands(bot))
+async def setup(bot):
+    await bot.add_cog(PokerCommands(bot))

@@ -16,7 +16,7 @@ class AdminRemoveCurrencyCog(commands.Cog):
 
     @app_commands.command(name="remove_currency", description="Remove currency from a user")
     @app_commands.check(is_owner())
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     async def remove_currency(self, interaction: discord.Interaction, user: discord.User, amount: int):
         try:
             await remove_bananas(str(user.id), amount)
@@ -31,5 +31,5 @@ class AdminRemoveCurrencyCog(commands.Cog):
         else:
             await interaction.response.send_message("An error occurred while processing your command.", ephemeral=True)
 
-def setup(bot):
-    bot.add_cog(AdminRemoveCurrencyCog(bot))
+async def setup(bot):
+    await bot.add_cog(AdminRemoveCurrencyCog(bot))

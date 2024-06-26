@@ -1,7 +1,7 @@
 import asyncio
 from config.config import SERVERS
+from discord.ext import commands
 from discord import app_commands
-from discord import commands
 import discord
 import random
 from data.currency import get_bananas, add_bananas, remove_bananas
@@ -69,7 +69,7 @@ class RouletteCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     @app_commands.command(name="roulette", description="Play roulette")
     @app_commands.describe(bet_amount="Amount of bananas to bet",
                             bet_type="Type of bet you want to make",
@@ -154,5 +154,5 @@ class RouletteCog(commands.Cog):
 
         await interaction.edit_original_response(embed=result_embed, attachments=[])
 
-def setup(bot):
-    bot.add_cog(RouletteCog(bot))
+async def setup(bot):
+    await bot.add_cog(RouletteCog(bot))

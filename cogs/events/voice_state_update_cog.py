@@ -31,5 +31,5 @@ class VoiceStateUpdateCog(commands.Cog):
             await delete_temp_vc(channel.guild.id, channel.id)
             await channel.delete(reason="VC Cleanup")
 
-def setup(bot):
-    bot.add_cog(VoiceStateUpdateCog(bot))
+async def setup(bot):
+    await bot.add_cog(VoiceStateUpdateCog(bot))

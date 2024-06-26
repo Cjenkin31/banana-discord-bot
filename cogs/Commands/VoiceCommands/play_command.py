@@ -1,8 +1,8 @@
 import os
 from config.config import SERVERS
 import discord
-from discord import app_commands
 from discord.ext import commands
+from discord import app_commands
 from discord import FFmpegPCMAudio
 import asyncio
 from pytube import YouTube, Playlist
@@ -17,7 +17,7 @@ MAX_DOWNLOAD_SONGS_AT_A_TIME = 2
 
 audio_queue = AudioQueue()
 
-@app_commands.guilds(SERVERS)
+@app_commands.guilds(*SERVERS)
 class PlayCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -186,5 +186,5 @@ class PlayCommand(commands.Cog):
         except Exception as e:
             print(f"Failed to remove file {file_path}: {e}")
 
-def setup(bot):
-    bot.add_cog(PlayCommand(bot))
+async def setup(bot):
+    await bot.add_cog(PlayCommand(bot))

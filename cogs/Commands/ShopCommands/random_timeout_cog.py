@@ -1,7 +1,7 @@
 from datetime import timedelta
 from config.config import SERVERS
+from discord.ext import commands
 from discord import app_commands
-from discord import commands
 import discord
 import random
 from data.currency import get_bananas, remove_bananas
@@ -12,7 +12,7 @@ class RandomTimeoutCommand(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="randomtimeout", description="Timeout a random user for 60 seconds (including yourself) : 1000 coins")
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     async def random_timeout(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         current_bananas = await get_bananas(user_id)
@@ -42,5 +42,5 @@ class RandomTimeoutCommand(commands.Cog):
         except Exception as e:
             await interaction.response.send_message(f"An error occurred: {str(e)}")
 
-def setup(bot):
-    bot.add_cog(RandomTimeoutCommand(bot))
+async def setup(bot):
+    await bot.add_cog(RandomTimeoutCommand(bot))

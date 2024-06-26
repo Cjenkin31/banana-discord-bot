@@ -1,13 +1,13 @@
 from config.config import SERVERS
 import discord
+from discord.ext import commands
 from discord import app_commands
-from discord import commands
 import os
 from utils.audio_queue import AudioQueue
 
 audio_queue = AudioQueue()
 
-@app_commands.guilds(SERVERS)
+@app_commands.guilds(*SERVERS)
 class StopYouTubeAudioCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -31,5 +31,5 @@ class StopYouTubeAudioCommand(commands.Cog):
         if os.path.exists(file_path):
             os.remove(file_path)
 
-def setup(bot):
-    bot.add_cog(StopYouTubeAudioCommand(bot))
+async def setup(bot):
+    await bot.add_cog(StopYouTubeAudioCommand(bot))

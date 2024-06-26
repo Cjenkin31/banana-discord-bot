@@ -10,7 +10,7 @@ class LeaderboardCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     @app_commands.command(name="leaderboard", description="Display the leaderboard of currency")
     async def leaderboard(self, interaction: discord.Interaction):
         try:
@@ -30,5 +30,5 @@ class LeaderboardCog(commands.Cog):
         except Exception as e:
             await interaction.response.send_message(f"Failed to display leaderboard: {str(e)}", ephemeral=True)
 
-def setup(bot):
-    bot.add_cog(LeaderboardCog(bot))
+async def setup(bot):
+    await bot.add_cog(LeaderboardCog(bot))

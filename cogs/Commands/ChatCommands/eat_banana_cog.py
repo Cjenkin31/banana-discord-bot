@@ -12,7 +12,7 @@ class EatBananaCog(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="eat_banana", description="Monkie eat")
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     async def eat_banana(self, interaction: discord.Interaction, amt: int = 1):
         await interaction.response.defer()
         banana_gif = "https://tenor.com/view/effy-gif-11375717773991506810"
@@ -35,5 +35,5 @@ class EatBananaCog(commands.Cog):
 
         await send_message_in_chunks(response_message, interaction)
 
-def setup(bot):
-    bot.add_cog(EatBananaCog(bot))
+async def setup(bot):
+    await bot.add_cog(EatBananaCog(bot))

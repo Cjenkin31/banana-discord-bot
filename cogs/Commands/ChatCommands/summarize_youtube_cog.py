@@ -62,5 +62,5 @@ class SummarizeYouTubeCog(commands.Cog):
 
         await send_message_in_chunks(final_summary, interaction)
 
-def setup(bot):
-    bot.add_cog(SummarizeYouTubeCog(bot))
+async def setup(bot):
+    await bot.add_cog(SummarizeYouTubeCog(bot))

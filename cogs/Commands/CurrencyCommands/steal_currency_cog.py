@@ -9,7 +9,7 @@ class StealCurrencyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     @app_commands.command(name="steal_bananas", description="Attempt to steal bananas from another user")
     async def steal_bananas(self, interaction: discord.Interaction, user: discord.User):
         thief = interaction.user
@@ -27,5 +27,5 @@ class StealCurrencyCog(commands.Cog):
         else:
             await interaction.response.send_message(f"{message}", ephemeral=False)
 
-def setup(bot):
-    bot.add_cog(StealCurrencyCog(bot))
+async def setup(bot):
+    await bot.add_cog(StealCurrencyCog(bot))

@@ -1,7 +1,7 @@
 from config.config import SERVERS
 import discord
-from discord import app_commands
 from discord.ext import commands
+from discord import app_commands
 from utils.audio_queue import AudioQueue
 
 audio_queue = AudioQueue()
@@ -11,7 +11,7 @@ class SkipCommand(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="skip", description="Skips the current audio playback and starts the next one in the queue.")
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     async def skip(self, interaction: discord.Interaction):
         guild_id = interaction.guild_id
         voice_client = discord.utils.get(self.bot.voice_clients, guild=interaction.guild)
@@ -37,5 +37,5 @@ class SkipCommand(commands.Cog):
         else:
             await interaction.channel.send("No more audios in the queue.")
 
-def setup(bot):
-    bot.add_cog(SkipCommand(bot))
+async def setup(bot):
+    await bot.add_cog(SkipCommand(bot))

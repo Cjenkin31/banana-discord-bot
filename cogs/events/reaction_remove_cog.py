@@ -39,5 +39,5 @@ class ReactionRemoveCog(commands.Cog):
                 finally:
                     await remove_message_mapping(payload.message_id)
 
-def setup(bot):
-    bot.add_cog(ReactionRemoveCog(bot))
+async def setup(bot):
+    await bot.add_cog(ReactionRemoveCog(bot))

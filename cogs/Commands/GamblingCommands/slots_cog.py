@@ -2,13 +2,14 @@ import asyncio
 import random
 from config.config import SERVERS
 from data.stats import get_luck
+from discord.ext import commands
 from discord import app_commands
 import discord
 from data.currency import get_bananas, add_bananas, remove_bananas
 from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI, SLOT_ROW_1_EMOJI, SLOT_ROW_2_EMOJI, SLOT_ROW_3_EMOJI, SLOT_EMOJI
 
-class SlotsCommands(app_commands.Cog, name="slots"):
+class SlotsCommands(commands.Cog, name="slots"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -17,7 +18,7 @@ class SlotsCommands(app_commands.Cog, name="slots"):
         return [w / total for w in weights] if total > 0 else [1/len(weights)] * len(weights)
 
     @app_commands.command(name="slots", description="Play slots")
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     @app_commands.describe(bet_amount="Amount of bananas to bet or 'all'")
     async def slots(self, interaction: discord.Interaction, bet_amount: str):
         valid, response = await bet_checks(bet_amount, interaction)
@@ -89,5 +90,5 @@ class SlotsCommands(app_commands.Cog, name="slots"):
         elif total_net_gain < 0:
             await remove_bananas(user_id, abs(total_net_gain))
 
-def setup(bot):
-    bot.add_cog(SlotsCommands(bot))
+async def setup(bot):
+    await bot.add_cog(SlotsCommands(bot))

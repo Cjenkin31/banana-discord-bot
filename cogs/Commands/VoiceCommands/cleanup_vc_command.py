@@ -1,13 +1,13 @@
 from config.config import SERVERS
 import discord
+from discord.ext import commands
 from discord import app_commands
-from discord import commands
-
 class CleanupVCCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="cleanupvc", description="Cleans up voice chats.", guilds=SERVERS)
+    @app_commands.command(name="cleanupvc", description="Cleans up voice chats.")
+    @app_commands.guilds(*SERVERS)
     async def cleanupvc(self, interaction: discord.Interaction):
         guild = interaction.guild
         if guild is None:
@@ -25,5 +25,5 @@ class CleanupVCCommand(commands.Cog):
 
         await interaction.response.send_message(f"Cleaned up {len(vcListToClean)} VC(s).")
 
-def setup(bot):
-    bot.add_cog(CleanupVCCommand(bot))
+async def setup(bot):
+    await bot.add_cog(CleanupVCCommand(bot))

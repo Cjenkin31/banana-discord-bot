@@ -10,7 +10,7 @@ class DailyCurrencyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     @app_commands.command(name="daily", description="Collect your daily bananas")
     async def daily(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
@@ -29,5 +29,5 @@ class DailyCurrencyCog(commands.Cog):
             response_message = await generate_gpt_response(model, story, user_input)
             await interaction.followup.send(response_message)
 
-def setup(bot):
-    bot.add_cog(DailyCurrencyCog(bot))
+async def setup(bot):
+    await bot.add_cog(DailyCurrencyCog(bot))

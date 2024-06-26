@@ -9,7 +9,7 @@ class GetCurrencyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     @app_commands.command(name="get_bananas", description="Get your banana coin amount")
     async def get_currency(self, interaction: discord.Interaction):
         try:
@@ -18,5 +18,5 @@ class GetCurrencyCog(commands.Cog):
         except Exception as e:
             await interaction.response.send_message(f"Failed to get currency: {str(e)}")
 
-def setup(bot):
-    bot.add_cog(GetCurrencyCog(bot))
+async def setup(bot):
+    await bot.add_cog(GetCurrencyCog(bot))

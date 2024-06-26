@@ -1,16 +1,17 @@
 from config.config import SERVERS
 from data.weekly import try_collect_weekly
+from discord.ext import commands
 from discord import app_commands
 import discord
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from utils.gpt import generate_gpt_response
 
-class WeeklyCurrencyCommand(app_commands.Cog):
+class WeeklyCurrencyCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @app_commands.command(name="weekly", description="Collect your weekly bananas")
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     async def weekly(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         can_collect, result = await try_collect_weekly(user_id)
@@ -27,5 +28,5 @@ class WeeklyCurrencyCommand(app_commands.Cog):
             response_message = await generate_gpt_response(model, story, user_input)
             await interaction.followup.send(response_message)
 
-def setup(bot):
-    bot.add_cog(WeeklyCurrencyCommand(bot))
+async def setup(bot):
+    await bot.add_cog(WeeklyCurrencyCommand(bot))

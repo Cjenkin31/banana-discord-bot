@@ -4,14 +4,15 @@ from discord.ui import View, Button
 from data.items import add_item
 from data.currency import get_bananas, remove_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
-from discord.ext import app_commands
+from discord.ext import commands
+from discord import app_commands
 
-class ShopCommands(app_commands.Cog, name="shop"):
+class ShopCommands(commands.Cog, name="shop"):
     def __init__(self, bot):
         self.bot = bot
 
     @app_commands.command(name="shop", description="Visit the shop to buy items")
-    @app_commands.guilds(SERVERS)
+    @app_commands.guilds(*SERVERS)
     async def shop(self, interaction: discord.Interaction):
         user_id = interaction.user.id
         view = ShopView(user_id)
@@ -52,5 +53,6 @@ class ShopView(View):
         self.clear_items()
         await interaction.response.send_message("An error occurred while processing your request. Please try again later.", ephemeral=True)
 
-# def setup(bot):
-#     bot.add_cog(ShopCommands(bot))
+async def setup(bot):
+    print("Skip Shop Commands")
+    # await bot.add_cog(ShopCommands(bot))
