@@ -1,34 +1,44 @@
-from Commands.setup_commands import define_all_commands
-from data.firebase_voicechat import delete_temp_vc, get_temp_vcs
+import asyncio
+import os
 import discord
 from discord.ext import commands
 from config.config import SERVERS, TOKEN, INTENTS
-from events.setup_events import setup_events
-from utils.error_handlers import setup_logging
 
-bot = commands.Bot(command_prefix="!", intents=INTENTS)
+bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+
+async def load_cogs():
+    loaded_cogs = 0
+    total_cogs = 0
+    for root, dirs, files in os.walk('cogs'):
+        for file in files:
+            if file.endswith('.py') and not file.startswith('__'):
+                path = os.path.join(root, file).replace(os.sep, '.').rstrip('.py')
+                total_cogs += 1
+                try:
+                    await bot.load_extension(path)
+                    loaded_cogs += 1
+                except Exception as e:
+                    print(f"Failed to load cog {path}: {e}")
+    print(f"Loaded {loaded_cogs} cogs")
+    print(f"Failed to load {total_cogs - loaded_cogs} cogs")
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user}!')
-    await setup_events(bot)
-    await define_all_commands(bot, SERVERS)
-    await cleanup_temp_vcs()
-    for guild in SERVERS:
-        try:
-            await bot.tree.sync(guild=guild)
-            print(f"Commands synced successfully with guild: {guild.id}")
-        except Exception as e:
-            print(f"Failed to sync commands with guild: {guild.id}, error: {e}")
+    print(f'Bot is attempting to sync commands...')
+    for server in SERVERS:
+        print(f'Starting sync for {server.id}')
+        await bot.tree.sync(guild=server)
+        print(f'Finished sync for {server.id}')
+    print(f'Bot is ready and has logged in as {bot.user}')
 
-async def cleanup_temp_vcs():
-    for guild in bot.guilds:
-        temp_vcs = await get_temp_vcs(guild.id)
-        for channel_id in temp_vcs:
-            channel = guild.get_channel(int(channel_id))
-            if channel and len(channel.members) == 0:
-                await delete_temp_vc(guild.id, channel.id)
-                await channel.delete(reason="VC Cleanup after bot restart")
+async def main():
+    try:
+        await load_cogs()
+        await bot.start(TOKEN)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        await bot.close()
 
 if __name__ == "__main__":
-    bot.run(TOKEN)
+    asyncio.run(main())
