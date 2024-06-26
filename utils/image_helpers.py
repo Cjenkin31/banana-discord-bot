@@ -39,17 +39,20 @@ async def download_gif_from_github(path: str):
     base_url = "https://raw.githubusercontent.com/Cjenkin31/banana-discord-bot/main/images/"
     corrected_path = path.lstrip('/')
     full_url = f"{base_url}{corrected_path}"
+    try:
+        response = requests.get(full_url, stream=True)
+        if response.status_code == 200:
+            local_filename = 'temp_image.gif'
+            with open(local_filename, 'wb') as f:
+                for chunk in response.iter_content(1024):
+                    f.write(chunk)
 
-    response = requests.get(full_url, stream=True)
-    if response.status_code == 200:
-        local_filename = 'temp_image.gif'
-        with open(local_filename, 'wb') as f:
-            for chunk in response.iter_content(1024):
-                f.write(chunk)
+            discord_file = File(local_filename, filename='image.gif')
+            os.remove(local_filename)
+            return discord_file
 
-        discord_file = File(local_filename, filename='image.gif')
-        os.remove(local_filename)
-        return discord_file
-
-    else:
+        else:
+            return None
+    except Exception as e:
+        print(f"An error occurred in download_gif_from_github: {e}")
         return None
