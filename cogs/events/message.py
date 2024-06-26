@@ -1,7 +1,7 @@
 import random
 from discord.ext import commands
 from GPT_stories import getStoryByRole
-from data.currency import add_bananas
+from data.Currency.currency import add_bananas
 from data.stats import get_luck
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from utils.gpt import generate_gpt_response

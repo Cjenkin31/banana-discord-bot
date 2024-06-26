@@ -27,12 +27,15 @@ async def download_from_github(path: str):
 
     local_filename = 'temp_image.jpg'
     image_path = download_image(full_url, local_filename)
-    
-    if image_path:
-        discord_file = File(image_path, filename='image.jpg')
-        os.remove(image_path)
-        return discord_file
-    else:
+    try:
+        if image_path:
+            discord_file = File(image_path, filename='image.jpg')
+            os.remove(image_path)
+            return discord_file
+        else:
+            return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
         return None
 
 async def download_gif_from_github(path: str):

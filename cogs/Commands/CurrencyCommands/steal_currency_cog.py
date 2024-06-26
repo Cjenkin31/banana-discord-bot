@@ -1,5 +1,5 @@
 from config.config import SERVERS
-from data.steal import try_steal
+from data.Currency.steal import try_steal
 from discord.ext import commands
 from discord import app_commands
 import discord
@@ -21,7 +21,6 @@ class StealCurrencyCog(commands.Cog):
 
         # Passing both user objects for better message formatting
         success, message = await try_steal(str(thief.id), str(target.id), thief, target)
-
         if success:
             await interaction.response.send_message(f"{message}", ephemeral=False)
         else:

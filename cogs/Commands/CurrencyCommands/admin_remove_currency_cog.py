@@ -2,7 +2,7 @@ from config.config import SERVERS
 from discord.ext import commands
 from discord import app_commands
 import discord
-from data.currency import remove_bananas
+from data.Currency.currency import remove_bananas
 from utils.users import UNBUTTERED_BAGEL_ID
 
 class AdminRemoveCurrencyCog(commands.Cog):

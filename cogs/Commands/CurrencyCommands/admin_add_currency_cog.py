@@ -2,9 +2,8 @@ from config.config import SERVERS
 from discord.ext import commands
 from discord import app_commands
 import discord
-from data.currency import add_bananas
+from data.Currency.currency import add_bananas
 from utils.users import UNBUTTERED_BAGEL_ID
-
 class AdminAddCurrencyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

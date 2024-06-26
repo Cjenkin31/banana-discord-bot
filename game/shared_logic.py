@@ -1,4 +1,4 @@
-from data.currency import get_bananas, add_bananas, remove_bananas
+from data.Currency.currency import get_bananas, add_bananas, remove_bananas
 import discord
 from discord import app_commands
 from utils.emoji_helper import BANANA_COIN_EMOJI

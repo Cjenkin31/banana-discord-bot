@@ -2,7 +2,7 @@ from config.config import SERVERS
 import discord
 from discord.ext import commands
 from discord import app_commands
-from data.currency import get_bananas, add_bananas, remove_bananas
+from data.Currency.currency import get_bananas, add_bananas, remove_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 
 class SendBananas(commands.Cog):

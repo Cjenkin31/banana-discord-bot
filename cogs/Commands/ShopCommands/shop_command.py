@@ -2,7 +2,7 @@ from config.config import SERVERS
 import discord
 from discord.ui import View, Button
 from data.items import add_item
-from data.currency import get_bananas, remove_bananas
+from data.Currency.currency import get_bananas, remove_bananas
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from discord.ext import commands
 from discord import app_commands

@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord import app_commands
 import discord
 import math
-from data.currency import get_bananas, add_bananas, remove_bananas
+from data.Currency.currency import get_bananas, add_bananas, remove_bananas
 from game.poker.poker_hand import card_rank_values
 from game.poker.flush import Flush
 from game.poker.four_of_a_kind import FourOfAKind
