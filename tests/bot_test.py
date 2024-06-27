@@ -36,7 +36,7 @@ async def test_load_cogs():
         mocked_load.return_value = None  # Simulate successful loading
         await load_cogs()
 
-        # Assertions, fixing the path
+        # Assertions
         expected_path = 'cogs.hello_cog'
         actual_call = mocked_load.call_args[0][0].replace('/path/to/', '')
         assert expected_path == actual_call, f"Expected {expected_path}, got {actual_call}"
