@@ -13,10 +13,23 @@ class AuthTokenCog(commands.Cog):
     async def dm_user(self, user, message):
         try:
             await user.send(message)
+            return True
         except discord.Forbidden:
             logging.error("Failed to send DM: Check the user's privacy settings.")
             return False
-        return True
+        except Exception as e:
+            logging.error(f"Failed to send DM: {e}")
+            return False
+    
+    async def generate_token(self, user_id):
+        new_token = str(uuid.uuid4()).replace('-', '')
+        if not await set_auth_token(user_id, new_token):
+            return None
+        return new_token
+    
+    async def send_token_dm(self, user, user_id, token):
+        message = f"Here is your userID\n```{user_id}```\nHere is your authentication token (This is specific to banana bread activities):\n ```{token}```\nKeep it safe!"
+        return await self.dm_user(user, message)
 
     @app_commands.command(name="get_auth_token", description="Get your authentication token")
     @app_commands.guilds(*SERVERS)
@@ -26,15 +39,12 @@ class AuthTokenCog(commands.Cog):
         token = await get_auth_token(user_id)
         
         if not token:
-            new_token = str(uuid.uuid4()).replace('-', '')
-            if not await set_auth_token(user_id, new_token):
+            token = await self.generate_token(user_id)
+            if not token:
                 await interaction.followup.send("Failed to generate a token. Please try again later.", ephemeral=True)
                 return
-            token = new_token
         
-        message = f"Here is your userID\n```{user_id}```\nHere is your authentication token (This is specific to banana bread activities):\n ```{token}```\nKeep it safe!"
-        
-        if not await self.dm_user(interaction.user, message):
+        if not await self.send_token_dm(interaction.user, user_id, token):
             await interaction.followup.send("I couldn't send you a DM. Please check your privacy settings and try again.", ephemeral=True)
         else:
             await interaction.followup.send("I've sent you your authentication token via DM!", ephemeral=True)
