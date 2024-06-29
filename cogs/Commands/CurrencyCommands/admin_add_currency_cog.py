@@ -8,6 +8,7 @@ class AdminAddCurrencyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @staticmethod
     def is_owner():
         async def predicate(interaction: discord.Interaction):
             return interaction.user.id == UNBUTTERED_BAGEL_ID
