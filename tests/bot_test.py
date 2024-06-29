@@ -5,25 +5,9 @@ import discord
 from discord.ext import commands
 import sys
 import os
-
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from bot import load_cogs, on_ready, bot
-
-@pytest.fixture
-def mock_bot():
-    intents = discord.Intents.default()
-    bot = commands.Bot(command_prefix="!", intents=intents)
-    type(bot).user = PropertyMock(return_value=MagicMock(id=123456, name='TestBot'))
-    type(bot).application_id = PropertyMock(return_value=123456789)
-
-    mock_tree = MagicMock()
-    type(bot).tree = PropertyMock(return_value=mock_tree)
-    mock_tree.sync = MagicMock(return_value=asyncio.Future())
-    mock_tree.sync.return_value.set_result(None)
-
-    return bot
 
 @pytest.mark.asyncio
 async def test_load_cogs():
