@@ -15,6 +15,10 @@ class EatBananaCog(commands.Cog):
     @app_commands.guilds(*SERVERS)
     async def eat_banana(self, interaction: discord.Interaction, amt: int = 1):
         await interaction.response.defer()
+        response_message = await self.process_eating(interaction, amt)
+        await send_message_in_chunks(response_message, interaction)
+
+    async def process_eating(self, interaction: discord.Interaction, amt: int):
         banana_gif = "https://tenor.com/view/effy-gif-11375717773991506810"
         user_id = interaction.user.id
         user_banana = await get_bananas(user_id)
@@ -32,8 +36,7 @@ class EatBananaCog(commands.Cog):
             await remove_bananas(user_id, amt)
 
         response_message += banana_gif
-
-        await send_message_in_chunks(response_message, interaction)
+        return response_message
 
 async def setup(bot):
     await bot.add_cog(EatBananaCog(bot))
