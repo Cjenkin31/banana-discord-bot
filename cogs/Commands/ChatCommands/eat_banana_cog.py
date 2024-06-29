@@ -25,9 +25,9 @@ class EatBananaCog(commands.Cog):
         response_message = ""
         if user_banana < amt:
             response_message += f"YOU DON'T HAVE ENOUGH {BANANA_COIN_EMOJI} TO EAT\n"
-            return
+            return response_message
         if random.randint(1, 10) == 1:
-            response_message += f"You decide to give {amt} banana(s) to the bot instead 🎁!\n{banana_gif}\n"
+            response_message += f"You decide to give {amt} banana(s) to the bot instead 🎁!\n"
             await add_bananas(1011022296741326910, amt)
             await remove_bananas(user_id, amt)
         else:
