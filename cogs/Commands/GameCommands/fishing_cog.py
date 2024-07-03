@@ -21,7 +21,7 @@ class FishingCog(commands.Cog):
     @app_commands.guilds(*SERVERS)
     async def askbread(self, interaction: discord.Interaction):
         await interaction.response.defer()
-        response = await generate_gpt_response("gpt3.5-turbo", "You are a fisherman who only speaks in words of fish names. Please only send back 1 word.", "")
+        response = await generate_gpt_response("gpt3.5-turbo", "You are a fisherman who only speaks in words of fish names. Please only send back 1 word.", "Give me a random fish")
         await interaction.followup.send(f"Fishing is WIP.....Pretend to have recieved a cool fish....Actually here is a gpt generated fish name. {response}")
         # await send_message_in_chunks(response_message, interaction)
 
