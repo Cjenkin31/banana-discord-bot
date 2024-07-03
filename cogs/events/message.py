@@ -39,7 +39,7 @@ class MessageCog(commands.Cog):
             previous_context = ""
             if message.reference and message.reference.resolved:
                 replied_message = await message.channel.fetch_message(message.reference.message_id)
-                previous_context = f"You previously said: {replied_message.content}\n"
+                previous_context = f"<@{replied_message.author.id} previously said: {replied_message.content}\n"
             story = getStoryByRole(role, message.author.id)
             story = previous_context + story
             story += f" Respond to user {message.author.display_name}, or use their @,  <@{message.author.id}>"
