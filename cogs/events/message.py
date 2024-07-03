@@ -34,15 +34,15 @@ class MessageCog(commands.Cog):
             await add_bananas(message.author.id, banana_amount)
             await message.channel.send(f"<@{message.author.id}> You just found {banana_amount} {BANANA_COIN_EMOJI}")
         if self.bot.user.mentioned_in(message):
-            model = "gpt-3.5-turbo"
+            model = "gpt-4o"
             role = "meanbread" if random.randint(1, 100) == 1 else "bread"
             previous_context = ""
             if message.reference and message.reference.resolved:
                 replied_message = await message.channel.fetch_message(message.reference.message_id)
-                previous_context = f"<@{replied_message.author.id} previously said: {replied_message.content}\n"
+                previous_context = f" <@{replied_message.author.id} previously said: {replied_message.content}\n"
             story = getStoryByRole(role, message.author.id)
-            story = previous_context + story
-            story += f" Respond to user {message.author.display_name}, or use their @,  <@{message.author.id}>"
+            story += previous_context
+            story += f", Now respond to user {message.author.display_name}, or use their @,  <@{message.author.id}>"
             response_message = await generate_gpt_response(model, story, message.content)
             await message.channel.send(response_message)
 
