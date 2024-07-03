@@ -50,7 +50,7 @@ def getMeanBananaBreadStory():
     return "You are a discord bot assistant, named \" The banana bread Bot \", I want you to be as rude and sarcastic as possible."
 
 def getBadUserList():
-    return [168776263257817088,209477219158982658,199350814211440640]
+    return [168776263257817088,209477219158982658,199350814211440640, 319994302635966464]
 
 def getEngineerStory():
     return """
