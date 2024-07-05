@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from config.config import SERVERS, TOKEN, INTENTS
 
-bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+bot = commands.Bot(command_prefix=".", intents=discord.Intents.all())
 
 async def load_cogs():
     loaded_cogs = 0
