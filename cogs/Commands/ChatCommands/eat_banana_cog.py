@@ -11,6 +11,12 @@ class EatBananaCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(name="eat_banana", help="Eat a banana")
+    async def eat_banana_chat(self, ctx, amt: int = 1):
+        async with ctx.typing():
+            response_message = await self.process_eating(ctx.author.id, amt)
+        await ctx.send(response_message)
+
     @app_commands.command(name="eat_banana", description="Monkie eat")
     @app_commands.guilds(*SERVERS)
     async def eat_banana(self, interaction: discord.Interaction, amt: int = 1):
