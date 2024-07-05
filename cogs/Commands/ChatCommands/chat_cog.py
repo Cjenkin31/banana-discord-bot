@@ -17,6 +17,13 @@ class ChatCog(commands.Cog):
         response_message = await generate_gpt_response(model, story, user_input)
         return response_message
 
+
+    @commands.command(name="askbread", help="Ask a question and provide a role.")
+    async def askbread_chat(self, ctx, user_input: str, role: str):
+        await ctx.defer()
+        response_message = await self.process_askbread(ctx.author.id, user_input, role)
+        await ctx.send(response_message)
+
     @app_commands.command(name="askbread", description="...")
     @app_commands.guilds(*SERVERS)
     async def askbread(self, interaction: discord.Interaction, user_input: str, role: str):
