@@ -13,7 +13,7 @@ class FishingCog(commands.Cog):
 
     @app_commands.command(name="fishing", description="Fishing Game!")
     @app_commands.guilds(*SERVERS)
-    async def askbread(self, interaction: discord.Interaction):
+    async def fishing_command(self, interaction: discord.Interaction):
         await interaction.response.send_message("This is still under development.... Please be patient")
 
 async def setup(bot):
