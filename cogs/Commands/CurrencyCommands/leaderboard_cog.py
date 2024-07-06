@@ -10,6 +10,24 @@ class LeaderboardCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(name="leaderboard", help="Display the leaderboard of currency")
+    async def debt_leaderboard(self, ctx):
+        try:
+            leaderboard_data = await get_debt_leaderboard()
+            embed = discord.Embed(title="Top Users by Bananas", description="Here are the top banana earners:", color=0xf1c40f)
+            for index, (user_id, amount) in enumerate(leaderboard_data[:10], start=1):
+                try:
+                    user = await ctx.guild.fetch_member(user_id)
+                except discord.errors.NotFound:
+                    user = "Unknown User"
+                if isinstance(user, discord.Member):
+                    embed.add_field(name=f"{index}. {BANANA_COIN_EMOJI} {user.display_name}", value=f"{amount}", inline=False)
+                else:
+                    embed.add_field(name=f"{index}. {BANANA_COIN_EMOJI} {user}", value=f"{amount}", inline=False)
+            await ctx.send(embed=embed)
+        except Exception as e:
+            await ctx.send(f"Failed to display leaderboard: {str(e)}")
+
     @app_commands.guilds(*SERVERS)
     @app_commands.command(name="leaderboard", description="Display the leaderboard of currency")
     async def leaderboard(self, interaction: discord.Interaction):
