@@ -11,26 +11,43 @@ class DailyCurrencyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.guilds(*SERVERS)
-    @app_commands.command(name="daily", description="Collect your daily bananas")
-    async def daily(self, interaction: discord.Interaction):
-        user_id = str(interaction.user.id)
-        await add_name_if_not_exist_to_database(user_id, interaction.user.display_name)
+    async def process_daily(self, user_id, user_display_name):
+        await add_name_if_not_exist_to_database(user_id, user_display_name)
         can_collect, result = await try_collect_daily(user_id)
         if not can_collect:
             wait_time = result
             formatted_wait_time = f"{wait_time.seconds // 3600} hours and {(wait_time.seconds // 60) % 60} minutes"
-            await interaction.response.send_message(f"Please wait {formatted_wait_time} to collect your daily bananas.")
+            return False, formatted_wait_time
         else:
-            await interaction.response.defer()
             bananas_collected = result
             model = "gpt-4o"
-            story = (f"You are a narrator telling a short story about how {interaction.user.mention} came across some money. Use 1 or 2 lines in BASIC markdown. At the end of your story, say '{interaction.user.mention} found: Then put some type of object'. Never any currency numbers. ")
-            user_input = f"{interaction.user.mention} went on an adventure found their daily currency."
+            story = (f"You are a narrator telling a short story about how {user_display_name} came across some money. Use 1 or 2 lines in BASIC markdown. At the end of your story, say '{user_display_name} found: Then put some type of object'. Never any currency numbers.")
+            user_input = f"{user_display_name} went on an adventure found their daily currency."
             response_message = await generate_gpt_response(model, story, user_input)
             response_message += f"\n +{bananas_collected} {BANANA_COIN_EMOJI}"
+            return True, response_message
 
-            await interaction.followup.send(response_message)
+    @commands.command(name="daily", help="Collect your daily bananas")
+    async def daily_cmd(self, ctx):
+        user_id = str(ctx.author.id)
+        user_display_name = ctx.author.display_name
+        can_collect, response = await self.process_daily(user_id, user_display_name)
+        if can_collect:
+            await ctx.send(response)
+        else:
+            await ctx.send(f"Please wait {response} to collect your daily bananas.")
+
+    @app_commands.guilds(*SERVERS)
+    @app_commands.command(name="daily", description="Collect your daily bananas")
+    async def daily_app_cmd(self, interaction: discord.Interaction):
+        user_id = str(interaction.user.id)
+        user_display_name = interaction.user.display_name
+        can_collect, response = await self.process_daily(user_id, user_display_name)
+        if can_collect:
+            await interaction.response.defer()
+            await interaction.followup.send(response)
+        else:
+            await interaction.response.send_message(f"Please wait {response} to collect your daily bananas.")
 
 async def setup(bot):
     await bot.add_cog(DailyCurrencyCog(bot))
