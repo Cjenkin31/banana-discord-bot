@@ -24,7 +24,7 @@ class LeaderboardCog(commands.Cog):
                 if isinstance(user, discord.Member):
                     embed.add_field(name=f"{index}. {BANANA_COIN_EMOJI} {user.display_name}", value=f"{amount}", inline=False)
                 else:
-                    embed.add_field(name=f"{index}. {BANANA_COIN_EMOJI} {user}", valu   e=f"{amount}", inline=False)
+                    embed.add_field(name=f"{index}. {BANANA_COIN_EMOJI} {user}", value=f"{amount}", inline=False)
             await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send(f"Failed to display leaderboard: {str(e)}")
