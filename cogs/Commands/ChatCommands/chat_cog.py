@@ -18,13 +18,13 @@ class ChatCog(commands.Cog):
         return response_message
 
 
-    @commands.command(name="askbread", help="Ask a question and provide a role.")
+    @commands.command(name="ask_bread", help="Ask a question and provide a role.")
     async def askbread_chat(self, ctx, user_input: str, role: str):
         async with ctx.typing():
             response_message = await self.process_askbread(ctx.author.id, user_input, role)
         await ctx.send(response_message)
 
-    @app_commands.command(name="askbread", description="...")
+    @app_commands.command(name="ask_bread", description="...")
     @app_commands.guilds(*SERVERS)
     async def askbread(self, interaction: discord.Interaction, user_input: str, role: str):
         await interaction.response.defer()
