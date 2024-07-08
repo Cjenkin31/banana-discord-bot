@@ -10,7 +10,7 @@ class GetCurrencyCog(commands.Cog):
         self.bot = bot
 
     @commands.command(name="get_bananas", help="Get your banana coin amount", aliases=['bal','balance', 'cash', 'get_cash', 'get_currency'])
-    async def get_currency(self, ctx):
+    async def get_currency_chat(self, ctx):
         try:
             amount = await get_bananas(str(ctx.author.id))
             await ctx.send(f"You have {amount} {BANANA_COIN_EMOJI}.")
