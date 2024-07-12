@@ -19,16 +19,21 @@ class AnnouncementCog(commands.Cog):
     @is_owner()
     async def announce(self, interaction: discord.Interaction, user_input: str, channel_ids: str = ""):
         await interaction.response.defer()
-        
+        print(channel_ids)
         if not channel_ids:
+            print("getting all channels")
             channel_ids = get_all_announcement_channels()
+            print(channel_ids)
         else:
+            print("splitting channel ids")
             channel_ids = [int(id.strip()) for id in channel_ids.split(",") if id.strip().isdigit()]
-
+            print(channel_ids)
         for channel_id in channel_ids:
             print(channel_id)
             channel = self.bot.get_channel(int(channel_id))
+            print(channel)
             if channel:
+                print("sending message")
                 await channel.send(user_input)
             else:
                 await interaction.response.send_message(f"Failed to send message to channel {channel_id}", ephemeral=True)
