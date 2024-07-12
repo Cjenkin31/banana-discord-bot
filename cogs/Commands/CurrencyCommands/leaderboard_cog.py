@@ -14,7 +14,7 @@ class LeaderboardCog(commands.Cog):
     async def debt_leaderboard(self, ctx):
         try:
             leaderboard_data = await get_debt_leaderboard()
-            embed = discord.Embed(title="Top Users by Bananas", description="Here are the top banana earners:", color=0xf1c40f)
+            embed = discord.Embed(title="Worst Users by Bananas", description="Here are the lowest banana earners:", color=0xf1c40f)
             for index, (user_id, amount) in enumerate(leaderboard_data[:10], start=1):
                 try:
                     user = await ctx.guild.fetch_member(user_id)
