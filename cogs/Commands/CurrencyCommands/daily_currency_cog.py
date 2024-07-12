@@ -16,7 +16,7 @@ class DailyCurrencyCog(commands.Cog):
         can_collect, result = await try_collect_daily(user_id)
         if not can_collect:
             wait_time = result
-            formatted_wait_time = f"{wait_time.seconds // 3600} hours and {(wait_time.seconds // 60) % 60} minutes"
+            formatted_wait_time = f"{wait_time.seconds // 3600} hours, {((wait_time.seconds // 60) % 60)} minutes, and {(wait_time.seconds % 60)} seconds"
             return False, formatted_wait_time
         else:
             bananas_collected = result
