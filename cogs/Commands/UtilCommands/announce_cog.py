@@ -31,8 +31,10 @@ class AnnouncementCog(commands.Cog):
         for channel_id in channel_ids:
             print(channel_id)
             channel = self.bot.get_channel(int(channel_id))
+            print(f"Channel: Right after getting: {channel}")
             if channel is None:
                 try:
+                    print("channel is none")
                     channel = await self.bot.fetch_channel(int(channel_id))
                 except discord.NotFound:
                     await interaction.response.send_message(f"Channel with ID {channel_id} not found.", ephemeral=True)
