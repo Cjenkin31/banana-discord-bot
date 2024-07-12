@@ -40,8 +40,9 @@ class WeeklyCurrencyCommand(commands.Cog):
 
     @commands.command(name="weekly", help="Collect your weekly bananas")
     async def weekly_text(self, ctx):
-        user_id = str(ctx.author.id)
-        can_collect, response_message = await self.collect_weekly(user_id, ctx.author.mention)
+        async with ctx.typing():
+            user_id = str(ctx.author.id)
+            can_collect, response_message = await self.collect_weekly(user_id, ctx.author.mention)
         
         if can_collect:
             await ctx.send(response_message)
