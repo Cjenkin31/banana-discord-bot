@@ -30,8 +30,20 @@ class AnnouncementCog(commands.Cog):
             print(channel_ids)
         for channel_id in channel_ids:
             print(channel_id)
-            channel = self.bot.get_channel(int(channel_id))
-            print(channel)
+        channel = self.bot.get_channel(int(channel_id))
+        if channel is None:
+            try:
+                channel = await self.bot.fetch_channel(int(channel_id))
+            except discord.NotFound:
+                await interaction.response.send_message(f"Channel with ID {channel_id} not found.", ephemeral=True)
+                return
+            except discord.Forbidden:
+                await interaction.response.send_message(f"Bot does not have access to the channel with ID {channel_id}.", ephemeral=True)
+                return
+            except discord.HTTPException as e:
+                await interaction.response.send_message(f"Failed to fetch channel due to an HTTP error: {e}", ephemeral=True)
+                return
+            print(f"Channel = {channel}")
             if channel:
                 print("sending message")
                 await channel.send(user_input)
