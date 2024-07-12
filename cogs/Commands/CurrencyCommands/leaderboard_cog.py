@@ -2,10 +2,9 @@ from config.config import SERVERS
 from discord.ext import commands
 from discord import app_commands
 import discord
-from data.Currency.currency import get_leaderboard
+from data.Currency.currency import get_leaderboard, get_debt_leaderboard
 from utils.image_helpers import download_from_github
 from utils.emoji_helper import BANANA_COIN_EMOJI
-from data.Currency.debt import get_debt_leaderboard
 
 class LeaderboardCog(commands.Cog):
     def __init__(self, bot):
