@@ -26,6 +26,7 @@ class AnnouncementCog(commands.Cog):
             channel_ids = [int(id.strip()) for id in channel_ids.split(",") if id.strip().isdigit()]
 
         for channel_id in channel_ids:
+            print(channel_id)
             channel = self.bot.get_channel(int(channel_id))
             if channel:
                 await channel.send(user_input)
