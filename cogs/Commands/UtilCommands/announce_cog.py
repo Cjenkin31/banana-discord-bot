@@ -43,12 +43,12 @@ class AnnouncementCog(commands.Cog):
             except discord.HTTPException as e:
                 await interaction.response.send_message(f"Failed to fetch channel due to an HTTP error: {e}", ephemeral=True)
                 return
-            print(f"Channel = {channel}")
-            if channel:
-                print("sending message")
-                await channel.send(user_input)
-            else:
-                await interaction.response.send_message(f"Failed to send message to channel {channel_id}", ephemeral=True)
+        print(f"Channel = {channel}")
+        if channel:
+            print("sending message")
+            await channel.send(user_input)
+        else:
+            await interaction.response.send_message(f"Failed to send message to channel {channel_id}", ephemeral=True)
         await interaction.response.send_message("Message sent to all channels", ephemeral=True)
 
 async def setup(bot):
