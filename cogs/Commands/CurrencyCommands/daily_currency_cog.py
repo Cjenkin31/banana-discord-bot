@@ -29,9 +29,10 @@ class DailyCurrencyCog(commands.Cog):
 
     @commands.command(name="daily", help="Collect your daily bananas")
     async def daily_cmd(self, ctx):
-        user_id = str(ctx.author.id)
-        user_display_name = ctx.author.display_name
-        can_collect, response = await self.process_daily(user_id, user_display_name)
+        async with ctx.typing():
+            user_id = str(ctx.author.id)
+            user_display_name = ctx.author.display_name
+            can_collect, response = await self.process_daily(user_id, user_display_name)
         if can_collect:
             await ctx.send(response)
         else:
