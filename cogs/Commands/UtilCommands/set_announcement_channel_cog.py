@@ -18,7 +18,7 @@ class SetAnnouncementChannel(commands.Cog):
     @app_commands.describe(channel="Sets the anouncement channel for announcements.")
     @app_commands.guilds(*SERVERS)
     @is_owner()
-    async def set_announcement_channel_command(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
+    async def set_announcement_channel_command(self, interaction: discord.Interaction, channel: discord.TextChannel):
         existing_channel_id = await get_announcement_channel(interaction.guild.id)
         if existing_channel_id == channel.id:
             await interaction.response.send_message(f"The 'Announcement Channel' is already set to {channel.name}.", ephemeral=True)
