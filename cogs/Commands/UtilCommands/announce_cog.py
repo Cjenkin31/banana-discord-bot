@@ -22,7 +22,7 @@ class AnnouncementCog(commands.Cog):
         print(channel_ids)
         if not channel_ids:
             print("getting all channels")
-            channel_ids = get_all_announcement_channels()
+            channel_ids = await get_all_announcement_channels()
             print(channel_ids)
         else:
             print("splitting channel ids")
