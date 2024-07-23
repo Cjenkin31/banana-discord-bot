@@ -23,7 +23,10 @@ class DailyCurrencyCog(commands.Cog):
             model = "gpt-4o"
             story = (f"You are a narrator telling a short story about how {user_display_name} came across some money. Use 1 or 2 lines in BASIC markdown. At the end of your story, say '{user_display_name} found: Then put some type of object'. Never any currency numbers.")
             user_input = f"{user_display_name} went on an adventure found their daily currency."
-            response_message = await generate_gpt_response(model, story, user_input)
+            try:
+                response_message = await generate_gpt_response(model, story, user_input)
+            except Exception as e:
+                response_message = "Response took too long or had an error. Sorry! Here is your daily currency."
             response_message += f"\n +{bananas_collected} {BANANA_COIN_EMOJI}"
             return True, response_message
 
