@@ -21,6 +21,8 @@ class FishingView(discord.ui.View):
         if interaction.user.id != self.user.id:
             return await interaction.response.send_message("This is not your fishing session!", ephemeral=True)
 
+        await interaction.response.defer()
+
         # Load fish data and shuffle actions
         fish_data = load_fish_data()
         caught_fish = select_fish_by_rarity(fish_data)
@@ -28,16 +30,9 @@ class FishingView(discord.ui.View):
         for action in caught_fish["actions"]:
             random.shuffle(action["options"])
 
-        # Initial response to disable the button and prevent re-casting
-        await interaction.response.edit_message(content="Casting line...", view=None)
-
-        # Simulate casting line with FishingMan gif
         fishing_man = await download_gif_from_github("FishingMan.gif")
-        try:
-            if fishing_man:
-                await interaction.edit_original_response(attachments=[fishing_man])
-        except Exception as e:
-            print(f"Error updating to fishing man gif: {e}")
+        if fishing_man:
+            await interaction.followup.send("Casting line...", file=fishing_man)
 
         # Wait for the fish 'bite' time
         await asyncio.sleep(caught_fish['wait_time'])
@@ -45,13 +40,10 @@ class FishingView(discord.ui.View):
         # Update message for caught fish and load mini-game
         man_caught_fish_gif = await download_gif_from_github("CaughtFish.gif")
         minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0, datetime.utcnow())
-        try:
-            if man_caught_fish_gif:
-                await interaction.followup.send(content="You got a bite! What will you do?", files=[man_caught_fish_gif], view=minigame_view)
-            else:
-                await interaction.followup.send(content="Failed to load the fish image, but you got a bite! What will you do?", view=minigame_view)
-        except Exception as e:
-            print(f"Error transitioning to mini-game with followup: {e}")
+        if man_caught_fish_gif:
+            await interaction.followup.send("You got a bite! What will you do?", files=[man_caught_fish_gif], view=minigame_view)
+        else:
+            await interaction.followup.send("Failed to load the fish image, but you got a bite! What will you do?", view=minigame_view)
 
 class MiniGameView(discord.ui.View):
     def __init__(self, bot, user, fish, action_index, last_action_time):
