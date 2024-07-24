@@ -30,9 +30,12 @@ class FishingView(discord.ui.View):
         print("Fish Selected")
         embed = discord.Embed(description="You cast your line... Waiting for a bite...")
         fishing_man = await download_gif_from_github("FishingMan.gif")
-        if fishing_man:
-            embed.set_image(url=fishing_man.url)
         print("Got FishingMan Gif")
+        try:
+            if fishing_man:
+                embed.set_image(url=fishing_man.url)
+        except Exception as e:
+            print(f"An error occurred: {e}")
         await interaction.response.edit_message(embed=embed, view=None)
         await asyncio.sleep(caught_fish['wait_time'])
         
