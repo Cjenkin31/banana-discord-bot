@@ -14,21 +14,25 @@ class FishingView(discord.ui.View):
         super().__init__(timeout=None)
         self.bot = bot
         self.user = user
-
+        print("Fishing View Init")
     @discord.ui.button(label="Cast Line", style=discord.ButtonStyle.primary, custom_id="cast_line")
     async def cast_line(self, interaction: discord.Interaction, button: discord.ui.Button):
+        print("Cast Line")
         if interaction.user.id != self.user.id:
             return await interaction.response.send_message("This is not your fishing session!", ephemeral=True)
-        
+        print("Loading Fish Data")
         fish_data = load_fish_data()
+        print("Selecting Fish")
         caught_fish = select_fish_by_rarity(fish_data)
         random.shuffle(caught_fish["actions"])
         for action in caught_fish["actions"]:
             random.shuffle(action["options"])
+        print("Fish Selected")
         embed = discord.Embed(description="You cast your line... Waiting for a bite...")
         fishing_man = await download_gif_from_github("FishingMan.gif")
         if fishing_man:
             embed.set_image(url=fishing_man.url)
+        print("Got FishingMan Gif")
         await interaction.response.edit_message(embed=embed, view=None)
         await asyncio.sleep(caught_fish['wait_time'])
         
@@ -99,6 +103,7 @@ class FishingCog(commands.Cog):
     @app_commands.command(name="fishing", description="Fishing Game!")
     @app_commands.guilds(*SERVERS)
     async def fishing_command(self, interaction: discord.Interaction):
+        print("Fishing Command")
         await interaction.response.send_message("You have started fishing (THIS DOES NOT GIVE REAL COINS)! Press the 'Cast Line' button to begin.", view=FishingView(self.bot, interaction.user))
 
 async def setup(bot):
