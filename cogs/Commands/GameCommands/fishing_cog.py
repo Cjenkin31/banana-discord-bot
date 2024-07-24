@@ -20,30 +20,36 @@ class FishingView(discord.ui.View):
     async def cast_line(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.user.id:
             return await interaction.response.send_message("This is not your fishing session!", ephemeral=True)
-        
+
+        # Load fish data and shuffle actions
         fish_data = load_fish_data()
         caught_fish = select_fish_by_rarity(fish_data)
         random.shuffle(caught_fish["actions"])
         for action in caught_fish["actions"]:
             random.shuffle(action["options"])
-        print(caught_fish)
-        initial_message = await interaction.response.edit_message(view=None)
-        
+
+        # Initial response to disable the button and prevent re-casting
+        await interaction.response.edit_message(content="Casting line...", view=None)
+
+        # Simulate casting line with FishingMan gif
         fishing_man = await download_gif_from_github("FishingMan.gif")
         try:
             if fishing_man:
-                await initial_message.edit(attachments=[fishing_man])
+                await interaction.edit_original_response(attachments=[fishing_man])
         except Exception as e:
-            print(f"An error occurred in cast_line: {e}")
-        
+            print(f"Error updating to fishing man gif: {e}")
+
+        # Wait for the fish 'bite' time
         await asyncio.sleep(caught_fish['wait_time'])
-        
-        minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0, datetime.utcnow())
+
+        # Update message for caught fish and load mini-game
         man_caught_fish_gif = await download_gif_from_github("CaughtFish.gif")
+        minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0, datetime.utcnow())
         try:
-            await initial_message.edit(content="You got a bite! What will you do?", view=minigame_view, attachments=[man_caught_fish_gif])
+            await interaction.edit_original_response(content="You got a bite! What will you do?", attachments=[man_caught_fish_gif], view=minigame_view)
         except Exception as e:
-            print(f"An error occurred in cast_line: {e}")
+            print(f"Error transitioning to mini-game: {e}")
+
 
 class MiniGameView(discord.ui.View):
     def __init__(self, bot, user, fish, action_index, last_action_time):
