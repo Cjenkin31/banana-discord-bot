@@ -102,7 +102,7 @@ class MiniGameView(discord.ui.View):
             await self.clear_embeds(interaction, "The fish escaped! Better luck next time.")
 
     async def clear_embeds(self, interaction: discord.Interaction, content: str):
-        await interaction.response.edit_message(content=content, embed=None, view=None)
+        await interaction.edit_original_response(content=content, attachments=[], view=None)
 
 class FishingCog(commands.Cog):
     def __init__(self, bot):
