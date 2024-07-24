@@ -34,7 +34,7 @@ class FishingView(discord.ui.View):
         try:
             if fishing_man:
                 await interaction.response.edit_message(embed=embed, view=None)
-                await interaction.followup.send(file=fishing_man)
+                initial_message = await interaction.followup.send(file=fishing_man)
         except Exception as e:
             print(f"An error occurred in cast_line: {e}")
         await asyncio.sleep(caught_fish['wait_time'])
@@ -44,7 +44,7 @@ class FishingView(discord.ui.View):
         man_caught_fish_gif = await download_gif_from_github("CaughtFish.gif")
         await interaction.response.edit_message(embed=embed, view=minigame_view)
         if man_caught_fish_gif:
-            await interaction.followup.send(file=man_caught_fish_gif)
+            await initial_message.edit(embed=None, view=None, attachments=[man_caught_fish_gif])
 
 class MiniGameView(discord.ui.View):
     def __init__(self, bot, user, fish, action_index, last_action_time):
