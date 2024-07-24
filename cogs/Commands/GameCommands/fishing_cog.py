@@ -46,10 +46,12 @@ class FishingView(discord.ui.View):
         man_caught_fish_gif = await download_gif_from_github("CaughtFish.gif")
         minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0, datetime.utcnow())
         try:
-            await interaction.followup.send(content="You got a bite! What will you do?", attachments=[man_caught_fish_gif], view=minigame_view, ephemeral=False)
+            if man_caught_fish_gif:
+                await interaction.followup.send(content="You got a bite! What will you do?", files=[man_caught_fish_gif], view=minigame_view)
+            else:
+                await interaction.followup.send(content="Failed to load the fish image, but you got a bite! What will you do?", view=minigame_view)
         except Exception as e:
             print(f"Error transitioning to mini-game with followup: {e}")
-
 
 class MiniGameView(discord.ui.View):
     def __init__(self, bot, user, fish, action_index, last_action_time):
