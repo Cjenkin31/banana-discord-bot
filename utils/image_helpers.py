@@ -46,13 +46,15 @@ async def download_gif_from_github(path: str):
     try:
         response = requests.get(full_url, stream=True)
         if response.status_code == 200:
+            print("200 ok")
             local_filename = 'temp_image.gif'
             with open(local_filename, 'wb') as f:
                 for chunk in response.iter_content(1024):
                     f.write(chunk)
-
+            print("file written")
             discord_file = File(local_filename, filename='image.gif')
             os.remove(local_filename)
+            print("file removed")
             return discord_file
 
         else:
