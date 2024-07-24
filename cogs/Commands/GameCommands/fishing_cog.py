@@ -82,24 +82,27 @@ class MiniGameView(discord.ui.View):
         await self.handle_action(interaction, self.option_2)
 
     async def handle_action(self, interaction: discord.Interaction, button: discord.ui.Button):
-        current_time = datetime.utcnow()
-        time_diff = current_time - self.last_action_time
+        try:
+            current_time = datetime.utcnow()
+            time_diff = current_time - self.last_action_time
 
-        if time_diff > timedelta(seconds=10):
-            await self.clear_embeds(interaction, "The fish escaped due to taking too long!")
-            return
+            if time_diff > timedelta(seconds=10):
+                await self.clear_embeds(interaction, "The fish escaped due to taking too long!")
+                return
 
-        selected_action = button.label
+            selected_action = button.label
 
-        if selected_action == self.correct_action:
-            self.action_index += 1
-            if self.action_index < len(self.fish['actions']):
-                next_view = MiniGameView(self.bot, self.user, self.fish, self.action_index, current_time)
-                await interaction.response.edit_message(content="Good job! Next action: What will you do?", view=next_view)
+            if selected_action == self.correct_action:
+                self.action_index += 1
+                if self.action_index < len(self.fish['actions']):
+                    next_view = MiniGameView(self.bot, self.user, self.fish, self.action_index, current_time)
+                    await interaction.response.edit_message(content="Good job! Next action: What will you do?", view=next_view)
+                else:
+                    await self.clear_embeds(interaction, f"Congratulations! You caught a {self.fish['name']} worth {self.fish['value']} Banana Coins! Size: {self.fish['size']}, Rarity: {self.fish['rarity']}")
             else:
-                await self.clear_embeds(interaction, f"Congratulations! You caught a {self.fish['name']} worth {self.fish['value']} Banana Coins! Size: {self.fish['size']}, Rarity: {self.fish['rarity']}")
-        else:
-            await self.clear_embeds(interaction, "The fish escaped! Better luck next time.")
+                await self.clear_embeds(interaction, "The fish escaped! Better luck next time.")
+        except Exception as e:
+            print(f"Error handling action: {e}")
 
     async def clear_embeds(self, interaction: discord.Interaction, content: str):
         await interaction.edit_original_response(content=content, attachments=[], view=None)
