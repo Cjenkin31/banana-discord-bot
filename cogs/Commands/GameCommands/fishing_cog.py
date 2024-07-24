@@ -31,8 +31,11 @@ class FishingView(discord.ui.View):
         embed = discord.Embed(description="You cast your line... Waiting for a bite...")
         fishing_man = await download_gif_from_github("FishingMan.gif")
         print("Got FishingMan Gif")
-        if fishing_man:
-            await interaction.response.edit_message(embed=embed, view=None, file=fishing_man)
+        try:
+            if fishing_man:
+                await interaction.response.edit_message(embed=embed, view=None, file=fishing_man)
+        except Exception as e:
+            print(f"An error occurred in cast_line: {e}")
         await asyncio.sleep(caught_fish['wait_time'])
         
         minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0, datetime.utcnow())
