@@ -42,10 +42,12 @@ class FishingView(discord.ui.View):
         minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0, datetime.utcnow())
         embed = discord.Embed(description="You got a bite! What will you do?")
         man_caught_fish_gif = await download_gif_from_github("CaughtFish.gif")
-        await interaction.response.edit_message(embed=embed, view=minigame_view)
-        if man_caught_fish_gif:
-            await initial_message.edit(embed=None, view=None, attachments=[man_caught_fish_gif])
-
+        try:
+            await interaction.response.edit_message(embed=embed, view=minigame_view)
+            if man_caught_fish_gif:
+                await initial_message.edit(embed=None, view=None, attachments=[man_caught_fish_gif])
+        except Exception as e:
+            print(f"An error occurred in cast_line: {e}")
 class MiniGameView(discord.ui.View):
     def __init__(self, bot, user, fish, action_index, last_action_time):
         super().__init__(timeout=None)
