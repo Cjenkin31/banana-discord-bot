@@ -46,9 +46,9 @@ class FishingView(discord.ui.View):
         man_caught_fish_gif = await download_gif_from_github("CaughtFish.gif")
         minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0, datetime.utcnow())
         try:
-            await interaction.edit_original_response(content="You got a bite! What will you do?", attachments=[man_caught_fish_gif], view=minigame_view)
+            await interaction.followup.send(content="You got a bite! What will you do?", attachments=[man_caught_fish_gif], view=minigame_view, ephemeral=False)
         except Exception as e:
-            print(f"Error transitioning to mini-game: {e}")
+            print(f"Error transitioning to mini-game with followup: {e}")
 
 
 class MiniGameView(discord.ui.View):
@@ -96,18 +96,17 @@ class MiniGameView(discord.ui.View):
                 self.action_index += 1
                 if self.action_index < len(self.fish['actions']):
                     next_view = MiniGameView(self.bot, self.user, self.fish, self.action_index, current_time)
-                    await interaction.edit_original_response(content="Good job! Next action: What will you do?", view=next_view)
+                    await interaction.followup.send(content="Good job! Next action: What will you do?", view=next_view, ephemeral=False)
                 else:
-                    await interaction.followup.send(f"Congratulations! You caught a {self.fish['name']} worth {self.fish['value']} Banana Coins! Size: {self.fish['size']}, Rarity: {self.fish['rarity']}", ephemeral=True)
+                    await interaction.followup.send(f"Congratulations! You caught a {self.fish['name']} worth {self.fish['value']} Banana Coins! Size: {self.fish['size']}, Rarity: {self.fish['rarity']}", ephemeral=False)
             else:
                 await interaction.followup.send("The fish escaped! Better luck next time.", ephemeral=True)
         except Exception as e:
             print(f"Error handling action: {e}")
             await interaction.followup.send("An error occurred while processing your action.", ephemeral=True)
 
-
     async def clear_embeds(self, interaction: discord.Interaction, content: str):
-        await interaction.edit_original_response(content=content, attachments=[], view=None)
+        await interaction.followup.send(content=content, attachments=[], ephemeral=False)
 
 class FishingCog(commands.Cog):
     def __init__(self, bot):
