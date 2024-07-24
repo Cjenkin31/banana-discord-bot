@@ -18,7 +18,6 @@ class FishingView(discord.ui.View):
 
     @discord.ui.button(label="Cast Line", style=discord.ButtonStyle.primary, custom_id="cast_line")
     async def cast_line(self, interaction: discord.Interaction, button: discord.ui.Button):
-        print("Cast Line")
         if interaction.user.id != self.user.id:
             return await interaction.response.send_message("This is not your fishing session!", ephemeral=True)
         
@@ -28,7 +27,7 @@ class FishingView(discord.ui.View):
         for action in caught_fish["actions"]:
             random.shuffle(action["options"])
         print(caught_fish)
-        initial_message = await interaction.response.send_message(view=None)
+        initial_message = await interaction.edit_message(view=None)
         
         fishing_man = await download_gif_from_github("FishingMan.gif")
         try:
