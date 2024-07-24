@@ -12,7 +12,8 @@ def download_image(url, local_filename):
     if response.status_code == 200:
         img = Image.open(BytesIO(response.content))
         img_path = os.path.join(images_directory, local_filename)
-        img.save(img_path)
+        with img:
+            img.save(img_path)
         return img_path
     return None
 

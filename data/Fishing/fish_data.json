@@ -1,0 +1,52 @@
+[
+    {
+        "name": "Goldfish",
+        "size": "small",
+        "tags": ["Common", "Pond"],
+        "rarity": "C",
+        "value": 100,
+        "wait_time": 5,
+        "actions": [
+            {"correct": "Pull Harder", "options": ["Pull Harder", "Let It Tire Out"]},
+            {"correct": "Keep It Tight", "options": ["Keep It Tight", "Loosen Line"]}
+        ]
+    },
+    {
+        "name": "Salmon",
+        "size": "medium",
+        "tags": ["River", "Freshwater"],
+        "rarity": "B",
+        "value": 200,
+        "wait_time": 8,
+        "actions": [
+            {"correct": "Keep It Tight", "options": ["Keep It Tight", "Loosen Line"]},
+            {"correct": "Dodge Left", "options": ["Dodge Left", "Dodge Right"]}
+        ]
+    },
+    {
+        "name": "Tuna",
+        "size": "large",
+        "tags": ["Ocean", "Saltwater"],
+        "rarity": "A",
+        "value": 300,
+        "wait_time": 10,
+        "actions": [
+            {"correct": "Dodge Right", "options": ["Dodge Right", "Dodge Left"]},
+            {"correct": "Use Hands", "options": ["Use Hands", "Use Net"]}
+        ]
+    },
+    {
+        "name": "Dragon Fish",
+        "size": "large",
+        "tags": ["Mythical", "Rare"],
+        "rarity": "S",
+        "value": 500,
+        "wait_time": 10,
+        "actions": [
+            {"correct": "Pull Harder", "options": ["Pull Harder", "Let It Tire Out"]},
+            {"correct": "Keep It Tight", "options": ["Keep It Tight", "Loosen Line"]},
+            {"correct": "Dodge Left", "options": ["Dodge Left", "Dodge Right"]},
+            {"correct": "Use Hands", "options": ["Use Hands", "Use Net"]}
+        ]
+    }
+]
