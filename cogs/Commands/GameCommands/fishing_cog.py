@@ -28,25 +28,24 @@ class FishingView(discord.ui.View):
         for action in caught_fish["actions"]:
             random.shuffle(action["options"])
         print(caught_fish)
-        embed = discord.Embed(description="You cast your line... Waiting for a bite...")
-        initial_message = await interaction.response.send_message(embed=embed, view=None)
+        initial_message = await interaction.response.send_message(view=None)
         
         fishing_man = await download_gif_from_github("FishingMan.gif")
         try:
             if fishing_man:
-                await initial_message.edit(embed=embed, attachments=[fishing_man])
+                await initial_message.edit(attachments=[fishing_man])
         except Exception as e:
             print(f"An error occurred in cast_line: {e}")
         
         await asyncio.sleep(caught_fish['wait_time'])
         
         minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0, datetime.utcnow())
-        embed = discord.Embed(description="You got a bite! What will you do?")
         man_caught_fish_gif = await download_gif_from_github("CaughtFish.gif")
         try:
-            await initial_message.edit(embed=embed, view=minigame_view, attachments=[man_caught_fish_gif])
+            await initial_message.edit(content="You got a bite! What will you do?", view=minigame_view, attachments=[man_caught_fish_gif])
         except Exception as e:
             print(f"An error occurred in cast_line: {e}")
+
 class MiniGameView(discord.ui.View):
     def __init__(self, bot, user, fish, action_index, last_action_time):
         super().__init__(timeout=None)
