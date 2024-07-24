@@ -15,11 +15,13 @@ class FishingView(discord.ui.View):
         self.bot = bot
         self.user = user
         print("Fishing View Init")
+
     @discord.ui.button(label="Cast Line", style=discord.ButtonStyle.primary, custom_id="cast_line")
     async def cast_line(self, interaction: discord.Interaction, button: discord.ui.Button):
         print("Cast Line")
         if interaction.user.id != self.user.id:
             return await interaction.response.send_message("This is not your fishing session!", ephemeral=True)
+        
         print("Loading Fish Data")
         fish_data = load_fish_data()
         print("Selecting Fish")
@@ -28,6 +30,7 @@ class FishingView(discord.ui.View):
         for action in caught_fish["actions"]:
             random.shuffle(action["options"])
         print("Fish Selected")
+        
         embed = discord.Embed(description="You cast your line... Waiting for a bite...")
         fishing_man = await download_gif_from_github("FishingMan.gif")
         print("Got FishingMan Gif")
@@ -37,13 +40,14 @@ class FishingView(discord.ui.View):
                 initial_message = await interaction.followup.send(file=fishing_man)
         except Exception as e:
             print(f"An error occurred in cast_line: {e}")
+        
         await asyncio.sleep(caught_fish['wait_time'])
         
         minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0, datetime.utcnow())
         embed = discord.Embed(description="You got a bite! What will you do?")
         man_caught_fish_gif = await download_gif_from_github("CaughtFish.gif")
         try:
-            await interaction.response.edit_message(embed=embed, view=minigame_view)
+            await interaction.followup.send(embed=embed, view=minigame_view)
             if man_caught_fish_gif:
                 await initial_message.edit(embed=None, view=None, attachments=[man_caught_fish_gif])
         except Exception as e:
