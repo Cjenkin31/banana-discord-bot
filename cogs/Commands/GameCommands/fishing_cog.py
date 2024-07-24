@@ -27,7 +27,7 @@ class FishingView(discord.ui.View):
         for action in caught_fish["actions"]:
             random.shuffle(action["options"])
         print(caught_fish)
-        initial_message = await interaction.edit_message(view=None)
+        initial_message = await interaction.response.edit_message(view=None)
         
         fishing_man = await download_gif_from_github("FishingMan.gif")
         try:
