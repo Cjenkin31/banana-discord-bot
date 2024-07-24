@@ -87,7 +87,7 @@ class MiniGameView(discord.ui.View):
             time_diff = current_time - self.last_action_time
 
             if time_diff > timedelta(seconds=10):
-                await self.clear_embeds(interaction, "The fish escaped due to taking too long!")
+                await interaction.followup.send("The fish escaped due to taking too long!", ephemeral=True)
                 return
 
             selected_action = button.label
@@ -96,13 +96,15 @@ class MiniGameView(discord.ui.View):
                 self.action_index += 1
                 if self.action_index < len(self.fish['actions']):
                     next_view = MiniGameView(self.bot, self.user, self.fish, self.action_index, current_time)
-                    await interaction.response.edit_message(content="Good job! Next action: What will you do?", view=next_view)
+                    await interaction.edit_original_response(content="Good job! Next action: What will you do?", view=next_view)
                 else:
-                    await self.clear_embeds(interaction, f"Congratulations! You caught a {self.fish['name']} worth {self.fish['value']} Banana Coins! Size: {self.fish['size']}, Rarity: {self.fish['rarity']}")
+                    await interaction.followup.send(f"Congratulations! You caught a {self.fish['name']} worth {self.fish['value']} Banana Coins! Size: {self.fish['size']}, Rarity: {self.fish['rarity']}", ephemeral=True)
             else:
-                await self.clear_embeds(interaction, "The fish escaped! Better luck next time.")
+                await interaction.followup.send("The fish escaped! Better luck next time.", ephemeral=True)
         except Exception as e:
             print(f"Error handling action: {e}")
+            await interaction.followup.send("An error occurred while processing your action.", ephemeral=True)
+
 
     async def clear_embeds(self, interaction: discord.Interaction, content: str):
         await interaction.edit_original_response(content=content, attachments=[], view=None)
