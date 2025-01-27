@@ -47,38 +47,32 @@ class DailyCurrencyCog(commands.Cog):
         response_message += f"\n +{bananas_collected} {BANANA_COIN_EMOJI}"
         return True, response_message
 
+    async def handle_daily(self, user_id: str, user_display_name: str, send_func):
+        """Handle the daily collection process and send the response."""
+        try:
+            can_collect, response = await self.process_daily(user_id, user_display_name)
+            if can_collect:
+                await send_func(response)
+            else:
+                await send_func(f"Please wait {response} to collect your daily bananas.")
+        except Exception as e:
+            await send_func(f"An error occurred while processing your request: {e}")
+
     @commands.command(name="daily", help="Collect your daily bananas")
     async def daily_cmd(self, ctx: commands.Context):
         """Handle the daily command."""
-        try:
-            async with ctx.typing():
-                user_id = str(ctx.author.id)
-                user_display_name = ctx.author.display_name
-                can_collect, response = await self.process_daily(user_id, user_display_name)
-            
-            if can_collect:
-                await ctx.send(response)
-            else:
-                await ctx.send(f"Please wait {response} to collect your daily bananas.")
-        except Exception as e:
-            await ctx.send(f"An error occurred while processing your request: {e}")
+        async with ctx.typing():
+            user_id = str(ctx.author.id)
+            user_display_name = ctx.author.display_name
+            await self.handle_daily(user_id, user_display_name, ctx.send)
 
     @app_commands.guilds(*SERVERS)
     @app_commands.command(name="daily", description="Collect your daily bananas")
     async def daily_app_cmd(self, interaction: discord.Interaction):
         """Handle the daily slash command."""
-        try:
-            user_id = str(interaction.user.id)
-            user_display_name = interaction.user.display_name
-            can_collect, response = await self.process_daily(user_id, user_display_name)
-            
-            if can_collect:
-                await interaction.response.defer()
-                await interaction.followup.send(response)
-            else:
-                await interaction.response.send_message(f"Please wait {response} to collect your daily bananas.")
-        except Exception as e:
-            await interaction.response.send_message(f"An error occurred while processing your request: {e}")
+        user_id = str(interaction.user.id)
+        user_display_name = interaction.user.display_name
+        await self.handle_daily(user_id, user_display_name, interaction.response.send_message)
 
 async def setup(bot: commands.Bot):
     """Set up the DailyCurrencyCog."""
