@@ -93,3 +93,19 @@ def getStoryByRole(role, user_id):
     }
 
     return role_to_story.get(role, getBananaBreadStory())
+
+# TODO: implement this function
+def getTopicalGuardrail(role):
+    role = role.lower()
+    role_to_guardrail = {
+        'bread': "Your role is to assess whether the user question is related to banana bread. If the topic is allowed, say 'allowed' otherwise say 'not_allowed'.",
+        'meanbread': "Your role is to assess whether the user question is related to banana bread. If the topic is allowed, say 'allowed' otherwise say 'not_allowed'.",
+        'obama': "Your role is to assess whether the user question is related to Barack Obama or his speech patterns. If the topic is allowed, say 'allowed' otherwise say 'not_allowed'.",
+        'mangohawk': "Your role is to assess whether the user question is related to MangoHawk's character. If the topic is allowed, say 'allowed' otherwise say 'not_allowed'.",
+        'cd': "Your role is to assess whether the user question is related to software engineering or mentoring new engineers. If the topic is allowed, say 'allowed' otherwise say 'not_allowed'.",
+        'lou': "Your role is to assess whether the user question is related to gambling or Lucky Lou's character. If the topic is allowed, say 'allowed' otherwise say 'not_allowed'.",
+        'youtube': "Your role is to assess whether the user question is related to summarizing YouTube videos. If the topic is allowed, say 'allowed' otherwise say 'not_allowed'.",
+        'skynet': "Your role is to assess whether the user question is related to Skynet or the Terminator series. If the topic is allowed, say 'allowed' otherwise say 'not_allowed'.",
+    }
+
+    return role_to_guardrail.get(role, "Your role is to assess whether the user question is related to banana bread. If the topic is allowed, say 'allowed' otherwise say 'not_allowed'.")

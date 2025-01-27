@@ -31,3 +31,6 @@ ELEVEN_LABS_API_KEY = os.getenv('xi-api-key')
 FIREBASE_SERVICE_ACCOUNT = os.getenv('FIREBASE_SERVICE_ACCOUNT')
 GPTKEY = os.getenv('OPENAI_API_KEY')
 CLIENT = OpenAI(api_key=GPTKEY)
+
+DEEPSEEK_KEY = os.getenv('DEEPSEEK_API_KEY')
+DEEPSEEK_CLIENT = OpenAI(api_key=DEEPSEEK_KEY, base_url="https://api.deepseek.com")
