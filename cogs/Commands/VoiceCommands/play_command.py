@@ -7,7 +7,6 @@ from discord import FFmpegPCMAudio
 import asyncio
 from pytube import YouTube, Playlist
 import uuid
-from moviepy.editor import AudioFileClip
 from utils.audio_queue import AudioQueue
 from pytube.exceptions import VideoUnavailable, PytubeError
 from typing import List
