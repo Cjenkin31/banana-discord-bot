@@ -20,8 +20,11 @@ class DailyCurrencyCog(commands.Cog):
 
     async def process_daily(self, user_id: str, user_display_name: str) -> tuple[bool, str]:
         """Process the daily currency collection and return the response message."""
-        await add_name_if_not_exist_to_database(user_id, user_display_name)
-        can_collect, result = await try_collect_daily(user_id)
+        try:
+            await add_name_if_not_exist_to_database(user_id, user_display_name)
+            can_collect, result = await try_collect_daily(user_id)
+        except Exception as e:
+            return False, f"Failed to process daily collection: {e}"
         
         if not can_collect:
             wait_time = result
@@ -39,7 +42,7 @@ class DailyCurrencyCog(commands.Cog):
         try:
             response_message = await generate_gpt_response(GPT_MODEL, story, user_input)
         except Exception as e:
-            response_message = "Response took too long or had an error. Sorry! Here is your daily currency."
+            response_message = f"Response took too long or had an error: {e}. Sorry! Here is your daily currency."
         
         response_message += f"\n +{bananas_collected} {BANANA_COIN_EMOJI}"
         return True, response_message
