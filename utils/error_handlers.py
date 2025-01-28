@@ -8,5 +8,5 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send('Command not found!')
     else:
-        logging.error(f"Unexpected error: {error}")
+        logging.error("Unexpected error: %s", error)
         await ctx.send('An unexpected error occurred. Please try again!')
