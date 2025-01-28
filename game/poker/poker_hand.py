@@ -1,5 +1,5 @@
-card_rank_values = {'a': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 
-            '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
+card_rank_values = {'a': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
+                    '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
 
 class PokerHand:
     def __init__(self, value):
@@ -11,31 +11,28 @@ class PokerHand:
 
     def makes_hand(self, hand):
         self.cards = sorted(hand, key=lambda card: card_rank_values[card.rank], reverse=True)
-        self.unique_ranks = sorted(list(set([card.rank for card in self.cards])), 
-                                    key=lambda rank: card_rank_values[rank], reverse=True)
-        self.unique_suits = list(set([card.suit for card in self.cards]))
+        self.unique_ranks = sorted({card.rank for card in self.cards},
+                                   key=lambda rank: card_rank_values[rank], reverse=True)
+        self.unique_suits = {card.suit for card in self.cards}
 
     def compare_hand(self, hand):
         if self.hand_type_value > hand.hand_type_value:
             return 1
-        elif self.hand_type_value < hand.hand_type_value:
+        if self.hand_type_value < hand.hand_type_value:
             return -1
-        else:
-            return 0
+        return 0
 
     def compare_equal_type_hands(self, hand):
         bestCards = self.get_kickers()
         handBestCards = hand.get_kickers()
 
-        limit = len(bestCards) if len(bestCards) <= len(handBestCards) else len(handBestCards)
+        limit = min(len(bestCards), len(handBestCards))
 
         for i in range(limit):
             if card_rank_values[bestCards[i].rank] > card_rank_values[handBestCards[i].rank]:
                 return 1
-            elif card_rank_values[bestCards[i].rank] < card_rank_values[handBestCards[i].rank]:
+            if card_rank_values[bestCards[i].rank] < card_rank_values[handBestCards[i].rank]:
                 return -1
-            else:
-                continue
 
         return 0
 
@@ -53,7 +50,7 @@ class PokerHand:
         ranked_cards = self.get_hand_cards()
         available_cards = self.get_kickers()
 
-        while len(ranked_cards) < 5 and len(available_cards):
+        while len(ranked_cards) < 5 and available_cards:
             ranked_cards.append(available_cards.pop(0))
 
         return ranked_cards
@@ -61,8 +58,8 @@ class PokerHand:
     def get_name(self):
         raise Exception("Method 'get_name' must be implemented in concrete class")
 
-    def get_detailed_name(self): 
+    def get_detailed_name(self):
         raise Exception("Method 'get_detailed_name' must be implemented in concrete class")
-    
+
     def __str__(self):
         return self.get_detailed_name() + " [ " + ", ".join(str(card) for card in self.cards) + " ]"

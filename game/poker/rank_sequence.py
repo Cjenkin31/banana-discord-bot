@@ -4,10 +4,10 @@ from game.poker.poker_hand import card_rank_values
 class RankSequence(PokerHand):
     def __init__(self, value, count, name="RankSequence"):
         super().__init__(value)
-
-        self.count = count    
+        self.count = count
         self.name = name
-        
+        self.ranks = []
+
     def makes_hand(self, hand):
         super().makes_hand(hand)
 
@@ -18,7 +18,7 @@ class RankSequence(PokerHand):
 
         for r in range(1, len(check_ranks)):
             best_sequence = [check_ranks[r - 1]]
-            
+
             count = 0
             for i in range(r, len(check_ranks)):
                 if card_rank_values[check_ranks[i - 1]] - card_rank_values[check_ranks[i]] == 1:
@@ -44,14 +44,13 @@ class RankSequence(PokerHand):
                     hand_cards.append(card)
                     break
         return hand_cards
-    
+
     def compare_equal_type_hands(self, hand):
         if card_rank_values[self.ranks[0]] > card_rank_values[hand.ranks[0]]:
             return 1
-        elif card_rank_values[self.ranks[0]] < card_rank_values[hand.ranks[0]]:
+        if card_rank_values[self.ranks[0]] < card_rank_values[hand.ranks[0]]:
             return -1
-        else:
-            return super().compare_equal_type_hands(hand)
+        return super().compare_equal_type_hands(hand)
 
     def get_name(self):
         return self.name

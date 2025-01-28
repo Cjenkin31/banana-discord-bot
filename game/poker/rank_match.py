@@ -4,9 +4,9 @@ from game.poker.poker_hand import card_rank_values
 class RankMatch(PokerHand):
     def __init__(self, value, count, name="RankMatch"):
         super().__init__(value)
-
-        self.count = count    
+        self.count = count
         self.name = name
+        self.rank = None
 
     def makes_hand(self, hand):
         super().makes_hand(hand)
@@ -25,7 +25,7 @@ class RankMatch(PokerHand):
 
     def get_hand_cards(self):
         hand_cards = []
-        for card in self.cards:          
+        for card in self.cards:
             if card.rank == self.rank:
                 hand_cards.append(card)
         return hand_cards
@@ -33,11 +33,10 @@ class RankMatch(PokerHand):
     def compare_equal_type_hands(self, hand):
         if card_rank_values[self.rank] > card_rank_values[hand.rank]:
             return 1
-        elif card_rank_values[self.rank] < card_rank_values[hand.rank]:
+        if card_rank_values[self.rank] < card_rank_values[hand.rank]:
             return -1
-        else:
-            return super().compare_equal_type_hands(hand)
-        
+        return super().compare_equal_type_hands(hand)
+
     def get_name(self):
         return self.name
 

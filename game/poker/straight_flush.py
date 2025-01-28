@@ -1,10 +1,10 @@
 from game.poker.rank_sequence import RankSequence
-from game.poker.poker_hand import card_rank_values
 
 class StraightFlush(RankSequence):
     def __init__(self, value):
         super().__init__(value, 5, "Straight Flush")
-        
+        self.suit = None
+
     def makes_hand(self, hand):
         if super().makes_hand(hand):
             filtered_cards = []
