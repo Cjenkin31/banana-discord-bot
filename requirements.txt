@@ -13,4 +13,3 @@ pytube
 uuid
 python-dotenv
 pylint
-mypy
