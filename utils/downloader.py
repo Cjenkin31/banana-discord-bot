@@ -1,9 +1,11 @@
 import os
 import uuid
 from moviepy.editor import AudioFileClip
-from pytube import YouTube, Playlist
+from pytube import YouTube
 from pytube.exceptions import VideoUnavailable, PytubeError
+
 MAX_DOWNLOAD_SONGS_AT_A_TIME = 2
+
 class Downloader:
     def __init__(self, guild_id):
         self.guild_id = guild_id
@@ -18,12 +20,12 @@ class Downloader:
             unique_id = uuid.uuid4()
             output_path = stream.download(filename=f'{self.guild_id}_downloaded_audio_{unique_id}.mp4')
             return self._convert_to_mp3(output_path)
-        except VideoUnavailable:
-            raise RuntimeError("The video is unavailable.")
+        except VideoUnavailable as exc:
+            raise RuntimeError("The video is unavailable.") from exc
         except PytubeError as e:
-            raise RuntimeError(f"PyTube error: {e}")
+            raise RuntimeError(f"PyTube error: {e}") from e
         except Exception as e:
-            raise RuntimeError(f"Unexpected error: {e}")
+            raise RuntimeError(f"Unexpected error: {e}") from e
 
     def _convert_to_mp3(self, path: str) -> str:
         audio_clip = AudioFileClip(path)
