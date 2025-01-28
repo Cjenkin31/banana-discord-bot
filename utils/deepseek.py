@@ -5,10 +5,10 @@ DEEPSEEK_MODEL = "deepseek-chat"
 ROLE_SYSTEM = "system"
 ROLE_USER = "user"
 
-async def generate_deepseek_response(model: str, system_story: str, user_input: Any) -> str:
+async def generate_deepseek_response(_model: str, system_story: str, user_input: Any) -> str:
     if not isinstance(user_input, str):
         user_input = str(user_input)
-    
+
     try:
         completion_response = DEEPSEEK_CLIENT.chat.completions.create(
             model=DEEPSEEK_MODEL,

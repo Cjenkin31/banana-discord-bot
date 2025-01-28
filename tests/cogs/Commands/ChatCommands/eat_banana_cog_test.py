@@ -1,17 +1,15 @@
 import asyncio
 import pytest
-from unittest.mock import AsyncMock, patch
-from discord.ext import commands
+from unittest.mock import patch
 from cogs.Commands.ChatCommands.eat_banana_cog import EatBananaCog
 
 @pytest.mark.asyncio
 async def test_process_eating_correctly_handles_1_banana_when_user_has_enough_currency(setup_bot):
-    bot, cog, interaction = await setup_bot(EatBananaCog)
+    _, cog, interaction = await setup_bot(EatBananaCog)
 
     with patch("cogs.Commands.ChatCommands.eat_banana_cog.get_bananas", return_value=1), \
          patch("cogs.Commands.ChatCommands.eat_banana_cog.add_bananas", return_value="You are a discord bot assistant...") as mock_add, \
-         patch("cogs.Commands.ChatCommands.eat_banana_cog.remove_bananas", return_value="You are a discord bot assistant...") as mock_remove, \
-         patch("cogs.Commands.ChatCommands.eat_banana_cog.random.randint", return_value=2) as mock_random:
+         patch("cogs.Commands.ChatCommands.eat_banana_cog.remove_bananas", return_value="You are a discord bot assistant...") as mock_remove:
 
         mock_add_future = asyncio.Future()
         mock_add.return_value = mock_add_future
@@ -28,12 +26,11 @@ async def test_process_eating_correctly_handles_1_banana_when_user_has_enough_cu
 
 @pytest.mark.asyncio
 async def test_process_eating_correctly_gives_it_to_bananabreadbot_if_random_is_1(setup_bot):
-    bot, cog, interaction = await setup_bot(EatBananaCog)
+    _, cog, interaction = await setup_bot(EatBananaCog)
 
     with patch("cogs.Commands.ChatCommands.eat_banana_cog.get_bananas", return_value=1), \
          patch("cogs.Commands.ChatCommands.eat_banana_cog.add_bananas", return_value="You are a discord bot assistant...") as mock_add, \
-         patch("cogs.Commands.ChatCommands.eat_banana_cog.remove_bananas", return_value="You are a discord bot assistant...") as mock_remove, \
-         patch("cogs.Commands.ChatCommands.eat_banana_cog.random.randint", return_value=1) as mock_random:
+         patch("cogs.Commands.ChatCommands.eat_banana_cog.remove_bananas", return_value="You are a discord bot assistant...") as mock_remove:
 
         mock_add_future = asyncio.Future()
         mock_add.return_value = mock_add_future
@@ -50,12 +47,11 @@ async def test_process_eating_correctly_gives_it_to_bananabreadbot_if_random_is_
 
 @pytest.mark.asyncio
 async def test_process_eating_correctly_eats_more_bananas(setup_bot):
-    bot, cog, interaction = await setup_bot(EatBananaCog)
+    _, cog, interaction = await setup_bot(EatBananaCog)
 
     with patch("cogs.Commands.ChatCommands.eat_banana_cog.get_bananas", return_value=10), \
          patch("cogs.Commands.ChatCommands.eat_banana_cog.add_bananas", return_value="You are a discord bot assistant...") as mock_add, \
-         patch("cogs.Commands.ChatCommands.eat_banana_cog.remove_bananas", return_value="You are a discord bot assistant...") as mock_remove, \
-         patch("cogs.Commands.ChatCommands.eat_banana_cog.random.randint", return_value=2) as mock_random:
+         patch("cogs.Commands.ChatCommands.eat_banana_cog.remove_bananas", return_value="You are a discord bot assistant...") as mock_remove:
 
         mock_add_future = asyncio.Future()
         mock_add.return_value = mock_add_future
@@ -72,12 +68,11 @@ async def test_process_eating_correctly_eats_more_bananas(setup_bot):
 
 @pytest.mark.asyncio
 async def test_process_eating_correctly_handles_1_banana_when_user_does_not_have_enough_currency(setup_bot):
-    bot, cog, interaction = await setup_bot(EatBananaCog)
+    _, cog, interaction = await setup_bot(EatBananaCog)
 
     with patch("cogs.Commands.ChatCommands.eat_banana_cog.get_bananas", return_value=0), \
          patch("cogs.Commands.ChatCommands.eat_banana_cog.add_bananas", return_value="You are a discord bot assistant...") as mock_add, \
-         patch("cogs.Commands.ChatCommands.eat_banana_cog.remove_bananas", return_value="You are a discord bot assistant...") as mock_remove, \
-         patch("cogs.Commands.ChatCommands.eat_banana_cog.random.randint", return_value=2) as mock_random:
+         patch("cogs.Commands.ChatCommands.eat_banana_cog.remove_bananas", return_value="You are a discord bot assistant...") as mock_remove:
 
         mock_add_future = asyncio.Future()
         mock_add.return_value = mock_add_future
@@ -94,12 +89,11 @@ async def test_process_eating_correctly_handles_1_banana_when_user_does_not_have
 
 @pytest.mark.asyncio
 async def test_process_eating_does_not_give_the_bot_bananas_if_user_does_not_have_enough(setup_bot):
-    bot, cog, interaction = await setup_bot(EatBananaCog)
+    _, cog, interaction = await setup_bot(EatBananaCog)
 
     with patch("cogs.Commands.ChatCommands.eat_banana_cog.get_bananas", return_value=0), \
          patch("cogs.Commands.ChatCommands.eat_banana_cog.add_bananas", return_value="You are a discord bot assistant...") as mock_add, \
-         patch("cogs.Commands.ChatCommands.eat_banana_cog.remove_bananas", return_value="You are a discord bot assistant...") as mock_remove, \
-         patch("cogs.Commands.ChatCommands.eat_banana_cog.random.randint", return_value=1) as mock_random:
+         patch("cogs.Commands.ChatCommands.eat_banana_cog.remove_bananas", return_value="You are a discord bot assistant...") as mock_remove:
 
         mock_add_future = asyncio.Future()
         mock_add.return_value = mock_add_future

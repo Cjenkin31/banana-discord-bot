@@ -1,8 +1,5 @@
-import asyncio
 import pytest
-from unittest.mock import MagicMock, PropertyMock, patch
-import discord
-from discord.ext import commands
+from unittest.mock import MagicMock, patch
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -27,9 +24,8 @@ async def test_load_cogs():
 
 @pytest.mark.asyncio
 async def test_on_ready(mock_bot):
-    with patch('bot.SERVERS', [MagicMock(id=123), MagicMock(id=456)]) as mocked_servers:
-        await on_ready()
+    await on_ready()
 
-        # Assertions
-        assert mock_bot.tree.sync.call_count == 2, "Sync should be called for each server"
-        print("on_ready called with:", mock_bot.user.name)
+    # Assertions
+    assert mock_bot.tree.sync.call_count == 2, "Sync should be called for each server"
+    print("on_ready called with:", mock_bot.user.name)

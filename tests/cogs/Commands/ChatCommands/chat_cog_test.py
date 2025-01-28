@@ -1,12 +1,11 @@
 import asyncio
 import pytest
-from unittest.mock import AsyncMock, patch
-from discord.ext import commands
+from unittest.mock import patch
 from cogs.Commands.ChatCommands.chat_cog import ChatCog
 
 @pytest.mark.asyncio
 async def test_proccess_askbread_correctly_returns_the_response(setup_bot):
-    bot, cog, interaction = await setup_bot(ChatCog)
+    _, cog, interaction = await setup_bot(ChatCog)
 
     user_input = "Why is banana bread funny?"
     role = "comedian"
@@ -19,7 +18,7 @@ async def test_proccess_askbread_correctly_returns_the_response(setup_bot):
         mock_gpt.return_value = future
         expected_response = "This is response."
         response_message = await cog.process_askbread(interaction.user.id, user_input, role)
-        
+
         mock_story.assert_called_once_with(role, interaction.user.id)
         mock_gpt.assert_called_once_with("gpt-4o", "You are a discord bot assistant...", user_input)
         assert response_message.result() == expected_response
