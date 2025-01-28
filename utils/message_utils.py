@@ -9,7 +9,6 @@ async def send_message_in_chunks(response_string: str, interaction: discord.Inte
         last_message = None
         for chunk in chunks:
             last_message = await interaction.followup.send(chunk)
-        return last_message
     else:
         last_message = await interaction.followup.send(response_string)
-        return last_message
+    return last_message
