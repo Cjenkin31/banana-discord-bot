@@ -9,14 +9,9 @@ class AnnouncementCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def is_owner(self):
-        async def predicate(interaction: discord.Interaction):
-            return interaction.user.id == UNBUTTERED_BAGEL_ID
-        return app_commands.check(predicate)
-
     @app_commands.command(name="announce", description="Send an announcement to the specified channels")
     @app_commands.guilds(*SERVERS)
-    @is_owner()
+    @app_commands.check(lambda interaction: interaction.user.id == UNBUTTERED_BAGEL_ID)
     async def announce(self, interaction: discord.Interaction, user_input: str, channel_ids: str = ""):
         await interaction.response.defer()
         if not channel_ids:

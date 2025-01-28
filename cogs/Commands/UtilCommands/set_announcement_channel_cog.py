@@ -9,15 +9,10 @@ class SetAnnouncementChannel(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def is_owner(self):
-        async def predicate(interaction: discord.Interaction):
-            return interaction.user.id == UNBUTTERED_BAGEL_ID
-        return app_commands.check(predicate)
-
     @app_commands.command(name="set_announcement_channel", description="Sets the announcement channel for announcements.")
     @app_commands.describe(channel="Sets the announcement channel for announcements.")
     @app_commands.guilds(*SERVERS)
-    @is_owner()
+    @app_commands.check(lambda interaction: interaction.user.id == UNBUTTERED_BAGEL_ID)
     async def set_announcement_channel_command(self, interaction: discord.Interaction, channel: discord.TextChannel):
         existing_channel_id = await get_announcement_channel(interaction.guild.id)
         if existing_channel_id == channel.id:
