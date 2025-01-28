@@ -24,8 +24,9 @@ async def test_load_cogs():
 
 @pytest.mark.asyncio
 async def test_on_ready(mock_bot):
-    await on_ready()
+    with patch('bot.SERVERS', [MagicMock(id=123), MagicMock(id=456)]):
+        await on_ready()
 
-    # Assertions
-    assert mock_bot.tree.sync.call_count == 2, "Sync should be called for each server"
-    print("on_ready called with:", mock_bot.user.name)
+        # Assertions
+        assert mock_bot.tree.sync.call_count == 2, "Sync should be called for each server"
+        print("on_ready called with:", mock_bot.user.name)
