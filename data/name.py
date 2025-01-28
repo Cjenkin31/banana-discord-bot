@@ -19,4 +19,4 @@ async def add_name_if_not_exist_to_database(user_id, name):
     user_name = user_name_ref.get()
     if not user_name:
         user_name_ref.set(name)
-        get_name(user_id).cache_clear()
+        get_name_sync.cache_clear()
