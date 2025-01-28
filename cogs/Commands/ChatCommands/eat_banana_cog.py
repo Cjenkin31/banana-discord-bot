@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import random
-from utils.emoji_helper import BANANA_COIN_EMOJI 
+from utils.emoji_helper import BANANA_COIN_EMOJI
 from utils.message_utils import send_message_in_chunks
 
 class EatBananaCog(commands.Cog):

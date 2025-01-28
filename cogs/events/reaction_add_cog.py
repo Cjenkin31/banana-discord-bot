@@ -22,7 +22,7 @@ class ReactionAddCog(commands.Cog):
             except discord.HTTPException as e:
                 print(f"Failed to fetch message: {e}")
                 return
-            
+
             # Check if 🍌 (banana) is already there
             banana_reaction = next((r for r in message.reactions if str(r.emoji) == "🍌"), None)
             bread_reaction = next((r for r in message.reactions if str(r.emoji) == "🍞"), None)

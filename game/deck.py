@@ -14,9 +14,8 @@ class Deck:
 
     def shuffle_deck(self):
         random.shuffle(self.cards)
-    
+
     def deal_card(self):
-        if not len(self.cards):
-            raise Exception("Deck of cards is empty")
-            
+        if not self.cards:
+            raise ValueError("Deck of cards is empty")
         return self.cards.pop()

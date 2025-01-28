@@ -5,15 +5,13 @@ from discord.ext import commands
 from discord import app_commands
 from discord import FFmpegPCMAudio
 import asyncio
-from pytube import YouTube, Playlist
-import uuid
+from pytube import Playlist
 from utils.audio_queue import AudioQueue
 from pytube.exceptions import VideoUnavailable, PytubeError
 from typing import List
 from utils.downloader import Downloader
 
 MAX_DOWNLOAD_SONGS_AT_A_TIME = 2
-
 audio_queue = AudioQueue()
 
 @app_commands.guilds(*SERVERS)
@@ -22,7 +20,10 @@ class PlayCommand(commands.Cog):
         self.bot = bot
         self.downloader = None
 
-    @app_commands.command(name="play_youtube_audio", description="Downloads and plays the audio from a YouTube video or playlist in a voice channel.")
+    @app_commands.command(
+        name="play_youtube_audio",
+        description="Downloads and plays the audio from a YouTube video or playlist in a voice channel."
+    )
     @app_commands.describe(url="URL of the YouTube video or playlist")
     async def play_youtube_audio(self, interaction: discord.Interaction, url: str):
         guild_id = interaction.guild_id
@@ -34,7 +35,8 @@ class PlayCommand(commands.Cog):
             return
 
         try:
-            if 'youtube.com/playlist?list=' in url or 'youtube.com/watch?v=' in url or 'youtu.be/' in url:
+            # Basic YouTube URL check
+            if any(k in url for k in ["youtube.com/playlist?list=", "youtube.com/watch?v=", "youtu.be/"]):
                 voice_channel = interaction.user.voice.channel
                 voice_client = discord.utils.get(interaction.client.voice_clients, guild=interaction.guild)
                 if voice_client is None:
@@ -45,7 +47,9 @@ class PlayCommand(commands.Cog):
                         return
 
                 print("Starting process_task")
-                process_task = asyncio.create_task(self.process_url_and_play_first_song(url, guild_id, voice_client, interaction))
+                process_task = asyncio.create_task(
+                    self.process_url_and_play_first_song(url, guild_id, voice_client, interaction)
+                )
                 await process_task
             else:
                 await interaction.followup.send("Invalid YouTube URL provided.")
@@ -63,63 +67,73 @@ class PlayCommand(commands.Cog):
                 if playlist is None:
                     return
                 songs = list(playlist.video_urls)
-                if songs is None or len(songs) == 0:
+                if not songs:
                     print("Playlist video_urls is None or empty")
                     return
-                else:
-                    print(f"Playlist contains {len(songs)} videos")
+                print(f"Playlist contains {len(songs)} videos")
             else:
                 songs = [url]
 
             first_song = songs.pop(0)
             first_song_path = await self.downloader.download_song(first_song)
+            play_task = None  # Initialize to avoid E0606
+
             if first_song_path:
                 await audio_queue.add_to_queue(guild_id, {"file": first_song_path, "url": first_song})
                 play_task = asyncio.create_task(self.play_audio(voice_client, guild_id, interaction))
 
+            # Download the rest in groups
             await self.download_songs_in_groups(songs, guild_id, retry=False)
 
-            await play_task
+            # Only await if we actually created the play task
+            if play_task:
+                await play_task
 
         except Exception as e:
             print(f"An error occurred in process_url_and_play_first_song: {e}")
 
     async def download_songs_in_groups(self, songs: List[str], guild_id: int, retry: bool):
+        """
+        Download songs in small groups, storing tasks in (task, song) pairs
+        so we know which 'song' corresponds to which task.
+        """
         try:
             while songs:
                 if not isinstance(songs, list):
                     print(f"Expected list of songs, got {type(songs)} instead. Exiting loop.")
                     break
-
                 if len(songs) == 0:
                     print("Songs list is empty. Exiting loop.")
                     break
 
                 songs_to_download = songs[:MAX_DOWNLOAD_SONGS_AT_A_TIME]
                 print(f"Downloading {len(songs_to_download)} songs...")
-
                 try:
                     songs = songs[MAX_DOWNLOAD_SONGS_AT_A_TIME:]
                 except Exception as e:
                     print(f"Error while slicing songs: {e}")
                     break
 
-                tasks = []
-                for song in songs_to_download:
-                    if song is None:
+                # Create a list of (task, song) pairs
+                tasks_and_songs = []
+                for s in songs_to_download:
+                    if s is None:
                         print("Encountered a None URL in songs_to_download")
                         continue
                     if retry:
-                        task = asyncio.create_task(self.download_with_retry(song, guild_id))
+                        t = asyncio.create_task(self.download_with_retry(s, guild_id))
                     else:
-                        task = asyncio.create_task(self.downloader.download_song(song))
-                    tasks.append(task)
+                        t = asyncio.create_task(self.downloader.download_song(s))
+                    tasks_and_songs.append((t, s))
 
-                for task in tasks:
+                # Now await each task and queue the result
+                for task, orig_song in tasks_and_songs:
                     try:
                         downloaded_audio = await task
                         if downloaded_audio:
-                            await audio_queue.add_to_queue(guild_id, {"file": downloaded_audio, "url": song})
+                            await audio_queue.add_to_queue(
+                                guild_id, {"file": downloaded_audio, "url": orig_song}
+                            )
                     except Exception as e:
                         print(f"An error occurred while downloading a song: {e}")
 
@@ -127,11 +141,15 @@ class PlayCommand(commands.Cog):
             print(f"An error occurred in download_songs_in_groups: {e}")
 
     async def play_audio(self, voice_client, guild_id, interaction):
+        """
+        Keep playing from the queue until empty, then disconnect.
+        """
         try:
             while True:
                 try:
                     track_info = await audio_queue.next_track(guild_id)
                     if track_info is None:
+                        # Possibly the queue is empty, check again
                         if await audio_queue.is_queue_empty(guild_id):
                             print("Queue is empty, disconnecting...")
                             break
@@ -161,7 +179,10 @@ class PlayCommand(commands.Cog):
             if voice_client:
                 await voice_client.disconnect()
 
-    async def download_with_retry(self, url: str, guild_id: int, max_retries=3):
+    async def download_with_retry(self, url: str, _: int, max_retries=3):
+        """
+        Attempt to download a song multiple times. If it fails, raise.
+        """
         for attempt in range(max_retries):
             try:
                 return await self.downloader.download_song(url)
@@ -178,6 +199,7 @@ class PlayCommand(commands.Cog):
                 raise
 
     def remove_file_if_exists(self, file_path: str):
+        """Delete the file if it still exists."""
         try:
             if os.path.exists(file_path):
                 os.remove(file_path)

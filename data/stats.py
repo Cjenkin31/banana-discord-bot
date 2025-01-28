@@ -1,4 +1,3 @@
-import firebase_admin
 from firebase_admin import db
 from functools import lru_cache
 import random
@@ -31,7 +30,7 @@ async def random_luck(user_id, currency_amount):
     min_luck = max(0, max_luck - 40)
 
     luck_to_add = random.randint(min_luck, max_luck)
-    
+
     await increase_luck(user_id, amt=luck_to_add)
 
     return luck_to_add

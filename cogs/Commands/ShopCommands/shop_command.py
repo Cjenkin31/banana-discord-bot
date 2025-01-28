@@ -22,12 +22,12 @@ class ShopView(View):
     def __init__(self, user_id):
         super().__init__()
         self.user_id = user_id
-        
-        item_1_button = Button(label=f"Item 1 (50 coins)", style=discord.ButtonStyle.primary, custom_id="buy_item_1")
+
+        item_1_button = Button(label="Item 1 (50 coins)", style=discord.ButtonStyle.primary, custom_id="buy_item_1")
         item_1_button.callback = self.buy_item_1_callback
         self.add_item(item_1_button)
-        
-        item_2_button = Button(label=f"Item 2 (100 coins)", style=discord.ButtonStyle.primary, custom_id="buy_item_2")
+
+        item_2_button = Button(label="Item 2 (100 coins)", style=discord.ButtonStyle.primary, custom_id="buy_item_2")
         item_2_button.callback = self.buy_item_2_callback
         self.add_item(item_2_button)
 
@@ -49,10 +49,9 @@ class ShopView(View):
     async def on_timeout(self):
         self.clear_items()
 
-    async def on_error(self, error, item, interaction):
+    async def handle_error(self, interaction: discord.Interaction):
         self.clear_items()
         await interaction.response.send_message("An error occurred while processing your request. Please try again later.", ephemeral=True)
 
 async def setup(bot):
-    print("Skip Shop Commands")
-    # await bot.add_cog(ShopCommands(bot))
+    await bot.add_cog(ShopCommands(bot))

@@ -2,11 +2,7 @@ from config.config import SERVERS
 import discord
 from discord.ext import commands
 from discord import app_commands
-from discord.ui import View, Button
-from data.items import add_item
-from data.Currency.currency import get_bananas, remove_bananas
-from data.stats import random_luck, set_luck, get_luck
-from utils.emoji_helper import BANANA_COIN_EMOJI
+from data.stats import get_luck
 
 class GetLuckCommand(commands.Cog, name="get_luck"):
     def __init__(self, bot):

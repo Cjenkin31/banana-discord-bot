@@ -6,7 +6,6 @@ import random
 import asyncio
 from datetime import datetime, timedelta
 from data.Fishing.fish_utils import load_fish_data, select_fish_by_rarity
-import os
 from utils.image_helpers import download_gif_from_github
 
 class FishingView(discord.ui.View):
@@ -17,7 +16,7 @@ class FishingView(discord.ui.View):
         print("Fishing View Init")
 
     @discord.ui.button(label="Cast Line", style=discord.ButtonStyle.primary, custom_id="cast_line")
-    async def cast_line(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def cast_line(self, interaction: discord.Interaction, _: discord.ui.Button):
         if interaction.user.id != self.user.id:
             return await interaction.response.send_message("This is not your fishing session!", ephemeral=True)
 
@@ -39,20 +38,20 @@ class FishingView(discord.ui.View):
 
         # Update message for caught fish and load mini-game
         man_caught_fish_gif = await download_gif_from_github("CaughtFish.gif")
-        minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0, datetime.utcnow())
+        minigame_view = MiniGameView(self.bot, self.user, caught_fish, 0)
         if man_caught_fish_gif:
             await interaction.followup.send("You got a bite! What will you do?", files=[man_caught_fish_gif], view=minigame_view)
         else:
             await interaction.followup.send("Failed to load the fish image, but you got a bite! What will you do?", view=minigame_view)
 
 class MiniGameView(discord.ui.View):
-    def __init__(self, bot, user, fish, action_index, last_action_time):
+    def __init__(self, bot, user, fish, action_index):
         super().__init__(timeout=None)
         self.bot = bot
         self.user = user
         self.fish = fish
         self.action_index = action_index
-        self.last_action_time = last_action_time
+        self.last_action_time = datetime.utcnow()
 
         self.correct_action = self.fish['actions'][self.action_index]['correct']
         self.options = self.fish['actions'][self.action_index]['options']
@@ -65,9 +64,6 @@ class MiniGameView(discord.ui.View):
 
         self.add_item(self.option_1)
         self.add_item(self.option_2)
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return interaction.user.id == self.user.id
 
     async def option_1_callback(self, interaction: discord.Interaction):
         await self.handle_action(interaction, self.option_1)
@@ -89,7 +85,7 @@ class MiniGameView(discord.ui.View):
             if selected_action == self.correct_action:
                 self.action_index += 1
                 if self.action_index < len(self.fish['actions']):
-                    next_view = MiniGameView(self.bot, self.user, self.fish, self.action_index, current_time)
+                    next_view = MiniGameView(self.bot, self.user, self.fish, self.action_index)
                     await interaction.followup.send(content="Good job! Next action: What will you do?", view=next_view, ephemeral=False)
                 else:
                     await interaction.followup.send(f"Congratulations! You caught a {self.fish['name']} worth {self.fish['value']} Banana Coins! Size: {self.fish['size']}, Rarity: {self.fish['rarity']}", ephemeral=False)

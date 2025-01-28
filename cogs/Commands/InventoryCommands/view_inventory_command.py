@@ -1,6 +1,5 @@
 from config.config import SERVERS
 import discord
-from discord.ext import commands
 from discord import app_commands
 from discord.ext.commands import Cog
 from data.items import get_inventory
@@ -14,7 +13,7 @@ class ViewInventoryCommand(Cog):
     async def view_inventory(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         inventory = await get_inventory(user_id)
-        
+
         if not inventory:
             await interaction.response.send_message("Your inventory is empty.", ephemeral=True)
             return

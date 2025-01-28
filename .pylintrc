@@ -325,7 +325,7 @@ min-public-methods=2
 [EXCEPTIONS]
 
 # Exceptions that will emit a warning when caught.
-overgeneral-exceptions=Exception
+overgeneral-exceptions=builtins.Exception
 
 
 [FORMAT]
@@ -548,7 +548,7 @@ ignore-imports=yes
 ignore-signatures=yes
 
 # Minimum lines number of a similarity.
-min-similarity-lines=40000
+min-similarity-lines=4
 
 
 [SPELLING]
@@ -573,7 +573,6 @@ spelling-private-dict-file=
 # Tells whether to store unknown words to the private dictionary (see the
 # --spelling-private-dict-file option) instead of raising a message.
 spelling-store-unknown-words=no
-
 
 [STRING]
 

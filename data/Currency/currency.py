@@ -1,8 +1,4 @@
-import os
-import json
-import firebase_admin
-from firebase_admin import credentials, db
-import config.firebase_config
+from firebase_admin import db
 
 async def get_bananas(user_id):
     ref = db.reference(f'users/{user_id}/bananas')

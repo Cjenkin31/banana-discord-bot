@@ -25,7 +25,7 @@ class RandomTimeoutCommand(commands.Cog):
 
         moderator_role = discord.utils.get(guild.roles, name="A")
         possible_targets = [member for member in guild.members if not member.bot and moderator_role not in member.roles]
-        
+
         if not possible_targets:
             await interaction.response.send_message("No available members to timeout.")
             return

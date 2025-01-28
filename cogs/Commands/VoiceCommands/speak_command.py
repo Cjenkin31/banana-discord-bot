@@ -1,11 +1,10 @@
-
 from config.config import ELEVEN_LABS_API_KEY, SERVERS
 import discord
 from discord.ext import commands
 from discord import app_commands
 from discord import FFmpegPCMAudio
 import asyncio
-from GPT_stories import *
+from GPT_stories import getStoryByRole
 import requests
 from utils.gpt import generate_gpt_response
 
@@ -56,7 +55,7 @@ class SpeakCommand(commands.Cog, name="speak"):
             }
         }
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-        response = requests.post(url, json=data, headers=headers)
+        response = requests.post(url, json=data, headers=headers, timeout=10)
 
         file_path = f'{interaction.guild.id}_temp_response.mp3'
         with open(file_path, 'wb') as f:

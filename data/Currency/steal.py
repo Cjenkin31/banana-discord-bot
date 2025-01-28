@@ -66,18 +66,18 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
         gpt_response = await generate_gpt_response("gpt-3.5-turbo", story, user_input)
         gpt_response += f"\n +{stolen_amount} {BANANA_COIN_EMOJI}"
         return True, gpt_response
-    else:
-        penalty_amount = stolen_amount
-        penalty = min(thief_bananas, penalty_amount)
-        await remove_bananas(thief_id, penalty)
-        await add_bananas(target_id, penalty)
-        await update_last_steal(thief_id)
-        story = (
-            "You are a Narrator making whacky and interesting turn around stories about how people fail stealing in the funniest ways possible. "
-            "The story always ends up with the person stealing losing the money and the target receiving it, as in they gain extra money that they would have lost. "
-            "He does it in one line. He never mentions how much was gained or lost."
-        )
-        user_input = f"{thief.mention} failed in stealing from {target.mention}"
-        gpt_response = await generate_gpt_response("gpt-3.5-turbo", story, user_input)
-        gpt_response += f"\n -{penalty} {BANANA_COIN_EMOJI}"
-        return False, gpt_response
+
+    penalty_amount = stolen_amount
+    penalty = min(thief_bananas, penalty_amount)
+    await remove_bananas(thief_id, penalty)
+    await add_bananas(target_id, penalty)
+    await update_last_steal(thief_id)
+    story = (
+        "You are a Narrator making whacky and interesting turn around stories about how people fail stealing in the funniest ways possible. "
+        "The story always ends up with the person stealing losing the money and the target receiving it, as in they gain extra money that they would have lost. "
+        "He does it in one line. He never mentions how much was gained or lost."
+    )
+    user_input = f"{thief.mention} failed in stealing from {target.mention}"
+    gpt_response = await generate_gpt_response("gpt-3.5-turbo", story, user_input)
+    gpt_response += f"\n -{penalty} {BANANA_COIN_EMOJI}"
+    return False, gpt_response

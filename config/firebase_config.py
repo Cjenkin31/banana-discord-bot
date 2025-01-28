@@ -1,6 +1,6 @@
 from config.config import FIREBASE_SERVICE_ACCOUNT
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials
 import os
 import json
 

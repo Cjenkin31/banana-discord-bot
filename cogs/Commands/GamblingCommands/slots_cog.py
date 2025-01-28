@@ -5,7 +5,7 @@ from data.stats import get_luck
 from discord.ext import commands
 from discord import app_commands
 import discord
-from data.Currency.currency import get_bananas, add_bananas, remove_bananas
+from data.Currency.currency import add_bananas, remove_bananas
 from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI, SLOT_ROW_1_EMOJI, SLOT_ROW_2_EMOJI, SLOT_ROW_3_EMOJI, SLOT_EMOJI
 
@@ -32,7 +32,7 @@ class SlotsCommands(commands.Cog, name="slots"):
         total_net_gain = -bet_amount
 
         await interaction.response.send_message("Playing slots...")
-        
+
         embed = discord.Embed(title=f"Slots {SLOT_EMOJI}", description=f"Playing for {bet_amount} {BANANA_COIN_EMOJI}", color=0xffff00)
         embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar.url)
         embed.add_field(name="Spinning...", value=f"{SLOT_ROW_1_EMOJI} | {SLOT_ROW_2_EMOJI} | {SLOT_ROW_3_EMOJI}", inline=True)
@@ -52,7 +52,7 @@ class SlotsCommands(commands.Cog, name="slots"):
             '💎': {'weight': .1+(slot_luck_stat*10), 'payout': 50}
         }
 
-        slot_data = {symbol: {'weight': weight, 'payout': data['payout']} 
+        slot_data = {symbol: {'weight': weight, 'payout': data['payout']}
                     for symbol, (weight, data) in zip(slot_data.keys(), zip(self.normalize_weights([data['weight'] for data in slot_data.values()]), slot_data.values()))}
 
         symbols = list(slot_data.keys())

@@ -2,14 +2,14 @@ import asyncio
 import os
 import discord
 from discord.ext import commands
-from config.config import SERVERS, TOKEN, INTENTS
+from config.config import SERVERS, TOKEN
 
 bot = commands.Bot(command_prefix=".", intents=discord.Intents.all())
 
 async def load_cogs():
     loaded_cogs = 0
     total_cogs = 0
-    for root, dirs, files in os.walk('cogs'):
+    for root, _, files in os.walk('cogs'):
         for file in files:
             if file.endswith('.py') and not file.startswith('__'):
                 path = os.path.join(root, file).replace(os.sep, '.').rstrip('.py')
@@ -24,7 +24,7 @@ async def load_cogs():
 
 @bot.event
 async def on_ready():
-    print(f'Bot is attempting to sync commands...')
+    print('Bot is attempting to sync commands...')
     for server in SERVERS:
         print(f'Starting sync for {server.id}')
         await bot.tree.sync(guild=server)

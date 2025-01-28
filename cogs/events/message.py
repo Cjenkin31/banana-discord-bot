@@ -5,7 +5,6 @@ from data.Currency.currency import add_bananas
 from data.stats import get_luck
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from utils.gpt import generate_gpt_response
-from utils.users import UNBUTTERED_BAGEL_ID
 
 class MessageCog(commands.Cog):
     def __init__(self, bot):

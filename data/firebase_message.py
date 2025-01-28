@@ -1,8 +1,4 @@
-import os
-import json
-import firebase_admin
-from firebase_admin import credentials, db
-import config.firebase_config
+from firebase_admin import db
 
 async def set_message_mapping(original_message_id, forwarded_message_id):
     ref = db.reference(f'messages/{original_message_id}')

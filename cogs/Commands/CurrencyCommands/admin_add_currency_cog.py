@@ -4,21 +4,24 @@ from discord import app_commands
 import discord
 from data.Currency.currency import add_bananas
 from utils.users import UNBUTTERED_BAGEL_ID
+
 class AdminAddCurrencyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def is_owner():
+    def is_owner(self):
         async def predicate(interaction: discord.Interaction):
             return interaction.user.id == UNBUTTERED_BAGEL_ID
-        return predicate
+        return app_commands.check(predicate)
 
     @app_commands.command(name="add_currency", description="Add currency to a user")
-    @app_commands.check(is_owner())
     @app_commands.guilds(*SERVERS)
     async def add_currency(self, interaction: discord.Interaction, user: discord.User, amount: int):
         if not isinstance(amount, int) or amount <= 0:
             await interaction.response.send_message("Invalid amount. Please enter a positive number.")
+            return
+        if not await self.is_owner().predicate(interaction):
+            await interaction.response.send_message("You do not have permission for this command.", ephemeral=True)
             return
         try:
             await add_bananas(str(user.id), amount)

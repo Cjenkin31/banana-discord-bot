@@ -12,13 +12,13 @@ class SendBananas(commands.Cog):
     @app_commands.command(name="send_bananas", description="Send bananas to another user")
     @app_commands.guilds(*SERVERS)
     async def send_bananas(self, interaction: discord.Interaction, user: discord.User, amount: int):
-        if (interaction.user.id == user.id):
-            await interaction.response.send_message(f"You cannot send yourself coins!", ephemeral=True)
+        if interaction.user.id == user.id:
+            await interaction.response.send_message("You cannot send yourself coins!", ephemeral=True)
             return
         if amount <= 0:
             await interaction.response.send_message(f"You cannot send a non-positive amount of {BANANA_COIN_EMOJI}.", ephemeral=True)
             return
-        
+
         # Confirm transaction, using the channel from the interaction
         view = ConfirmView(user, amount, interaction.user, interaction.channel)
         await interaction.response.send_message(f"Are you sure you would like to give **{user.display_name}** {amount} {BANANA_COIN_EMOJI}?", view=view, ephemeral=True)
@@ -32,7 +32,7 @@ class ConfirmView(discord.ui.View):
         self.channel = channel
 
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def confirm(self, interaction: discord.Interaction, _: discord.ui.Button):
         # Check if initiator has enough bananas
         initiator_bananas = await get_bananas(str(self.initiator.id))
         if initiator_bananas < self.amount:
@@ -57,7 +57,7 @@ class ConfirmView(discord.ui.View):
         self.stop()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.grey)
-    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def cancel(self, interaction: discord.Interaction, _: discord.ui.Button):
         # Notify the user that the transaction is canceled and disable buttons
         for item in self.children:
             if isinstance(item, discord.ui.Button):

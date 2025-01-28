@@ -9,7 +9,7 @@ class SetJoinToCreateVC(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def is_owner():
+    def is_owner(self):
         async def predicate(interaction: discord.Interaction):
             return interaction.user.id == UNBUTTERED_BAGEL_ID
         return app_commands.check(predicate)
@@ -17,7 +17,7 @@ class SetJoinToCreateVC(commands.Cog):
     @app_commands.command(name="set_join_to_create_vc", description="Sets the voice channel for creating temporary VCs.")
     @app_commands.describe(channel="The voice channel to be used for creating temporary VCs.")
     @app_commands.guilds(*SERVERS)
-    @is_owner()
+    @is_owner
     async def set_join_to_create_vc_command(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
         existing_channel_id = await get_join_to_create_vc(interaction.guild.id)
         if existing_channel_id == channel.id:

@@ -3,7 +3,6 @@ from data.Currency.steal import try_steal
 from discord.ext import commands
 from discord import app_commands
 import discord
-from utils.emoji_helper import BANANA_COIN_EMOJI
 
 class StealCurrencyCog(commands.Cog):
     def __init__(self, bot):

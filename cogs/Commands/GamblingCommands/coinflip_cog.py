@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 import discord
 import random
-from data.Currency.currency import get_bananas, add_bananas, remove_bananas
+from data.Currency.currency import add_bananas, remove_bananas
 from game.shared_logic import bet_checks
 from utils.emoji_helper import BANANA_COIN_EMOJI
 
@@ -22,7 +22,7 @@ class Coinflip(commands.Cog):
         if user_choice not in valid_heads + valid_tails:
             await interaction.response.send_message("Please choose either 'Heads' or 'Tails'.")
             return
-        
+
         valid, response = await bet_checks(bet_amount, interaction)
         if not valid:
             await interaction.response.send_message(str(response))

@@ -1,5 +1,5 @@
 from config.config import SERVERS
-from data.firebase_announcement import get_announcement_channel, get_all_announcement_channels
+from data.firebase_announcement import get_all_announcement_channels
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -9,7 +9,7 @@ class AnnouncementCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def is_owner():
+    def is_owner(self):
         async def predicate(interaction: discord.Interaction):
             return interaction.user.id == UNBUTTERED_BAGEL_ID
         return app_commands.check(predicate)

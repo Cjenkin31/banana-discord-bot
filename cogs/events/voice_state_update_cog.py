@@ -1,5 +1,4 @@
 from data.firebase_voicechat import add_temp_vc, delete_temp_vc, get_join_to_create_vc, get_temp_vcs
-import discord
 from discord.ext import commands
 import asyncio
 
@@ -25,7 +24,7 @@ class VoiceStateUpdateCog(commands.Cog):
 
     async def on_member_leave_vc(self, channel):
         await asyncio.sleep(1)
-        
+
         temp_vcs = await get_temp_vcs(channel.guild.id)
         if str(channel.id) in temp_vcs and len(channel.members) == 0:
             await delete_temp_vc(channel.guild.id, channel.id)

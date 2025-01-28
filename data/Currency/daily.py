@@ -1,13 +1,8 @@
-from data.Currency.currency import add_bananas, get_bananas
+from data.Currency.currency import add_bananas
 from data.stats import get_luck
-import firebase_admin
-import os
-import json
-from firebase_admin import credentials, db
+from firebase_admin import db
 from datetime import datetime, timedelta, timezone
 import random
-import config.firebase_config
-
 
 async def get_last_daily(user_id):
     ref = db.reference(f'users/{user_id}/last_daily')
@@ -22,10 +17,10 @@ async def try_collect_daily(user_id):
         last_daily_str = await get_last_daily(user_id)
         last_daily = datetime.fromisoformat(last_daily_str) if last_daily_str else None
         now = datetime.now(timezone.utc)
-        
+
         if last_daily and (now - last_daily < timedelta(days=1)):
             return False, (last_daily + timedelta(days=1)) - now
-        
+
         base_bananas = random.randint(1, 100)
         user_luck = await get_luck(user_id)
         luck_multiplier = 1 + (user_luck / 100.0)

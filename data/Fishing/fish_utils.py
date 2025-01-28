@@ -5,7 +5,7 @@ import random
 def load_fish_data(filepath="fish_data.json"):
     script_dir = os.path.dirname(__file__)
     file_path = os.path.join(script_dir, filepath)
-    with open(file_path, "r") as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         fish_data = json.load(file)
     return fish_data
 

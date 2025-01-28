@@ -37,7 +37,7 @@ class PokerHand:
         return 0
 
     def get_hand_cards(self):
-        raise Exception("Method 'get_hand_cards' must be implemented in concrete class")
+        raise NotImplementedError("Method 'get_hand_cards' must be implemented in concrete class")
 
     def get_kickers(self):
         kickers = []
@@ -56,10 +56,10 @@ class PokerHand:
         return ranked_cards
 
     def get_name(self):
-        raise Exception("Method 'get_name' must be implemented in concrete class")
+        raise NotImplementedError("Method 'get_name' must be implemented in concrete class")
 
     def get_detailed_name(self):
-        raise Exception("Method 'get_detailed_name' must be implemented in concrete class")
+        raise NotImplementedError("Method 'get_detailed_name' must be implemented in concrete class")
 
     def __str__(self):
         return self.get_detailed_name() + " [ " + ", ".join(str(card) for card in self.cards) + " ]"
