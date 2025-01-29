@@ -1,6 +1,5 @@
 import asyncio
 import os
-import discord
 from discord.ext import commands
 from config.config import SERVERS, TOKEN, setup_intents
 
