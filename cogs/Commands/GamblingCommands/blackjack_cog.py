@@ -46,28 +46,28 @@ class BlackjackCog(commands.Cog):
         """
         Main entry point for the Blackjack command.
         """
-        logger.info(f"User {interaction.user} invoked blackjack command with bet '{bet_amount}'.")
+        logger.info("User %s invoked blackjack command with bet '%s'", interaction.user, bet_amount)
 
         # 1) Validate the bet
         valid, response = await bet_checks(bet_amount, interaction)
         if not valid:
-            logger.warning(f"Bet validation failed for user {interaction.user}. Response: {response}")
+            logger.warning("Bet validation failed for user %s. Response: %s", interaction.user, response)
             await interaction.response.send_message(str(response))
             return
         bet_amount_int = int(response)
-        logger.debug(f"User {interaction.user} bet validated: {bet_amount_int}")
+        logger.debug("User %s bet validated: %d", interaction.user, bet_amount_int)
 
         user_id = str(interaction.user.id)
         current_bananas = await get_bananas(user_id)
-        logger.debug(f"User {interaction.user} has {current_bananas} bananas before betting.")
+        logger.debug("User %s has %d bananas before betting.", interaction.user, current_bananas)
 
         # 2) Quick notification
         await interaction.response.send_message("Playing Blackjack...")
 
         # 3) Check if user has enough bananas
         if bet_amount_int > current_bananas:
-            logger.warning(f"User {interaction.user} tried to bet {bet_amount_int}, "
-                           f"but only has {current_bananas}.")
+            logger.warning("User %s tried to bet %d, but only has %d.",
+                           interaction.user, bet_amount_int, current_bananas)
             await interaction.followup.send("You don't have enough bananas to place that bet!")
             return
 
@@ -80,7 +80,7 @@ class BlackjackCog(commands.Cog):
         embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar)
         embed.set_footer(text="Dealing cards...")
         bj_msg = await interaction.channel.send(embed=embed)
-        logger.debug(f"Initial Blackjack embed sent for user {interaction.user}.")
+        logger.debug("Initial Blackjack embed sent for user %s.", interaction.user)
 
         # 5) Create deck & hands
         deck = Deck()
@@ -103,14 +103,14 @@ class BlackjackCog(commands.Cog):
             "hands_to_calc":   []
         }
 
-        logger.info(f"Starting Blackjack game for user {interaction.user} with bet {bet_amount_int}.")
+        logger.info("Starting Blackjack game for user %s with bet %d.", interaction.user, bet_amount_int)
 
         # 7) Deal initial cards
         await self.deal_initial_cards(game_state, dealer_hand, player_hand)
 
         # 8) Check immediate Blackjack
         if self.is_player_blackjack(player_hand):
-            logger.info(f"User {interaction.user} got a Blackjack immediately.")
+            logger.info("User %s got a Blackjack immediately.", interaction.user)
             await self.handle_player_blackjack(game_state, player_hand)
             return
 
@@ -177,7 +177,7 @@ class BlackjackCog(commands.Cog):
             player_text = f"**You** `{hand.score}` ({hand.bet} {BANANA_COIN_EMOJI})"
 
         if hand.field_idx < 0 or hand.field_idx > len(embed.fields):
-            logger.error(f"Invalid field index {hand.field_idx}. Unable to update hand display.")
+            logger.error("Invalid field index %s. Unable to update hand display.", hand.field_idx)
             raise ValueError(f"Invalid field index: {hand.field_idx}")
 
         if hand.field_idx == len(embed.fields):
@@ -210,7 +210,7 @@ class BlackjackCog(commands.Cog):
         for _ in range(2):
             card = deck.deal_card()
             player_hand.add_card(card)
-            logger.debug(f"Dealt {card} to player.")
+            logger.debug("Dealt %s to player.", card)
             self.update_hand_display(embed, player_hand)
             await bj_msg.edit(embed=embed)
             await asyncio.sleep(0.5)
@@ -218,14 +218,14 @@ class BlackjackCog(commands.Cog):
         # Dealer's shown card
         d_card_shown = deck.deal_card()
         dealer_hand.add_card(d_card_shown)
-        logger.debug(f"Dealer shown card: {d_card_shown}")
+        logger.debug("Dealer shown card: %s", d_card_shown)
         self.update_hand_display(embed, dealer_hand)
         await bj_msg.edit(embed=embed)
 
         # Dealer's hidden card
         d_card_hidden = deck.deal_card()
         dealer_hand.add_card(d_card_hidden)  # Not shown yet
-        logger.debug(f"Dealer hidden card: {d_card_hidden} (Not displayed to players)")
+        logger.debug("Dealer hidden card: %s (Not displayed to players)", d_card_hidden)
 
     def is_player_blackjack(self, player_hand: Hand) -> bool:
         """Check if player got a Blackjack."""
@@ -246,7 +246,7 @@ class BlackjackCog(commands.Cog):
         embed.color = self.WIN_COLOR
         await bj_msg.edit(embed=embed)
         await add_bananas(user_id, bj_winnings)
-        logger.info(f"Blackjack payout of {bj_winnings} bananas awarded to user {user_id}.")
+        logger.info("Blackjack payout of %d bananas awarded to user %s.", bj_winnings, user_id)
 
     async def handle_player_turns(self, gs: dict):
         """
@@ -262,7 +262,7 @@ class BlackjackCog(commands.Cog):
         """
         Plays out a single hand until Stand/Bust/Blackjack.
         """
-        logger.debug(f"Starting turn for hand with initial cards: {hand.cards}")
+        logger.debug("Starting turn for hand with initial cards: %s", hand.cards)
         while hand.score <= self.BLACKJACK_SCORE:
             if hand.score == self.BLACKJACK_SCORE:
                 logger.debug("Hand reached 21, ending turn.")
@@ -289,7 +289,7 @@ class BlackjackCog(commands.Cog):
             try:
                 await gs["bj_msg"].remove_reaction(action_info["react"], action_info["user"])
             except discord.DiscordException as e:
-                logger.debug(f"Failed to remove reaction: {e}")
+                logger.debug("Failed to remove reaction: %s", e)
 
             gs["embed"].set_footer(text="Please wait...")
             await gs["bj_msg"].edit(embed=gs["embed"])
@@ -297,7 +297,7 @@ class BlackjackCog(commands.Cog):
             # Perform the chosen action
             stop_hand = await self.process_player_action(gs, hand, action_info["react"])
             if stop_hand:
-                logger.debug(f"Hand ended after action {action_info['react']}.")
+                logger.debug("Hand ended after action %s.", action_info['react'])
                 break
 
             # 5) Check bust or 21
@@ -317,14 +317,14 @@ class BlackjackCog(commands.Cog):
         Applies the effect of the chosen reaction (Hit, Stand, Double, Split).
         Returns True if the hand should stop after this action, False otherwise.
         """
-        logger.debug(f"Processing action {reaction} for the hand: {hand.cards}")
+        logger.debug("Processing action %s for the hand: %s", reaction, hand.cards)
         deck = gs["deck"]
         embed = gs["embed"]
 
         if reaction == "👊":  # Hit
             card = deck.deal_card()
             hand.add_card(card)
-            logger.debug(f"Player hit and received {card}. New hand score: {hand.score}.")
+            logger.debug("Player hit and received %s. New hand score: %d.", card, hand.score)
             return False
 
         if reaction == "🛑":  # Stand
@@ -338,7 +338,7 @@ class BlackjackCog(commands.Cog):
             hand.bet *= 2
             card = deck.deal_card()
             hand.add_card(card)
-            logger.debug(f"Player doubles down. Dealt {card}. New bet: {hand.bet}.")
+            logger.debug("Player doubles down. Dealt %s. New bet: %d.", card, hand.bet)
             embed.description = f"Playing for {gs['bet_amount']} {BANANA_COIN_EMOJI}"
             self.update_hand_display(embed, hand)
             await gs["bj_msg"].edit(embed=embed)
@@ -361,7 +361,7 @@ class BlackjackCog(commands.Cog):
 
             hand.add_card(deck.deal_card())
             split_hand.add_card(deck.deal_card())
-            logger.debug(f"Dealt new cards to split hands: {hand.cards} | {split_hand.cards}")
+            logger.debug("Dealt new cards to split hands: %s | %s", hand.cards, split_hand.cards)
             await asyncio.sleep(0.5)
 
             self.update_hand_display(embed, hand, active=True)
@@ -402,14 +402,14 @@ class BlackjackCog(commands.Cog):
 
     async def ensure_reactions(self, bj_msg: discord.Message, actions: list):
         """Ensure the message has the correct reaction buttons."""
-        logger.debug(f"Ensuring reaction buttons for {actions}")
+        logger.debug("Ensuring reaction buttons for %s", actions)
         existing_reacts = {str(r.emoji) for r in bj_msg.reactions}
         for act in actions:
             if act not in existing_reacts:
                 try:
                     await bj_msg.add_reaction(act)
                 except discord.DiscordException as e:
-                    logger.warning(f"Failed to add reaction {act}: {e}")
+                    logger.warning("Failed to add reaction %s: %s", act, e)
 
     async def wait_for_player_action(self, gs: dict, available_actions: list):
         """
@@ -432,7 +432,7 @@ class BlackjackCog(commands.Cog):
                     and str(r.emoji) in available_actions
                 )
             reaction, user = await self.bot.wait_for("reaction_add", timeout=60.0, check=check)
-            logger.debug(f"Player chose reaction {reaction.emoji}")
+            logger.debug("Player chose reaction %s", reaction.emoji)
             return {"react": str(reaction.emoji), "user": user}
         except asyncio.TimeoutError:
             # Abandon game
@@ -462,7 +462,7 @@ class BlackjackCog(commands.Cog):
             await asyncio.sleep(1)
             card = deck.deal_card()
             dealer_hand.add_card(card)
-            logger.debug(f"Dealer drew {card}. Dealer score: {dealer_hand.score}")
+            logger.debug("Dealer drew %s. Dealer score: %d", card, dealer_hand.score)
             if dealer_hand.score > self.BLACKJACK_SCORE:
                 self.update_hand_display(embed, dealer_hand, status="Bust!")
             else:
@@ -485,22 +485,22 @@ class BlackjackCog(commands.Cog):
             if hand.score > self.BLACKJACK_SCORE:
                 winnings -= hand.bet
                 status = f"Bust! -{hand.bet} {BANANA_COIN_EMOJI}"
-                logger.debug(f"Hand bust. Bet lost: {hand.bet}.")
+                logger.debug("Hand bust. Bet lost: %d.", hand.bet)
             elif dealer_hand.score > self.BLACKJACK_SCORE:
                 winnings += hand.bet
                 status = f"Win! +{hand.bet} {BANANA_COIN_EMOJI}"
-                logger.debug(f"Dealer bust. Player wins bet: {hand.bet}.")
+                logger.debug("Dealer bust. Player wins bet: %d.", hand.bet)
             elif hand.score > dealer_hand.score:
                 winnings += hand.bet
                 status = f"Win! +{hand.bet} {BANANA_COIN_EMOJI}"
-                logger.debug(f"Player wins against dealer. Gains: {hand.bet}.")
+                logger.debug("Player wins against dealer. Gains: %d.", hand.bet)
             elif hand.score < dealer_hand.score:
                 winnings -= hand.bet
                 status = f"Loss! -{hand.bet} {BANANA_COIN_EMOJI}"
-                logger.debug(f"Player loses against dealer. Loses: {hand.bet}.")
+                logger.debug("Player loses against dealer. Loses: %d.", hand.bet)
             else:
                 status = "Push!"
-                logger.debug(f"Push with dealer. No change for bet {hand.bet}.")
+                logger.debug("Push with dealer. No change for bet %d.", hand.bet)
 
             self.update_hand_display(embed, hand, status=status)
 
@@ -508,16 +508,16 @@ class BlackjackCog(commands.Cog):
             embed.color = self.WIN_COLOR
             embed.description = f"You win {winnings} {BANANA_COIN_EMOJI}!"
             await add_bananas(user_id, winnings)
-            logger.info(f"User {user_id} wins {winnings} bananas.")
+            logger.info("User %s wins %d bananas.", user_id, winnings)
         elif winnings < 0:
             embed.color = self.LOSE_COLOR
             embed.description = f"You lose {abs(winnings)} {BANANA_COIN_EMOJI}!"
             await remove_bananas(user_id, abs(winnings))
-            logger.info(f"User {user_id} loses {abs(winnings)} bananas.")
+            logger.info("User %s loses %d bananas.", user_id, abs(winnings))
         else:
             embed.description = "No winnings or losses!"
             embed.color = self.PUSH_COLOR
-            logger.info(f"User {user_id} ends in a push with no net change.")
+            logger.info("User %s ends in a push with no net change.", user_id)
 
         embed.set_footer(text="Game over!")
         await bj_msg.edit(embed=embed)
