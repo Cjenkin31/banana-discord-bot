@@ -1,10 +1,14 @@
 import random
+import logging
 from discord.ext import commands
 from GPT_stories import getStoryByRole
 from data.Currency.currency import add_bananas
 from data.stats import get_luck
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from utils.gpt import generate_gpt_response
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class MessageCog(commands.Cog):
     def __init__(self, bot):
@@ -31,17 +35,32 @@ class MessageCog(commands.Cog):
             upper_bound = min(100, user_luck + 10)
             banana_amount = random.randint(lower_bound, upper_bound)
             await add_bananas(message.author.id, banana_amount)
-            await message.channel.send(f"<@{message.author.id}> You just found {banana_amount} {BANANA_COIN_EMOJI}")
+            await message.channel.send(
+                f"<@{message.author.id}> You just found {banana_amount} {BANANA_COIN_EMOJI}"
+            )
         if self.bot.user.mentioned_in(message):
+            logger.info(
+                "Bot mentioned by user '%s' in channel '%s' with content: %s",
+                message.author,
+                message.channel,
+                message.content
+            )
+
             model = "gpt-4o"
             role = "meanbread" if random.randint(1, 100) == 1 else "bread"
             previous_context = ""
+            logger.info("Message reference: %s", message.reference)
             if message.reference and message.reference.resolved:
                 replied_message = await message.channel.fetch_message(message.reference.message_id)
-                previous_context = f" <@{replied_message.author.id} previously said: {replied_message.content}\n"
+                logger.info("Replied message: %s", replied_message.content)
+                previous_context = (
+                    f" <@{replied_message.author.id} previously said: {replied_message.content}\n"
+                )
+
             story = getStoryByRole(role, message.author.id)
             story += previous_context
             story += f", Now respond to user {message.author.display_name}, or use their @,  <@{message.author.id}>"
+
             response_message = await generate_gpt_response(model, story, message.content)
             await message.channel.send(response_message)
 
