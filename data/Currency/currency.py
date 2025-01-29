@@ -1,5 +1,7 @@
 from firebase_admin import db
+from config.firebase_config import initialize_firebase
 
+initialize_firebase()
 async def get_bananas(user_id):
     ref = db.reference(f'users/{user_id}/bananas')
     return ref.get() or 0

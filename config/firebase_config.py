@@ -11,5 +11,3 @@ def initialize_firebase():
         firebase_admin.initialize_app(cred, {
             'databaseURL': os.getenv("FIREBASE_DATABASE_URL")
         })
-
-initialize_firebase()
