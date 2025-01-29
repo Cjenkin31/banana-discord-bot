@@ -19,12 +19,14 @@ else:
     SERVERS = [TEST_SERVER_ID]
     debug_mode = True
 
-INTENTS = discord.Intents.default()
-INTENTS.messages = True
-INTENTS.reactions = True
-INTENTS.members = True
-INTENTS.message_content = True
-INTENTS.voice_states = True
+def setup_intents():
+    INTENTS = discord.Intents.default()
+    INTENTS.messages = True
+    INTENTS.reactions = True
+    INTENTS.members = True
+    INTENTS.message_content = True
+    INTENTS.voice_states = True
+    return INTENTS
 
 ELEVEN_LABS_API_KEY = os.getenv('xi-api-key')
 FIREBASE_SERVICE_ACCOUNT = os.getenv('FIREBASE_SERVICE_ACCOUNT')
