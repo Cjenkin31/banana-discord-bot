@@ -4,8 +4,11 @@ from data.name import add_name_if_not_exist_to_database
 from discord.ext import commands
 from discord import app_commands
 import discord
+import logging
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from utils.gpt import generate_gpt_response
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)  # Or adjust to INFO/ERROR depending on verbosity desired
 
 GPT_MODEL = "gpt-4o"
 STORY_TEMPLATE = (
@@ -47,16 +50,15 @@ class DailyCurrencyCog(commands.Cog):
         response_message += f"\n +{bananas_collected} {BANANA_COIN_EMOJI}"
         return True, response_message
 
-    async def handle_daily(self, user_id: str, user_display_name: str, send_func):
+    async def handle_daily(self, user_id: str, user_display_name: str):
         """Handle the daily collection process and send the response."""
         try:
             can_collect, response = await self.process_daily(user_id, user_display_name)
             if can_collect:
-                await send_func(response)
-            else:
-                await send_func(f"Please wait {response} to collect your daily bananas.")
+                return response
+            return f"Please wait {response} to collect your daily bananas."
         except Exception as e:
-            await send_func(f"An error occurred while processing your request: {e}")
+            return f"An error occurred while processing your request: {e}"
 
     @commands.command(name="daily", help="Collect your daily bananas")
     async def daily_cmd(self, ctx: commands.Context):
@@ -64,7 +66,9 @@ class DailyCurrencyCog(commands.Cog):
         async with ctx.typing():
             user_id = str(ctx.author.id)
             user_display_name = ctx.author.display_name
-            await self.handle_daily(user_id, user_display_name, ctx.send)
+            resposne_message = await self.handle_daily(user_id, user_display_name)
+            await ctx.send(resposne_message)
+
 
     @app_commands.guilds(*SERVERS)
     @app_commands.command(name="daily", description="Collect your daily bananas")
@@ -72,7 +76,8 @@ class DailyCurrencyCog(commands.Cog):
         """Handle the daily slash command."""
         user_id = str(interaction.user.id)
         user_display_name = interaction.user.display_name
-        await self.handle_daily(user_id, user_display_name, interaction.response.send_message)
+        response_message = await self.handle_daily(user_id, user_display_name)
+        await interaction.response.send_message(response_message)
 
 async def setup(bot: commands.Bot):
     """Set up the DailyCurrencyCog."""
