@@ -1,6 +1,8 @@
 from firebase_admin import db
 from functools import lru_cache
+from config.firebase_config import initialize_firebase
 
+initialize_firebase()
 @lru_cache(maxsize=128)
 def get_join_to_create_vc_sync(guild_id):
     ref = db.reference(f'join_to_create_vc/{guild_id}')

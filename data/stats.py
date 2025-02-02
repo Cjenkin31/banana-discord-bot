@@ -2,7 +2,9 @@ from firebase_admin import db
 from functools import lru_cache
 import random
 import math
+from config.firebase_config import initialize_firebase
 
+initialize_firebase()
 @lru_cache(maxsize=128)
 def get_stats_sync(user_id):
     ref = db.reference(f'users/{user_id}/stats')

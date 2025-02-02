@@ -13,7 +13,9 @@ LOW_BANANAS_STEAL_CHANCE = 0.05
 LUCK_BONUS = 0.1
 LUCK_PENALTY = -0.1
 BANANA_RATIO = 0.1
+from config.firebase_config import initialize_firebase
 
+initialize_firebase()
 async def get_last_steal(user_id):
     ref = db.reference(f'users/{user_id}/last_steal')
     return ref.get()

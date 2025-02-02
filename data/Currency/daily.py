@@ -3,7 +3,9 @@ from data.stats import get_luck
 from firebase_admin import db
 from datetime import datetime, timedelta, timezone
 import random
+from config.firebase_config import initialize_firebase
 
+initialize_firebase()
 async def get_last_daily(user_id):
     ref = db.reference(f'users/{user_id}/last_daily')
     return ref.get()
