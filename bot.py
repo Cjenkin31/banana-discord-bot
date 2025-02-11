@@ -2,8 +2,23 @@ import asyncio
 import os
 from discord.ext import commands
 from config.config import SERVERS, TOKEN, setup_intents
+from utils.users import UNBUTTERED_BAGEL_ID
+import discord
+import logging
 
 bot = commands.Bot(command_prefix=".", intents=setup_intents())
+
+async def dm_user(bot, user_id, message):
+    try:
+        user = await bot.fetch_user(user_id)
+        await user.send(message)
+    except discord.Forbidden:
+        logging.error("Failed to send DM: Check the user's privacy settings.")
+        return False
+    except discord.HTTPException as e:
+        logging.error(f"Failed to send DM: {e}")
+        return False
+    return True
 
 async def load_cogs():
     loaded_cogs = 0
@@ -28,6 +43,7 @@ async def on_ready():
         print(f'Starting sync for {server.id}')
         await bot.tree.sync(guild=server)
         print(f'Finished sync for {server.id}')
+    await dm_user(bot, UNBUTTERED_BAGEL_ID, f'Bot is ready and has logged in as {bot.user}')
     print(f'Bot is ready and has logged in as {bot.user}')
 
 async def main():
