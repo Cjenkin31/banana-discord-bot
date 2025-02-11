@@ -2,7 +2,7 @@ import asyncio
 import os
 from discord.ext import commands
 from config.config import SERVERS, TOKEN, setup_intents
-from utils.users import UNBUTTERED_BAGEL_ID
+from utils.users import FREAK_ID, UNBUTTERED_BAGEL_ID
 import discord
 import logging
 
@@ -44,6 +44,7 @@ async def on_ready():
         await bot.tree.sync(guild=server)
         print(f'Finished sync for {server.id}')
     await dm_user(bot, UNBUTTERED_BAGEL_ID, f'Bot is ready and has logged in as {bot.user}')
+    await dm_user(bot, FREAK_ID, f'Bot is ready and has logged in as {bot.user}')
     print(f'Bot is ready and has logged in as {bot.user}')
 
 async def main():
