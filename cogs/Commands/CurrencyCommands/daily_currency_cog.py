@@ -6,6 +6,7 @@ from discord import app_commands
 import discord
 import logging
 from utils.emoji_helper import BANANA_COIN_EMOJI
+from GPT_stories import getStoryByRole
 from utils.gpt import generate_gpt_response
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)  # Or adjust to INFO/ERROR depending on verbosity desired
@@ -13,7 +14,7 @@ logger.setLevel(logging.DEBUG)  # Or adjust to INFO/ERROR depending on verbosity
 GPT_MODEL = "gpt-4o"
 STORY_TEMPLATE = (
     "You are a narrator telling a short story about how {user_display_name} came across some money. "
-    "Use 1 or 2 lines in BASIC markdown. At the end of your story, say '{user_display_name} found: "
+    "Use 1 or 2 sentences in BASIC markdown. At the end of your story, say '{user_display_name} found: "
     "Then put some type of object'. Never any currency numbers."
 )
 
@@ -37,7 +38,7 @@ class DailyCurrencyCog(commands.Cog):
             )
             return False, formatted_wait_time
         bananas_collected = result
-        story = STORY_TEMPLATE.format(user_display_name=user_display_name)
+        story = getStoryByRole("bread", user_id) + STORY_TEMPLATE.format(user_display_name=user_display_name)
         user_input = f"{user_display_name} went on an adventure and found their daily currency."
 
         try:
