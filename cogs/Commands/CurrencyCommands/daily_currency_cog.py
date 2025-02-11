@@ -28,7 +28,6 @@ class DailyCurrencyCog(commands.Cog):
             can_collect, result = await try_collect_daily(user_id)
         except Exception as e:
             return False, f"Failed to process daily collection: {e}"
-
         if not can_collect:
             wait_time = result
             formatted_wait_time = (
@@ -37,7 +36,6 @@ class DailyCurrencyCog(commands.Cog):
                 f"{wait_time.seconds % 60} seconds"
             )
             return False, formatted_wait_time
-
         bananas_collected = result
         story = STORY_TEMPLATE.format(user_display_name=user_display_name)
         user_input = f"{user_display_name} went on an adventure and found their daily currency."
@@ -46,7 +44,6 @@ class DailyCurrencyCog(commands.Cog):
             response_message = await generate_gpt_response(GPT_MODEL, story, user_input)
         except Exception as e:
             response_message = f"Response took too long or had an error: {e}. Sorry! Here is your daily currency."
-
         response_message += f"\n +{bananas_collected} {BANANA_COIN_EMOJI}"
         return True, response_message
 
@@ -69,15 +66,16 @@ class DailyCurrencyCog(commands.Cog):
             resposne_message = await self.handle_daily(user_id, user_display_name)
             await ctx.send(resposne_message)
 
-
     @app_commands.guilds(*SERVERS)
     @app_commands.command(name="daily", description="Collect your daily bananas")
     async def daily_app_cmd(self, interaction: discord.Interaction):
         """Handle the daily slash command."""
+        await interaction.response.defer(thinking=True)
+
         user_id = str(interaction.user.id)
         user_display_name = interaction.user.display_name
         response_message = await self.handle_daily(user_id, user_display_name)
-        await interaction.response.send_message(response_message)
+        await interaction.followup.send(response_message)
 
 async def setup(bot: commands.Bot):
     """Set up the DailyCurrencyCog."""
