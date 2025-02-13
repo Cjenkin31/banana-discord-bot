@@ -1,3 +1,4 @@
+from datetime import datetime
 from config.config import SERVERS
 from data.Currency.daily import try_collect_daily
 from data.name import add_name_if_not_exist_to_database
@@ -8,6 +9,8 @@ import logging
 from utils.emoji_helper import BANANA_COIN_EMOJI
 from GPT_stories import getStoryByRole
 from utils.gpt import generate_gpt_response
+from utils.holidays import HOLIDAYS
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)  # Or adjust to INFO/ERROR depending on verbosity desired
 
@@ -40,6 +43,9 @@ class DailyCurrencyCog(commands.Cog):
         bananas_collected = result
         story = getStoryByRole("bread", user_id) + STORY_TEMPLATE.format(user_display_name=user_display_name)
         user_input = f"{user_display_name} went on an adventure and found their daily currency."
+        # If the current date is a holiday, add the holiday to the story.
+        if (datetime.utcnow().month, datetime.utcnow().day) in HOLIDAYS:
+            story += f" Today is {HOLIDAYS[(datetime.utcnow().month, datetime.utcnow().day)]['name']}! Please include this in your story."
 
         try:
             response_message = await generate_gpt_response(GPT_MODEL, story, user_input)

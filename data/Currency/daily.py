@@ -4,8 +4,10 @@ from firebase_admin import db
 from datetime import datetime, timedelta, timezone
 import random
 from config.firebase_config import initialize_firebase
+from utils.holidays import HOLIDAYS
 
 initialize_firebase()
+
 async def get_last_daily(user_id):
     ref = db.reference(f'users/{user_id}/last_daily')
     return ref.get()
@@ -23,10 +25,16 @@ async def try_collect_daily(user_id):
         if last_daily and (now - last_daily < timedelta(days=1)):
             return False, (last_daily + timedelta(days=1)) - now
 
+
         base_bananas = random.randint(1, 100)
-        user_luck = await get_luck(user_id)
+        user_luck = await get_luck(user_id) or 0
         luck_multiplier = 1 + (user_luck / 100.0)
         bananas_to_add = int(base_bananas * luck_multiplier)
+
+        today_key = (now.month, now.day)
+        if today_key in HOLIDAYS:
+            holiday = HOLIDAYS[today_key]
+            bananas_to_add = int(bananas_to_add * holiday["bonus_multiplier"]) + holiday["bonus_extra"]
 
         await add_bananas(user_id, bananas_to_add)
         await update_last_daily(user_id)
