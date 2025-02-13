@@ -2,6 +2,7 @@ from asyncio.log import logger
 import random
 from data.gacha_config import INGREDIENTS
 from data.Currency.currency import remove_bananas
+from data.gacha_rolls import try_gacha
 from data.items import add_item
 from data.stats import get_luck
 from game.shared_logic import bet_checks
@@ -18,8 +19,11 @@ class GachaService:
 
         if not valid:
             logger.warning("Bet validation failed for user %s. Response: %s", interaction.user, response)
-            await interaction.response.send_message(str(response))
-            return
+            return False , response
+
+        gacha_valid, gacha_resposne = await try_gacha(amount, user_id)
+        if not gacha_valid:
+            return False , gacha_resposne
 
         await remove_bananas(user_id, ROLL_COST*amount)
 

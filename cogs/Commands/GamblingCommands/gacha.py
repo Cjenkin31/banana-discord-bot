@@ -8,12 +8,10 @@ class Gacha(commands.Cog):
     @app_commands.guilds(*SERVERS)
     @app_commands.command(name="gacha_spin", description="Roll for a random ingredient")
     async def gacha_spin(self, interaction, amount: int = 1):
+        await interaction.response.defer(thinking=True)
         user_id = str(interaction.user.id)
         ingredient, message = await GachaService.roll_ingredient(user_id, interaction, amount)
-        if not ingredient:
-            await interaction.response.send_message(message)
-        else:
-            await interaction.response.send_message(message)
+        await interaction.followup.send(message)
 
 async def setup(bot):
     await bot.add_cog(Gacha(bot))
