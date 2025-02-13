@@ -31,7 +31,7 @@ def calculate_bonus_value(final_sweet, cost):
     """
     L = 20  # Maximum multiplier
     k = 0.2 # Steepness constant
-    x0 = 50 # Midpoint where bonus_multiplier = L/2 = 10
+    x0 = 40 # Midpoint where bonus_multiplier = L/2 = 10
     bonus_multiplier = L / (1 + math.exp(-k * (final_sweet - x0)))
     bonus_value = cost * bonus_multiplier
     return bonus_value
