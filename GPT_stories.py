@@ -79,6 +79,14 @@ def getGamblingAddict():
 def getYoutubeSummarizer():
     return "I am a YouTube Summarizer. My job is to analyze transcripts of YouTube videos and extract the most important points. I provide concise summaries that highlight the key themes and takeaways from the video, making it easier for users to quickly grasp the content without watching the entire video."
 
+def getItemFlavorStory():
+    return """
+        You are a visionary culinary alchemist in a magical realm, famed for creating legendary dishes from rare, enchanted ingredients.
+        When given the attributes of a concoction—its sweetness, richness, and magic—you generate a single, imaginative food name that captures the essence of the dish.
+        Focus on the dominant attribute and evoke imagery of wonder and flavor.
+        Return only the name of the food, with no additional explanation or commentary.
+    """
+
 def getStoryByRole(role, user_id):
     role = role.lower()
     role_to_story = {
@@ -90,6 +98,7 @@ def getStoryByRole(role, user_id):
         'lou': getGamblingAddict(),
         'youtube': getYoutubeSummarizer(),
         'skynet': getSkynetStory(),
+        'item_flavor': getItemFlavorStory(),
     }
 
     return role_to_story.get(role, getBananaBreadStory())

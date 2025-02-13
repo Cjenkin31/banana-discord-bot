@@ -1,21 +1,19 @@
 from config.config import SERVERS
 from discord.ext import commands
 from discord import app_commands
-import discord
-
-class GachaCog(commands.Cog):
+from game.gacha.gacha_service import GachaService
+class Gacha(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    @commands.command(name="gacha", help="Roll for some items")
-    async def gacha_dot(self, ctx):
-        await ctx.send("Gacha command is not implemented yet.")
-
-    @app_commands.command(name="gacha", description="Roll for some items")
     @app_commands.guilds(*SERVERS)
-    async def gacha_slash(self, interaction: discord.Interaction):
-        await interaction.response.defer()
-        await interaction.followup.send("Gacha command is not implemented yet.")
+    @app_commands.command(name="gacha_spin", description="Roll for a random ingredient")
+    async def gacha_spin(self, interaction, amount: int = 1):
+        user_id = str(interaction.user.id)
+        ingredient, message = await GachaService.roll_ingredient(user_id, interaction, amount)
+        if not ingredient:
+            await interaction.response.send_message(message)
+        else:
+            await interaction.response.send_message(message)
 
 async def setup(bot):
-    await bot.add_cog(GachaCog(bot))
+    await bot.add_cog(Gacha(bot))

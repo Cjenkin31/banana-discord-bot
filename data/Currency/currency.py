@@ -19,7 +19,7 @@ async def remove_bananas(user_id, amount):
     if current_bananas - amount < 0:
         await set_debt(user_id, amount - current_bananas)
     ref.update({'bananas': new_bananas})
-
+    return new_bananas >= 0
 
 async def get_leaderboard():
     ref = db.reference('users/')
