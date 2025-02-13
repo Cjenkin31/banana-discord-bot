@@ -21,19 +21,17 @@ def calculate_bonus_value(final_sweet, cost):
 
     For our tuning:
       - L (max multiplier) = 20, so the function saturates at 20× cost.
-      - x0 (midpoint) = 30, so at final_sweet=30 the multiplier is 20/2 = 10.
+      - x0 (midpoint) = 50, so at final_sweet=50 the multiplier is 20/2 = 10.
       - k = 0.2 controls the steepness.
 
     This means:
       - For final_sweet well below 30, the bonus is very low.
       - At final_sweet=30, bonus ≈ 10 * cost = 1000.
       - For final_sweet above 30, the bonus climbs toward 20× cost.
-
-    Balanced off of 5 Bananas
     """
     L = 20  # Maximum multiplier
     k = 0.2 # Steepness constant
-    x0 = 30 # Midpoint where bonus_multiplier = L/2 = 10
+    x0 = 50 # Midpoint where bonus_multiplier = L/2 = 10
     bonus_multiplier = L / (1 + math.exp(-k * (final_sweet - x0)))
     bonus_value = cost * bonus_multiplier
     return bonus_value
