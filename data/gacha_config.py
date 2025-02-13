@@ -6,4 +6,5 @@ INGREDIENTS = [
     {"name": "Mystic Banana", "rarity": "legendary", "weight": 8, "sweetness": 8, "richness": 5, "magic": 12},
     {"name": "Banana Peel", "rarity": "common", "weight": 30, "sweetness": 2, "richness": 1, "magic": 0},
     {"name": "Banana Nut", "rarity": "uncommon", "weight": 20, "sweetness": 4, "richness": 5, "magic": 1},
+    {"name": "Banana Bunny", "rarity": "celestial", "weight": 1, "sweetness": 15, "richness": 15, "magic": 15},
 ]
