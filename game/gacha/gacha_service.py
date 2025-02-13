@@ -29,7 +29,7 @@ class GachaService:
 
         base_weights = [item["weight"] for item in INGREDIENTS]
         user_luck = await get_luck(user_id)
-        adjusted_weights = [w + (user_luck * 0.1) for w in base_weights]
+        adjusted_weights = [w + (user_luck * 0.05) for w in base_weights]
         full_ingredient_list = []
         for _ in range(amount):
             ingredient = random.choices(INGREDIENTS, weights=adjusted_weights, k=1)[0]
