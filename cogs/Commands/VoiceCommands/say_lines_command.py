@@ -189,11 +189,16 @@ class SayLines(commands.Cog, name="say_lines"):
         try:
             audio_source = FFmpegPCMAudio(
                 concatenated_file,
-                executable='/app/.heroku/activestorage-preview/bin/ffmpeg',
-                options='-vn -ar 48000 -ac 2 -f s16le'
+                executable='/app/.heroku/activestorage-preview/bin/ffmpeg'
             )
+
             if not vc.is_playing():
-                vc.play(audio_source)
+                def after_playing(error):
+                    if error:
+                        print("Error during playback:", error)
+                    else:
+                        print("Playback finished without error.")
+                vc.play(audio_source, after=after_playing)
                 print("Started playing audio.")
                 while vc.is_playing():
                     await asyncio.sleep(1)
