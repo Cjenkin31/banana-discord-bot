@@ -198,7 +198,7 @@ class SayLines(commands.Cog, name="say_lines"):
                 while vc.is_playing():
                     await asyncio.sleep(1)
                 print("Finished playing audio, disconnecting.")
-                interaction.followup.send("Finished speaking.")
+                await interaction.followup.send("Finished speaking.")
                 await vc.disconnect()
             else:
                 print("Voice client is already playing audio.")
