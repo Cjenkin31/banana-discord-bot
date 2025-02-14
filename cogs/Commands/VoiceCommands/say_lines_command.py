@@ -146,7 +146,11 @@ class SayLines(commands.Cog, name="say_lines"):
             return
 
         try:
-            audio_source = FFmpegPCMAudio(concatenated_file, executable='/app/.heroku/activestorage-preview/bin/ffmpeg')
+            audio_source = FFmpegPCMAudio(
+                concatenated_file,
+                executable='/app/.heroku/activestorage-preview/bin/ffmpeg',
+                options='-vn -ar 48000 -ac 2 -f s16le'
+            )
             if not vc.is_playing():
                 vc.play(audio_source)
 
