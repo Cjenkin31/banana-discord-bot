@@ -1,55 +1,51 @@
 import re
 import os
 import discord
-import logging
 from discord.ext import commands
 from discord import app_commands, FFmpegPCMAudio
 import asyncio
 import requests
 from config.config import ELEVEN_LABS_API_KEY, SERVERS
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
 class SayLines(commands.Cog, name="say_lines"):
     def __init__(self, bot):
         self.bot = bot
-        logger.info("SayLines cog initialized.")
+        print("SayLines cog initialized.")
 
     @app_commands.command(name="say_lines", description="Says the lines in the voice channel.")
     @app_commands.guilds(*SERVERS)
     async def speak(self, interaction: discord.Interaction, user_input: str):
-        logger.info("Received speak command from %s", interaction.user)
+        print(f"Received speak command from {interaction.user}")
         await interaction.response.defer()
 
         if not await self._check_user_in_voice_channel(interaction):
-            logger.warning("User %s not in a voice channel.", interaction.user)
+            print(f"User {interaction.user} is not in a voice channel.")
             return
 
         if not await self._check_bot_not_speaking(interaction):
-            logger.warning("Bot is already speaking in guild %s", interaction.guild.id)
+            print(f"Bot is already speaking in guild {interaction.guild.id}")
             return
 
         speaker_voices = self._get_speaker_voices()
         matches = self._parse_user_input(user_input)
 
         if not matches:
-            logger.error("Invalid input format: %s", user_input)
+            print("Invalid input format:", user_input)
             await interaction.followup.send("Invalid input format. Please use the format: [speaker] text.")
             return
 
         audio_files = await self._generate_audio_files(interaction, matches, speaker_voices)
         if not audio_files:
-            logger.error("Audio file generation failed.")
+            print("Audio file generation failed.")
             return
 
         concatenated_file = await self._concatenate_audio_files(interaction, audio_files)
-        logger.info("Playing audio file: %s", concatenated_file)
+        print("Playing audio file:", concatenated_file)
         await self._play_audio(interaction, concatenated_file)
 
     async def _check_user_in_voice_channel(self, interaction):
         if interaction.user.voice is None or interaction.user.voice.channel is None:
-            logger.warning("User %s is not in a voice channel.", interaction.user)
+            print(f"User {interaction.user} is not connected to any voice channel.")
             await interaction.followup.send(
                 "You are not in a voice channel. Please use the `askbread` command if you just want text responses."
             )
@@ -58,7 +54,7 @@ class SayLines(commands.Cog, name="say_lines"):
 
     async def _check_bot_not_speaking(self, interaction):
         if interaction.guild.voice_client is not None and interaction.guild.voice_client.is_playing():
-            logger.warning("Bot is already speaking in guild %s", interaction.guild.id)
+            print(f"Bot is already speaking in guild {interaction.guild.id}")
             await interaction.followup.send("I'm currently speaking. Please try again later.")
             return False
         return True
@@ -72,13 +68,13 @@ class SayLines(commands.Cog, name="say_lines"):
             "mangohawk": "ZuAcH52R3qZnDMjlvT1w",
             "cowboy": "KTPVrSVAEUSJRClDzBw7",
         }
-        logger.info("Loaded speaker voices: %s", voices)
+        print("Loaded speaker voices:", voices)
         return voices
 
     def _parse_user_input(self, user_input):
         pattern = r'\[(.*?)\]\s*([^\[]+)'
         matches = re.findall(pattern, user_input)
-        logger.info("Parsed user input into: %s", matches)
+        print("Parsed user input into:", matches)
         return matches
 
     async def _generate_audio_files(self, interaction, matches, speaker_voices):
@@ -87,20 +83,20 @@ class SayLines(commands.Cog, name="say_lines"):
             speaker = speaker.strip().lower()
             text = text.strip()
             if speaker not in speaker_voices:
-                logger.error("Unknown speaker: %s", speaker)
+                print("Unknown speaker:", speaker)
                 await interaction.followup.send(
                     f"Unknown speaker '{speaker}'. Available speakers are: {', '.join(speaker_voices.keys())}"
                 )
                 return None
 
             voice_id = speaker_voices[speaker]
-            logger.info("Generating speech for speaker: %s, voice_id: %s", speaker, voice_id)
+            print(f"Generating speech for speaker: {speaker}, voice_id: {voice_id}")
             file_path = await self._generate_speech(interaction, text, voice_id, idx)
             if file_path:
                 audio_files.append(file_path)
-                logger.info("Generated audio file: %s", file_path)
+                print("Generated audio file:", file_path)
             else:
-                logger.error("Failed to generate speech for speaker: %s", speaker)
+                print("Failed to generate speech for speaker:", speaker)
                 return None
         return audio_files
 
@@ -124,12 +120,12 @@ class SayLines(commands.Cog, name="say_lines"):
         try:
             response = requests.post(url, json=data, headers=headers, timeout=10)
         except Exception as e:
-            logger.exception("Error sending request to ElevenLabs API: %s", e)
+            print("Error sending request to ElevenLabs API:", e)
             await interaction.followup.send(f"Error generating speech for speaker '{voice_id}'.")
             return None
 
         if response.status_code != 200:
-            logger.error("ElevenLabs API error: %s (status code %s)", response.content, response.status_code)
+            print("ElevenLabs API error:", response.content, "Status code:", response.status_code)
             await interaction.followup.send(f"Error generating speech for speaker '{voice_id}'.")
             return None
 
@@ -137,9 +133,9 @@ class SayLines(commands.Cog, name="say_lines"):
         try:
             with open(file_path, 'wb') as f:
                 f.write(response.content)
-            logger.info("Saved speech to file: %s", file_path)
+            print("Saved speech to file:", file_path)
         except Exception as e:
-            logger.exception("Error writing file %s: %s", file_path, e)
+            print(f"Error writing file {file_path}:", e)
             await interaction.followup.send(f"Error saving audio for speaker '{voice_id}'.")
             return None
         return file_path
@@ -152,41 +148,41 @@ class SayLines(commands.Cog, name="say_lines"):
             with open(concat_list, 'w', encoding='utf-8') as f:
                 for file in audio_files:
                     f.write(f"file '{os.path.abspath(file)}'\n")
-            logger.info("Created concat list file: %s", concat_list)
+            print("Created concat list file:", concat_list)
         except Exception as e:
-            logger.exception("Error creating concat list file: %s", e)
+            print("Error creating concat list file:", e)
             await interaction.followup.send("Error preparing audio files.")
             return None
 
         ffmpeg_command = f"ffmpeg -y -f concat -safe 0 -i {concat_list} -c copy {concatenated_file}"
-        logger.info("Running ffmpeg command: %s", ffmpeg_command)
+        print("Running ffmpeg command:", ffmpeg_command)
         os.system(ffmpeg_command)
 
         for file in audio_files:
             try:
                 os.remove(file)
-                logger.info("Removed temporary file: %s", file)
+                print("Removed temporary file:", file)
             except Exception as e:
-                logger.exception("Error removing file %s: %s", file, e)
+                print(f"Error removing file {file}:", e)
         try:
             os.remove(concat_list)
-            logger.info("Removed concat list file: %s", concat_list)
+            print("Removed concat list file:", concat_list)
         except Exception as e:
-            logger.exception("Error removing concat list file %s: %s", concat_list, e)
+            print(f"Error removing concat list file {concat_list}:", e)
 
-        logger.info("Concatenated file created: %s", concatenated_file)
+        print("Concatenated file created:", concatenated_file)
         return concatenated_file
 
     async def _play_audio(self, interaction, concatenated_file):
         voice_channel = interaction.user.voice.channel
         try:
             vc = await voice_channel.connect()
-            logger.info("Connected to voice channel: %s", voice_channel)
+            print("Connected to voice channel:", voice_channel)
         except discord.ClientException:
             vc = interaction.guild.voice_client
-            logger.info("Using existing voice client in channel: %s", vc.channel)
+            print("Using existing voice client in channel:", vc.channel)
         except discord.Forbidden:
-            logger.error("Permission denied for voice channel: %s", voice_channel)
+            print("Permission denied for voice channel:", voice_channel)
             await interaction.followup.send("I don't have permission to join your voice channel.")
             return
 
@@ -198,26 +194,26 @@ class SayLines(commands.Cog, name="say_lines"):
             )
             if not vc.is_playing():
                 vc.play(audio_source)
-                logger.info("Started playing audio.")
+                print("Started playing audio.")
                 while vc.is_playing():
                     await asyncio.sleep(1)
-                logger.info("Finished playing audio, disconnecting.")
+                print("Finished playing audio, disconnecting.")
                 await vc.disconnect()
             else:
-                logger.warning("Voice client is already playing audio.")
+                print("Voice client is already playing audio.")
                 await interaction.followup.send("I'm currently speaking. Please wait until I'm finished.")
                 await vc.disconnect()
         except Exception as e:
-            logger.exception("Error during audio playback: %s", e)
+            print("Error during audio playback:", e)
             await interaction.followup.send(f"🗣️ **Error occurred:** \"{e}\"")
             await vc.disconnect()
         finally:
             if os.path.exists(concatenated_file):
                 try:
                     os.remove(concatenated_file)
-                    logger.info("Removed concatenated file: %s", concatenated_file)
+                    print("Removed concatenated file:", concatenated_file)
                 except Exception as e:
-                    logger.exception("Error removing concatenated file %s: %s", concatenated_file, e)
+                    print(f"Error removing concatenated file {concatenated_file}:", e)
 
 async def setup(bot):
     await bot.add_cog(SayLines(bot))
