@@ -146,7 +146,8 @@ class SayLines(commands.Cog, name="say_lines"):
             return
 
         try:
-            audio_source = FFmpegPCMAudio(concatenated_file)
+            audio_source = FFmpegPCMAudio(concatenated_file, executable='/app/vendor/ffmpeg/ffmpeg')
+
             if not vc.is_playing():
                 vc.play(audio_source)
 
