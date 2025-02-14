@@ -153,6 +153,7 @@ class SayLines(commands.Cog, name="say_lines"):
 
                 while vc.is_playing():
                     await asyncio.sleep(1)
+                print("Finished playing audio.")
                 await vc.disconnect()
             else:
                 await interaction.followup.send(
