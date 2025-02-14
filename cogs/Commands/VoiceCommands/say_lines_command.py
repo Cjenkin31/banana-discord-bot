@@ -15,8 +15,8 @@ class SayLines(commands.Cog, name="say_lines"):
     @app_commands.command(name="say_lines", description="Says the lines in the voice channel.")
     @app_commands.guilds(*SERVERS)
     async def speak(self, interaction: discord.Interaction, user_input: str):
-        print(f"Received speak command from {interaction.user}")
         await interaction.response.defer()
+        print(f"Received speak command from {interaction.user}")
 
         if not await self._check_user_in_voice_channel(interaction):
             print(f"User {interaction.user} is not in a voice channel.")
@@ -198,6 +198,7 @@ class SayLines(commands.Cog, name="say_lines"):
                 while vc.is_playing():
                     await asyncio.sleep(1)
                 print("Finished playing audio, disconnecting.")
+                interaction.followup.send("Finished speaking.")
                 await vc.disconnect()
             else:
                 print("Voice client is already playing audio.")
