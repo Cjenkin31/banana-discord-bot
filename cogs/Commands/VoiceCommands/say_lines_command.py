@@ -170,7 +170,7 @@ class SayLines(commands.Cog, name="say_lines"):
         except Exception as e:
             print(f"Error removing concat list file {concat_list}:", e)
 
-        print("Concatenated file created:", concatenated_file)
+        print("Concatenated file created: ", concatenated_file)
         return concatenated_file
 
     async def _play_audio(self, interaction, concatenated_file):
