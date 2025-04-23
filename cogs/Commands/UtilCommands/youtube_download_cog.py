@@ -9,11 +9,8 @@ import browser_cookie3
 import http.cookiejar
 from config.config import SERVERS
 
-# Configure logging for this cog
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Path to cookies file for authenticated downloads (env var or default temp)
 DEFAULT_COOKIES_PATH = os.getenv('YTDL_COOKIE_FILE') or os.path.join(tempfile.gettempdir(), 'yt_cookies.txt')
 
 class YTDLCog(commands.Cog):
