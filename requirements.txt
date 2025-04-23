@@ -13,3 +13,4 @@ pytube
 uuid
 python-dotenv
 pylint
+yt-dlp
