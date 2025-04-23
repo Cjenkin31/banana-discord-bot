@@ -1,28 +1,8 @@
-from data.Currency.currency import add_bananas
-from data.stats import get_luck
 from firebase_admin import db
 from datetime import datetime, timedelta, timezone
-import random
 from config.firebase_config import initialize_firebase
 
 initialize_firebase()
-async def get_gacha_reset(user_id):
-    ref = db.reference(f'users/{user_id}/last_gacha_reset')
-    return ref.get()
-
-async def update_last_gacha_reset(user_id):
-    ref = db.reference(f'users/{user_id}')
-    ref.update({'last_gacha_reset': datetime.now(timezone.utc).isoformat()})
-
-from data.Currency.currency import add_bananas
-from data.stats import get_luck
-from firebase_admin import db
-from datetime import datetime, timedelta, timezone
-import random
-from config.firebase_config import initialize_firebase
-
-initialize_firebase()
-
 async def get_gacha_reset(user_id):
     ref = db.reference(f'users/{user_id}/last_gacha_reset')
     return ref.get()

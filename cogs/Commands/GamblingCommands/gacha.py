@@ -10,7 +10,7 @@ class Gacha(commands.Cog):
     async def gacha_spin(self, interaction, amount: int = 1):
         await interaction.response.defer(thinking=True)
         user_id = str(interaction.user.id)
-        ingredient, message = await GachaService.roll_ingredient(user_id, interaction, amount)
+        _, message = await GachaService.roll_ingredient(user_id, interaction, amount)
         await interaction.followup.send(message)
 
 async def setup(bot):
