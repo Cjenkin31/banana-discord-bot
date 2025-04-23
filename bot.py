@@ -44,8 +44,8 @@ async def on_ready():
         await bot.tree.sync(guild=server)
         print(f'Finished sync for {server.id}')
     await dm_user(UNBUTTERED_BAGEL_ID, f'Bot is ready and has logged in as {bot.user}')
-    if os.getenv('ENV', 'DEVELOPMENT') == 'PRODUCTION':
-        await dm_user(FREAK_ID, f'Bot is ready and has logged in as {bot.user}')
+    # if os.getenv('ENV', 'DEVELOPMENT') == 'PRODUCTION':
+        # await dm_user(FREAK_ID, f'Bot is ready and has logged in as {bot.user}')
     print(f'Bot is ready and has logged in as {bot.user}')
 
 async def main():

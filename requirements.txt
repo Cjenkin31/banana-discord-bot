@@ -14,3 +14,4 @@ uuid
 python-dotenv
 pylint
 yt-dlp
+browser_cookie3
