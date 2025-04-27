@@ -67,6 +67,7 @@ async def try_steal(thief_id, target_id, thief: discord.User, target: discord.Us
         user_input = f"{thief.mention} succeeded in stealing from {target.mention}"
         gpt_response = await generate_gpt_response("gpt-3.5-turbo", story, user_input)
         gpt_response += f"\n +{stolen_amount} {BANANA_COIN_EMOJI}"
+        gpt_response += f"\n\n**Chance to steal was:** {steal_chance * 100:.2f}%"
         return True, gpt_response
 
     penalty_amount = stolen_amount
