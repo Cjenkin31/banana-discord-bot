@@ -9,6 +9,14 @@ class VideoConvertCog(commands.Cog):
         self.bot = bot
         self.temp_dir = "temp_videos"
         os.makedirs(self.temp_dir, exist_ok=True)
+        # Limit concurrent conversions to avoid memory spikes
+        self._semaphore = asyncio.Semaphore(1)
+        # Cleanup any leftover files on startup
+        for f in os.listdir(self.temp_dir):
+            try:
+                os.remove(os.path.join(self.temp_dir, f))
+            except OSError:
+                pass
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -16,7 +24,12 @@ class VideoConvertCog(commands.Cog):
             return
         for attachment in message.attachments:
             if attachment.filename.lower().endswith(".mkv"):
-                await self.convert_and_send(attachment, message)
+                # Ensure only one conversion at a time
+                asyncio.create_task(self._handle_conversion(attachment, message))
+
+    async def _handle_conversion(self, attachment: discord.Attachment, message: discord.Message):
+        async with self._semaphore:
+            await self.convert_and_send(attachment, message)
 
     def _get_upload_limit(self, guild: discord.Guild) -> int:
         tier = getattr(guild, 'premium_tier', 0)
@@ -41,86 +54,70 @@ class VideoConvertCog(commands.Cog):
     async def convert_and_send(self, attachment: discord.Attachment, message: discord.Message):
         channel = message.channel
         uid = uuid.uuid4().hex
-        input_path = os.path.join(self.temp_dir, f"{uid}.mkv")
-        output_path = os.path.join(self.temp_dir, f"{uid}.mp4")
-        comp_path = os.path.join(self.temp_dir, f"{uid}_compressed.mp4")
-        trimmed_path = os.path.join(self.temp_dir, f"{uid}_trimmed.mp4")
+        paths = {
+            "input": os.path.join(self.temp_dir, f"{uid}.mkv"),
+            "mp4": os.path.join(self.temp_dir, f"{uid}.mp4"),
+            "compressed": os.path.join(self.temp_dir, f"{uid}_c.mp4"),
+            "trimmed": os.path.join(self.temp_dir, f"{uid}_t.mp4"),
+        }
+        # Download
+        await attachment.save(paths["input"])
 
-        await attachment.save(input_path)
-
-        # Convert container
-        p1 = await asyncio.create_subprocess_exec(
-            "ffmpeg", "-i", input_path, "-c", "copy", output_path,
+        # 1: Container conversion
+        await asyncio.create_subprocess_exec(
+            "ffmpeg", "-i", paths["input"], "-c", "copy", paths["mp4"],
             stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL
-        )
-        await p1.wait()
+        ).wait()
 
         try:
-            if not os.path.exists(output_path):
+            if not os.path.exists(paths["mp4"]):
                 await channel.send("❌ Conversion failed: output not found.")
                 return
             limit = self._get_upload_limit(channel.guild)
-            size = os.path.getsize(output_path)
+            size = os.path.getsize(paths["mp4"])
             if size <= limit:
-                await channel.send(file=discord.File(output_path))
+                await channel.send(file=discord.File(paths["mp4"]))
                 return
-            # Compress
-            await channel.send("🔄 File too large, compressing to fit upload limit...")
-            p2 = await asyncio.create_subprocess_exec(
-                "ffmpeg", "-i", output_path,
+            # 2: Compress
+            await channel.send("🔄 File too large, compressing...")
+            await asyncio.create_subprocess_exec(
+                "ffmpeg", "-i", paths["mp4"],
                 "-c:v", "libx264", "-preset", "fast", "-crf", "28",
-                "-c:a", "aac", "-b:a", "128k", comp_path,
+                "-c:a", "aac", "-b:a", "128k", paths["compressed"],
                 stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL
-            )
-            await p2.wait()
-            if not os.path.exists(comp_path):
+            ).wait()
+            if not os.path.exists(paths["compressed"]):
                 await channel.send("❌ Compression failed: output not found.")
                 return
-            comp_size = os.path.getsize(comp_path)
-            if comp_size <= limit:
-                mb = comp_size / (1024 * 1024)
-                await channel.send(f"✅ Compressed video to {mb:.2f} MB to fit the server limit.")
+            if os.path.getsize(paths["compressed"]) <= limit:
+                await channel.send(f"✅ Compressed video fits limit.")
                 try:
-                    await channel.send(file=discord.File(comp_path))
+                    await channel.send(file=discord.File(paths["compressed"]))
                 except discord.HTTPException as e:
-                    await channel.send(f"❌ Failed to send compressed video: {e}")
+                    await channel.send(f"❌ Send failed: {e}")
                 return
-            # Trim start
-            await channel.send("✂️ Even after compression it’s too big; trimming start until it fits...")
-            duration = await self._get_duration(comp_path)
-            if duration <= 0:
-                await channel.send("❌ Could not determine video duration for trimming.")
-                return
-            keep_ratio = limit / comp_size
-            keep_duration = duration * keep_ratio
-            start_time = max(0, duration - keep_duration)
-            p3 = await asyncio.create_subprocess_exec(
-                "ffmpeg", "-ss", str(start_time), "-i", comp_path,
-                "-c", "copy", trimmed_path,
+            # 3: Trim
+            await channel.send("✂️ Still too large, trimming start...")
+            dur = await self._get_duration(paths["compressed"])
+            keep_ratio = limit / os.path.getsize(paths["compressed"])
+            keep_sec = dur * keep_ratio
+            start = max(0, dur - keep_sec)
+            await asyncio.create_subprocess_exec(
+                "ffmpeg", "-ss", str(start), "-i", paths["compressed"],
+                "-c", "copy", paths["trimmed"],
                 stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL
-            )
-            await p3.wait()
-            if not os.path.exists(trimmed_path):
-                await channel.send("❌ Trimming failed: output not found.")
-                return
-            trim_size = os.path.getsize(trimmed_path)
-            if trim_size <= limit:
-                mb = trim_size / (1024 * 1024)
-                await channel.send(f"✂️ Trimmed video to last {keep_duration:.1f}s (~{mb:.2f} MB), now fits limit.")
-                try:
-                    await channel.send(file=discord.File(trimmed_path))
-                except discord.HTTPException as e:
-                    await channel.send(f"❌ Failed to send trimmed video: {e}")
+            ).wait()
+            if os.path.exists(paths["trimmed"]) and os.path.getsize(paths["trimmed"]) <= limit:
+                await channel.send(file=discord.File(paths["trimmed"]))
             else:
-                mb = trim_size / (1024 * 1024)
-                lmb = limit / (1024 * 1024)
-                await channel.send(f"⚠️ Trimming still too big ({mb:.2f} MB) vs limit {lmb:.2f} MB.")
+                await channel.send("⚠️ Trimmed output still exceeds the upload limit.")
         except Exception as e:
-            await channel.send(f"❌ An error occurred: {e}")
+            await channel.send(f"❌ Error during processing: {e}")
         finally:
-            for path in (input_path, output_path, comp_path, trimmed_path):
+            # Remove all temp files
+            for p in paths.values():
                 try:
-                    os.remove(path)
+                    os.remove(p)
                 except OSError:
                     pass
 
