@@ -62,29 +62,70 @@ class SpeakCommand(commands.Cog, name="speak"):
             f.write(response.content)
         if interaction.user.voice:
             voice_channel = interaction.user.voice.channel
+            vc = None
             try:
-                vc = await voice_channel.connect()
+                # Check if already connected to this channel
+                if interaction.guild.voice_client and interaction.guild.voice_client.channel == voice_channel:
+                    vc = interaction.guild.voice_client
+                else:
+                    # Disconnect from any existing connection first
+                    if interaction.guild.voice_client:
+                        await interaction.guild.voice_client.disconnect(force=True)
+
+                    # Connect with timeout
+                    vc = await voice_channel.connect(timeout=15.0)
+
             except discord.Forbidden:
-                await interaction.response.send_message("I don't have permission to join that voice channel.")
+                await interaction.followup.send("I don't have permission to join that voice channel.")
                 return
-            except discord.ClientException:
-                await interaction.response.send_message("I'm already connected to a voice channel.")
+            except discord.ClientException as e:
+                await interaction.followup.send(f"Voice client error: {e}")
                 return
+            except asyncio.TimeoutError:
+                await interaction.followup.send("Timed out connecting to voice channel.")
+                return
+            except Exception as e:
+                await interaction.followup.send(f"Failed to connect to voice: {e}")
+                return
+
             try:
+                # Verify connection before playing
+                if not vc or not vc.is_connected():
+                    await interaction.followup.send("Failed to establish voice connection.")
+                    return
+
                 audio_source = FFmpegPCMAudio(file_path)
                 if not vc.is_playing():
-                    vc.play(audio_source, after=lambda e: print('Finished playing', e))
+                    vc.play(audio_source, after=lambda e: print('Finished playing', e) if e else None)
 
-                    while vc.is_playing():
+                    # Wait for playback to complete with timeout
+                    timeout_counter = 0
+                    while vc.is_playing() and timeout_counter < 30:  # 30 second timeout
                         await asyncio.sleep(1)
+                        timeout_counter += 1
+
+                    if timeout_counter >= 30:
+                        vc.stop()
+                        await interaction.followup.send("Audio playback timed out.")
+
                     await vc.disconnect()
                 else:
-                    await interaction.response.send_message("I'm currently speaking. Please wait until I'm finished.")
+                    await interaction.followup.send("I'm currently speaking. Please wait until I'm finished.")
                     await vc.disconnect()
             except Exception as e:
-                await interaction.response.send_message(f"🗣️ **Banana Bread Errors with:** \"{e}\"")
+                await interaction.followup.send(f"🗣️ **Audio playback error:** \"{e}\"")
+                if vc and vc.is_connected():
+                    await vc.disconnect()
+            finally:
+                # Clean up the temporary file
+                try:
+                    import os
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                except Exception:
+                    pass
         else:
-            await interaction.response.send_message("You are not in a voice channel.")
+            await interaction.followup.send("You are not in a voice channel.")
 
 async def setup(bot):
     await bot.add_cog(SpeakCommand(bot))
